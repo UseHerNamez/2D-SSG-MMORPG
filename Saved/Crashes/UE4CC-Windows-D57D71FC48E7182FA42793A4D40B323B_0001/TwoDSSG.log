@@ -1,0 +1,1259 @@
+﻿Log file open, 02/15/21 20:22:08
+LogInit: Display: Running engine for game: TwoDSSG
+LogPlatformFile: Not using cached read wrapper
+LogTaskGraph: Started task graph with 5 named threads and 14 total threads with 3 sets of task threads.
+LogStats: Stats thread started at 0.274928
+LogD3D11RHI: Loaded GFSDK_Aftermath_Lib.x64.dll
+LogICUInternationalization: ICU TimeZone Detection - Raw Offset: +2:00, Platform Override: ''
+LogPluginManager: Mounting plugin Paper2D
+LogPluginManager: Mounting plugin AISupport
+LogPluginManager: Mounting plugin LightPropagationVolume
+LogPluginManager: Mounting plugin CameraShakePreviewer
+LogPluginManager: Mounting plugin ActorLayerUtilities
+LogPluginManager: Mounting plugin AnimationSharing
+LogPluginManager: Mounting plugin CLionSourceCodeAccess
+LogPluginManager: Mounting plugin CodeLiteSourceCodeAccess
+LogPluginManager: Mounting plugin GitSourceControl
+LogPluginManager: Mounting plugin KDevelopSourceCodeAccess
+LogPluginManager: Mounting plugin NullSourceCodeAccess
+LogPluginManager: Mounting plugin PerforceSourceControl
+LogPluginManager: Mounting plugin PlasticSourceControl
+LogPluginManager: Mounting plugin RiderSourceCodeAccess
+LogPluginManager: Mounting plugin SubversionSourceControl
+LogPluginManager: Mounting plugin UObjectPlugin
+LogPluginManager: Mounting plugin VisualStudioCodeSourceCodeAccess
+LogPluginManager: Mounting plugin VisualStudioSourceCodeAccess
+LogPluginManager: Mounting plugin XCodeSourceCodeAccess
+LogPluginManager: Mounting plugin AssetManagerEditor
+LogPluginManager: Mounting plugin CryptoKeys
+LogPluginManager: Mounting plugin CurveEditorTools
+LogPluginManager: Mounting plugin DataValidation
+LogPluginManager: Mounting plugin EditorScriptingUtilities
+LogPluginManager: Mounting plugin FacialAnimation
+LogPluginManager: Mounting plugin GameplayTagsEditor
+LogPluginManager: Mounting plugin GeometryMode
+LogPluginManager: Mounting plugin MacGraphicsSwitching
+LogPluginManager: Mounting plugin MaterialAnalyzer
+LogPluginManager: Mounting plugin MobileLauncherProfileWizard
+LogPluginManager: Mounting plugin PluginBrowser
+LogPluginManager: Mounting plugin SpeedTreeImporter
+LogPluginManager: Mounting plugin DatasmithContent
+LogPluginManager: Mounting plugin VariantManagerContent
+LogPluginManager: Mounting plugin AlembicImporter
+LogPluginManager: Mounting plugin AutomationUtils
+LogPluginManager: Mounting plugin BackChannel
+LogPluginManager: Mounting plugin ChaosCloth
+LogPluginManager: Mounting plugin ChaosClothEditor
+LogPluginManager: Mounting plugin ChaosEditor
+LogPluginManager: Mounting plugin ChaosNiagara
+LogPluginManager: Mounting plugin ChaosSolverPlugin
+LogPluginManager: Mounting plugin CharacterAI
+LogPluginManager: Mounting plugin GeometryCache
+LogPluginManager: Mounting plugin GeometryCollectionPlugin
+LogPluginManager: Mounting plugin GeometryProcessing
+LogPluginManager: Mounting plugin PlanarCut
+LogPluginManager: Mounting plugin PlatformCrypto
+LogPluginManager: Mounting plugin ProxyLODPlugin
+LogPluginManager: Mounting plugin SkeletalReduction
+LogPluginManager: Mounting plugin Niagara
+LogPluginManager: Mounting plugin MagicLeap
+LogPluginManager: Mounting plugin MagicLeapLightEstimation
+LogPluginManager: Mounting plugin MagicLeapMedia
+LogPluginManager: Mounting plugin MagicLeapPassableWorld
+LogPluginManager: Mounting plugin MLSDK
+LogPluginManager: Mounting plugin AndroidMedia
+LogPluginManager: Mounting plugin AvfMedia
+LogPluginManager: Mounting plugin ImgMedia
+LogPluginManager: Mounting plugin MediaCompositing
+LogPluginManager: Mounting plugin MediaPlayerEditor
+LogPluginManager: Mounting plugin WebMMedia
+LogPluginManager: Mounting plugin WmfMedia
+LogPluginManager: Mounting plugin MeshPainting
+LogPluginManager: Mounting plugin TcpMessaging
+LogPluginManager: Mounting plugin UdpMessaging
+LogPluginManager: Mounting plugin ActorSequence
+LogPluginManager: Mounting plugin LevelSequenceEditor
+LogPluginManager: Mounting plugin MatineeToLevelSequence
+LogPluginManager: Mounting plugin MovieRenderPipeline
+LogPluginManager: Mounting plugin TemplateSequence
+LogPluginManager: Mounting plugin NetcodeUnitTest
+LogPluginManager: Mounting plugin NUTUnrealEngine4
+LogPluginManager: Mounting plugin OnlineSubsystemGooglePlay
+LogPluginManager: Mounting plugin OnlineSubsystemIOS
+LogPluginManager: Mounting plugin OnlineSubsystem
+LogPluginManager: Mounting plugin OnlineSubsystemNull
+LogPluginManager: Mounting plugin OnlineSubsystemUtils
+LogPluginManager: Mounting plugin LauncherChunkInstaller
+LogPluginManager: Mounting plugin AndroidDeviceProfileSelector
+LogPluginManager: Mounting plugin AndroidMoviePlayer
+LogPluginManager: Mounting plugin AndroidPermission
+LogPluginManager: Mounting plugin AppleImageUtils
+LogPluginManager: Mounting plugin AppleMoviePlayer
+LogPluginManager: Mounting plugin ArchVisCharacter
+LogPluginManager: Mounting plugin AssetTags
+LogPluginManager: Mounting plugin AudioCapture
+LogPluginManager: Mounting plugin CableComponent
+LogPluginManager: Mounting plugin CustomMeshComponent
+LogPluginManager: Mounting plugin EditableMesh
+LogPluginManager: Mounting plugin ExampleDeviceProfileSelector
+LogPluginManager: Mounting plugin GoogleCloudMessaging
+LogPluginManager: Mounting plugin GooglePAD
+LogPluginManager: Mounting plugin IOSDeviceProfileSelector
+LogPluginManager: Mounting plugin LinuxDeviceProfileSelector
+LogPluginManager: Mounting plugin LocationServicesBPLibrary
+LogPluginManager: Mounting plugin MobilePatchingUtils
+LogPluginManager: Mounting plugin OculusVR
+LogPluginManager: Mounting plugin PhysXVehicles
+LogPluginManager: Mounting plugin PostSplashScreen
+LogPluginManager: Mounting plugin ProceduralMeshComponent
+LogPluginManager: Mounting plugin RuntimePhysXCooking
+LogPluginManager: Mounting plugin SignificanceManager
+LogPluginManager: Mounting plugin SoundFields
+LogPluginManager: Mounting plugin SteamVR
+LogPluginManager: Mounting plugin Synthesis
+LogPluginManager: Mounting plugin WebMMoviePlayer
+LogPluginManager: Mounting plugin WindowsMoviePlayer
+LogPluginManager: Mounting plugin ScreenshotTools
+LogInit: Using libcurl 7.55.1-DEV
+LogInit:  - built for x86_64-pc-win32
+LogInit:  - supports SSL with OpenSSL/1.1.1
+LogInit:  - supports HTTP deflate (compression) using libz 1.2.8
+LogInit:  - other features:
+LogInit:      CURL_VERSION_SSL
+LogInit:      CURL_VERSION_LIBZ
+LogInit:      CURL_VERSION_IPV6
+LogInit:      CURL_VERSION_ASYNCHDNS
+LogInit:      CURL_VERSION_LARGEFILE
+LogInit:      CURL_VERSION_IDN
+LogInit:  CurlRequestOptions (configurable via config and command line):
+LogInit:  - bVerifyPeer = true  - Libcurl will verify peer certificate
+LogInit:  - bUseHttpProxy = false  - Libcurl will NOT use HTTP proxy
+LogInit:  - bDontReuseConnections = false  - Libcurl will reuse connections
+LogInit:  - MaxHostConnections = 16  - Libcurl will limit the number of connections to a host
+LogInit:  - LocalHostAddr = Default
+LogInit:  - BufferSize = 65536
+LogOnline: OSS: Creating online subsystem instance for: NULL
+LogInit: WinSock: version 1.1 (2.2), MaxSocks=32767, MaxUdp=65467
+LogOnline: OSS: TryLoadSubsystemAndSetDefault: Loaded subsystem for module [NULL]
+LogInit: Build: ++UE4+Release-4.25-CL-13942748
+LogInit: Engine Version: 4.25.3-13942748+++UE4+Release-4.25
+LogInit: Compatible Engine Version: 4.25.0-13144385+++UE4+Release-4.25
+LogInit: Net CL: 13144385
+LogInit: OS: Windows 10 (Release 2009) (), CPU: Intel(R) Core(TM) i5-6400 CPU @ 2.70GHz, GPU: NVIDIA GeForce GTX 960
+LogInit: Compiled (64-bit): Jul 25 2020 02:07:48
+LogInit: Compiled with Visual C++: 19.24.28315.00
+LogInit: Build Configuration: Development
+LogInit: Branch Name: ++UE4+Release-4.25
+LogInit: Command Line: 
+LogInit: Base Directory: D:/UnRealEngine/UE_4.25/Engine/Binaries/Win64/
+LogInit: Allocator: TBB
+LogInit: Installed Engine Build: 1
+LogDevObjectVersion: Number of dev versions registered: 26
+LogDevObjectVersion:   Dev-Blueprints (B0D832E4-1F89-4F0D-ACCF-7EB736FD4AA2): 10
+LogDevObjectVersion:   Dev-Build (E1C64328-A22C-4D53-A36C-8E866417BD8C): 0
+LogDevObjectVersion:   Dev-Core (375EC13C-06E4-48FB-B500-84F0262A717E): 4
+LogDevObjectVersion:   Dev-Editor (E4B068ED-F494-42E9-A231-DA0B2E46BB41): 38
+LogDevObjectVersion:   Dev-Framework (CFFC743F-43B0-4480-9391-14DF171D2073): 37
+LogDevObjectVersion:   Dev-Mobile (B02B49B5-BB20-44E9-A304-32B752E40360): 2
+LogDevObjectVersion:   Dev-Networking (A4E4105C-59A1-49B5-A7C5-40C4547EDFEE): 0
+LogDevObjectVersion:   Dev-Online (39C831C9-5AE6-47DC-9A44-9C173E1C8E7C): 0
+LogDevObjectVersion:   Dev-Physics (78F01B33-EBEA-4F98-B9B4-84EACCB95AA2): 4
+LogDevObjectVersion:   Dev-Platform (6631380F-2D4D-43E0-8009-CF276956A95A): 0
+LogDevObjectVersion:   Dev-Rendering (12F88B9F-8875-4AFC-A67C-D90C383ABD29): 43
+LogDevObjectVersion:   Dev-Sequencer (7B5AE74C-D270-4C10-A958-57980B212A5A): 12
+LogDevObjectVersion:   Dev-VR (D7296918-1DD6-4BDD-9DE2-64A83CC13884): 3
+LogDevObjectVersion:   Dev-LoadTimes (C2A15278-BFE7-4AFE-6C17-90FF531DF755): 1
+LogDevObjectVersion:   Private-Geometry (6EACA3D4-40EC-4CC1-B786-8BED09428FC5): 3
+LogDevObjectVersion:   Dev-AnimPhys (29E575DD-E0A3-4627-9D10-D276232CDCEA): 17
+LogDevObjectVersion:   Dev-Anim (AF43A65D-7FD3-4947-9873-3E8ED9C1BB05): 7
+LogDevObjectVersion:   Dev-ReflectionCapture (6B266CEC-1EC7-4B8F-A30B-E4D90942FC07): 1
+LogDevObjectVersion:   Dev-Automation (0DF73D61-A23F-47EA-B727-89E90C41499A): 1
+LogDevObjectVersion:   FortniteMain (601D1886-AC64-4F84-AA16-D3DE0DEAC7D6): 31
+LogDevObjectVersion:   Dev-Enterprise (9DFFBCD6-494F-0158-E221-12823C92A888): 10
+LogDevObjectVersion:   Dev-Niagara (F2AED0AC-9AFE-416F-8664-AA7FFA26D6FC): 1
+LogDevObjectVersion:   Dev-Destruction (174F1F0B-B4C6-45A5-B13F-2EE8D0FB917D): 10
+LogDevObjectVersion:   Dev-Physics-Ext (35F94A83-E258-406C-A318-09F59610247C): 37
+LogDevObjectVersion:   Dev-PhysicsMaterial-Chaos (B68FC16E-8B1B-42E2-B453-215C058844FE): 1
+LogDevObjectVersion:   Dev-CineCamera (B2E18506-4273-CFC2-A54E-F4BB758BBA07): 1
+LogInit: Presizing for max 25165824 objects, including 0 objects not considered by GC, pre-allocating 0 bytes for permanent pool.
+LogConfig: Applying CVar settings from Section [/Script/Engine.StreamingSettings] File [D:/UnRealEngine/TwoDSSG/Saved/Config/Windows/Engine.ini]
+LogConfig: Setting CVar [[s.MinBulkDataSizeForAsyncLoading:131072]]
+LogConfig: Setting CVar [[s.AsyncLoadingThreadEnabled:0]]
+LogConfig: Setting CVar [[s.EventDrivenLoaderEnabled:1]]
+LogConfig: Setting CVar [[s.WarnIfTimeLimitExceeded:0]]
+LogConfig: Setting CVar [[s.TimeLimitExceededMultiplier:1.5]]
+LogConfig: Setting CVar [[s.TimeLimitExceededMinTime:0.005]]
+LogConfig: Setting CVar [[s.UseBackgroundLevelStreaming:1]]
+LogConfig: Setting CVar [[s.PriorityAsyncLoadingExtraTime:15.0]]
+LogConfig: Setting CVar [[s.LevelStreamingActorsUpdateTimeLimit:5.0]]
+LogConfig: Setting CVar [[s.PriorityLevelStreamingActorsUpdateExtraTime:5.0]]
+LogConfig: Setting CVar [[s.LevelStreamingComponentsRegistrationGranularity:10]]
+LogConfig: Setting CVar [[s.UnregisterComponentsTimeLimit:1.0]]
+LogConfig: Setting CVar [[s.LevelStreamingComponentsUnregistrationGranularity:5]]
+LogConfig: Setting CVar [[s.FlushStreamingOnExit:1]]
+LogInit: Object subsystem initialized
+LogConfig: Setting CVar [[con.DebugEarlyDefault:1]]
+LogConfig: Setting CVar [[r.setres:1280x720]]
+[2021.02.15-18.22.09:092][  0]LogConfig: Setting CVar [[r.VSync:0]]
+[2021.02.15-18.22.09:092][  0]LogConfig: Setting CVar [[r.RHICmdBypass:0]]
+[2021.02.15-18.22.09:092][  0]LogConfig: Applying CVar settings from Section [/Script/Engine.RendererSettings] File [D:/UnRealEngine/TwoDSSG/Saved/Config/Windows/Engine.ini]
+[2021.02.15-18.22.09:092][  0]LogConfig: Setting CVar [[r.GPUCrashDebugging:0]]
+[2021.02.15-18.22.09:092][  0]LogConfig: Setting CVar [[r.MobileHDR:0]]
+[2021.02.15-18.22.09:092][  0]LogConfig: Setting CVar [[r.DefaultFeature.AntiAliasing:0]]
+[2021.02.15-18.22.09:092][  0]LogConfig: Applying CVar settings from Section [/Script/Engine.RendererOverrideSettings] File [D:/UnRealEngine/TwoDSSG/Saved/Config/Windows/Engine.ini]
+[2021.02.15-18.22.09:092][  0]LogConfig: Applying CVar settings from Section [/Script/Engine.StreamingSettings] File [D:/UnRealEngine/TwoDSSG/Saved/Config/Windows/Engine.ini]
+[2021.02.15-18.22.09:092][  0]LogConfig: Setting CVar [[s.MinBulkDataSizeForAsyncLoading:131072]]
+[2021.02.15-18.22.09:092][  0]LogConfig: Setting CVar [[s.AsyncLoadingThreadEnabled:0]]
+[2021.02.15-18.22.09:092][  0]LogConfig: Setting CVar [[s.EventDrivenLoaderEnabled:1]]
+[2021.02.15-18.22.09:092][  0]LogConfig: Setting CVar [[s.WarnIfTimeLimitExceeded:0]]
+[2021.02.15-18.22.09:092][  0]LogConfig: Setting CVar [[s.TimeLimitExceededMultiplier:1.5]]
+[2021.02.15-18.22.09:092][  0]LogConfig: Setting CVar [[s.TimeLimitExceededMinTime:0.005]]
+[2021.02.15-18.22.09:092][  0]LogConfig: Setting CVar [[s.UseBackgroundLevelStreaming:1]]
+[2021.02.15-18.22.09:092][  0]LogConfig: Setting CVar [[s.PriorityAsyncLoadingExtraTime:15.0]]
+[2021.02.15-18.22.09:092][  0]LogConfig: Setting CVar [[s.LevelStreamingActorsUpdateTimeLimit:5.0]]
+[2021.02.15-18.22.09:092][  0]LogConfig: Setting CVar [[s.PriorityLevelStreamingActorsUpdateExtraTime:5.0]]
+[2021.02.15-18.22.09:092][  0]LogConfig: Setting CVar [[s.LevelStreamingComponentsRegistrationGranularity:10]]
+[2021.02.15-18.22.09:092][  0]LogConfig: Setting CVar [[s.UnregisterComponentsTimeLimit:1.0]]
+[2021.02.15-18.22.09:092][  0]LogConfig: Setting CVar [[s.LevelStreamingComponentsUnregistrationGranularity:5]]
+[2021.02.15-18.22.09:092][  0]LogConfig: Setting CVar [[s.FlushStreamingOnExit:1]]
+[2021.02.15-18.22.09:092][  0]LogConfig: Applying CVar settings from Section [/Script/Engine.GarbageCollectionSettings] File [D:/UnRealEngine/TwoDSSG/Saved/Config/Windows/Engine.ini]
+[2021.02.15-18.22.09:092][  0]LogConfig: Setting CVar [[gc.MaxObjectsNotConsideredByGC:1]]
+[2021.02.15-18.22.09:092][  0]LogConfig: Setting CVar [[gc.SizeOfPermanentObjectPool:0]]
+[2021.02.15-18.22.09:092][  0]LogConfig: Setting CVar [[gc.FlushStreamingOnGC:0]]
+[2021.02.15-18.22.09:092][  0]LogConfig: Setting CVar [[gc.NumRetriesBeforeForcingGC:10]]
+[2021.02.15-18.22.09:092][  0]LogConfig: Setting CVar [[gc.AllowParallelGC:1]]
+[2021.02.15-18.22.09:092][  0]LogConfig: Setting CVar [[gc.TimeBetweenPurgingPendingKillObjects:61.1]]
+[2021.02.15-18.22.09:092][  0]LogConfig: Setting CVar [[gc.MaxObjectsInEditor:25165824]]
+[2021.02.15-18.22.09:092][  0]LogConfig: Setting CVar [[gc.IncrementalBeginDestroyEnabled:1]]
+[2021.02.15-18.22.09:092][  0]LogConfig: Setting CVar [[gc.CreateGCClusters:1]]
+[2021.02.15-18.22.09:092][  0]LogConfig: Setting CVar [[gc.MinGCClusterSize:5]]
+[2021.02.15-18.22.09:092][  0]LogConfig: Setting CVar [[gc.ActorClusteringEnabled:0]]
+[2021.02.15-18.22.09:092][  0]LogConfig: Setting CVar [[gc.BlueprintClusteringEnabled:0]]
+[2021.02.15-18.22.09:092][  0]LogConfig: Setting CVar [[gc.UseDisregardForGCOnDedicatedServers:0]]
+[2021.02.15-18.22.09:092][  0]LogConfig: Applying CVar settings from Section [/Script/Engine.NetworkSettings] File [D:/UnRealEngine/TwoDSSG/Saved/Config/Windows/Engine.ini]
+[2021.02.15-18.22.09:092][  0]LogConfig: Applying CVar settings from Section [/Script/UnrealEd.CookerSettings] File [D:/UnRealEngine/TwoDSSG/Saved/Config/Windows/Engine.ini]
+[2021.02.15-18.22.09:098][  0]LogConfig: Applying CVar settings from Section [ViewDistanceQuality@3] File [D:/UnRealEngine/TwoDSSG/Saved/Config/Windows/Scalability.ini]
+[2021.02.15-18.22.09:098][  0]LogConfig: Setting CVar [[r.SkeletalMeshLODBias:0]]
+[2021.02.15-18.22.09:098][  0]LogConfig: Setting CVar [[r.ViewDistanceScale:1.0]]
+[2021.02.15-18.22.09:098][  0]LogConfig: Applying CVar settings from Section [AntiAliasingQuality@3] File [D:/UnRealEngine/TwoDSSG/Saved/Config/Windows/Scalability.ini]
+[2021.02.15-18.22.09:098][  0]LogConfig: Setting CVar [[r.PostProcessAAQuality:4]]
+[2021.02.15-18.22.09:098][  0]LogConfig: Applying CVar settings from Section [ShadowQuality@3] File [D:/UnRealEngine/TwoDSSG/Saved/Config/Windows/Scalability.ini]
+[2021.02.15-18.22.09:098][  0]LogConfig: Setting CVar [[r.LightFunctionQuality:1]]
+[2021.02.15-18.22.09:098][  0]LogConfig: Setting CVar [[r.ShadowQuality:5]]
+[2021.02.15-18.22.09:098][  0]LogConfig: Setting CVar [[r.Shadow.CSM.MaxCascades:10]]
+[2021.02.15-18.22.09:098][  0]LogConfig: Setting CVar [[r.Shadow.MaxResolution:2048]]
+[2021.02.15-18.22.09:098][  0]LogConfig: Setting CVar [[r.Shadow.MaxCSMResolution:2048]]
+[2021.02.15-18.22.09:098][  0]LogConfig: Setting CVar [[r.Shadow.RadiusThreshold:0.01]]
+[2021.02.15-18.22.09:098][  0]LogConfig: Setting CVar [[r.Shadow.DistanceScale:1.0]]
+[2021.02.15-18.22.09:098][  0]LogConfig: Setting CVar [[r.Shadow.CSM.TransitionScale:1.0]]
+[2021.02.15-18.22.09:098][  0]LogConfig: Setting CVar [[r.Shadow.PreShadowResolutionFactor:1.0]]
+[2021.02.15-18.22.09:098][  0]LogConfig: Setting CVar [[r.DistanceFieldShadowing:1]]
+[2021.02.15-18.22.09:098][  0]LogConfig: Setting CVar [[r.DistanceFieldAO:1]]
+[2021.02.15-18.22.09:098][  0]LogConfig: Setting CVar [[r.AOQuality:2]]
+[2021.02.15-18.22.09:098][  0]LogConfig: Setting CVar [[r.VolumetricFog:1]]
+[2021.02.15-18.22.09:098][  0]LogConfig: Setting CVar [[r.VolumetricFog.GridPixelSize:8]]
+[2021.02.15-18.22.09:098][  0]LogConfig: Setting CVar [[r.VolumetricFog.GridSizeZ:128]]
+[2021.02.15-18.22.09:098][  0]LogConfig: Setting CVar [[r.VolumetricFog.HistoryMissSupersampleCount:4]]
+[2021.02.15-18.22.09:098][  0]LogConfig: Setting CVar [[r.LightMaxDrawDistanceScale:1]]
+[2021.02.15-18.22.09:098][  0]LogConfig: Setting CVar [[r.CapsuleShadows:1]]
+[2021.02.15-18.22.09:098][  0]LogConfig: Applying CVar settings from Section [PostProcessQuality@3] File [D:/UnRealEngine/TwoDSSG/Saved/Config/Windows/Scalability.ini]
+[2021.02.15-18.22.09:098][  0]LogConfig: Setting CVar [[r.MotionBlurQuality:4]]
+[2021.02.15-18.22.09:098][  0]LogConfig: Setting CVar [[r.AmbientOcclusionMipLevelFactor:0.4]]
+[2021.02.15-18.22.09:098][  0]LogConfig: Setting CVar [[r.AmbientOcclusionMaxQuality:100]]
+[2021.02.15-18.22.09:098][  0]LogConfig: Setting CVar [[r.AmbientOcclusionLevels:-1]]
+[2021.02.15-18.22.09:098][  0]LogConfig: Setting CVar [[r.AmbientOcclusionRadiusScale:1.0]]
+[2021.02.15-18.22.09:098][  0]LogConfig: Setting CVar [[r.DepthOfFieldQuality:2]]
+[2021.02.15-18.22.09:098][  0]LogConfig: Setting CVar [[r.RenderTargetPoolMin:400]]
+[2021.02.15-18.22.09:098][  0]LogConfig: Setting CVar [[r.LensFlareQuality:2]]
+[2021.02.15-18.22.09:098][  0]LogConfig: Setting CVar [[r.SceneColorFringeQuality:1]]
+[2021.02.15-18.22.09:098][  0]LogConfig: Setting CVar [[r.EyeAdaptationQuality:2]]
+[2021.02.15-18.22.09:098][  0]LogConfig: Setting CVar [[r.BloomQuality:5]]
+[2021.02.15-18.22.09:098][  0]LogConfig: Setting CVar [[r.FastBlurThreshold:100]]
+[2021.02.15-18.22.09:098][  0]LogConfig: Setting CVar [[r.Upscale.Quality:3]]
+[2021.02.15-18.22.09:098][  0]LogConfig: Setting CVar [[r.Tonemapper.GrainQuantization:1]]
+[2021.02.15-18.22.09:098][  0]LogConfig: Setting CVar [[r.LightShaftQuality:1]]
+[2021.02.15-18.22.09:098][  0]LogConfig: Setting CVar [[r.Filter.SizeScale:1]]
+[2021.02.15-18.22.09:098][  0]LogConfig: Setting CVar [[r.Tonemapper.Quality:5]]
+[2021.02.15-18.22.09:098][  0]LogConfig: Setting CVar [[r.DOF.Gather.AccumulatorQuality:1        ; higher gathering accumulator quality]]
+[2021.02.15-18.22.09:098][  0]LogConfig: Setting CVar [[r.DOF.Gather.PostfilterMethod:1          ; Median3x3 postfilering method]]
+[2021.02.15-18.22.09:098][  0]LogConfig: Setting CVar [[r.DOF.Gather.EnableBokehSettings:0       ; no bokeh simulation when gathering]]
+[2021.02.15-18.22.09:099][  0]LogConfig: Setting CVar [[r.DOF.Gather.RingCount:4                 ; medium number of samples when gathering]]
+[2021.02.15-18.22.09:099][  0]LogConfig: Setting CVar [[r.DOF.Scatter.ForegroundCompositing:1    ; additive foreground scattering]]
+[2021.02.15-18.22.09:099][  0]LogConfig: Setting CVar [[r.DOF.Scatter.BackgroundCompositing:2    ; additive background scattering]]
+[2021.02.15-18.22.09:099][  0]LogConfig: Setting CVar [[r.DOF.Scatter.EnableBokehSettings:1      ; bokeh simulation when scattering]]
+[2021.02.15-18.22.09:099][  0]LogConfig: Setting CVar [[r.DOF.Scatter.MaxSpriteRatio:0.1         ; only a maximum of 10% of scattered bokeh]]
+[2021.02.15-18.22.09:099][  0]LogConfig: Setting CVar [[r.DOF.Recombine.Quality:1                ; cheap slight out of focus]]
+[2021.02.15-18.22.09:099][  0]LogConfig: Setting CVar [[r.DOF.Recombine.EnableBokehSettings:0    ; no bokeh simulation on slight out of focus]]
+[2021.02.15-18.22.09:099][  0]LogConfig: Setting CVar [[r.DOF.TemporalAAQuality:1                ; more stable temporal accumulation]]
+[2021.02.15-18.22.09:099][  0]LogConfig: Setting CVar [[r.DOF.Kernel.MaxForegroundRadius:0.025]]
+[2021.02.15-18.22.09:099][  0]LogConfig: Setting CVar [[r.DOF.Kernel.MaxBackgroundRadius:0.025]]
+[2021.02.15-18.22.09:099][  0]LogConfig: Applying CVar settings from Section [TextureQuality@3] File [D:/UnRealEngine/TwoDSSG/Saved/Config/Windows/Scalability.ini]
+[2021.02.15-18.22.09:099][  0]LogConfig: Setting CVar [[r.Streaming.MipBias:0]]
+[2021.02.15-18.22.09:099][  0]LogConfig: Setting CVar [[r.Streaming.AmortizeCPUToGPUCopy:0]]
+[2021.02.15-18.22.09:099][  0]LogConfig: Setting CVar [[r.Streaming.MaxNumTexturesToStreamPerFrame:0]]
+[2021.02.15-18.22.09:099][  0]LogConfig: Setting CVar [[r.Streaming.Boost:1]]
+[2021.02.15-18.22.09:099][  0]LogConfig: Setting CVar [[r.MaxAnisotropy:8]]
+[2021.02.15-18.22.09:099][  0]LogConfig: Setting CVar [[r.VT.MaxAnisotropy:8]]
+[2021.02.15-18.22.09:099][  0]LogConfig: Setting CVar [[r.Streaming.LimitPoolSizeToVRAM:0]]
+[2021.02.15-18.22.09:099][  0]LogConfig: Setting CVar [[r.Streaming.PoolSize:1000]]
+[2021.02.15-18.22.09:099][  0]LogConfig: Setting CVar [[r.Streaming.MaxEffectiveScreenSize:0]]
+[2021.02.15-18.22.09:099][  0]LogConfig: Applying CVar settings from Section [EffectsQuality@3] File [D:/UnRealEngine/TwoDSSG/Saved/Config/Windows/Scalability.ini]
+[2021.02.15-18.22.09:099][  0]LogConfig: Setting CVar [[r.TranslucencyLightingVolumeDim:64]]
+[2021.02.15-18.22.09:099][  0]LogConfig: Setting CVar [[r.RefractionQuality:2]]
+[2021.02.15-18.22.09:099][  0]LogConfig: Setting CVar [[r.SSR.Quality:3]]
+[2021.02.15-18.22.09:099][  0]LogConfig: Setting CVar [[r.SSR.HalfResSceneColor:0]]
+[2021.02.15-18.22.09:099][  0]LogConfig: Setting CVar [[r.SceneColorFormat:4]]
+[2021.02.15-18.22.09:099][  0]LogConfig: Setting CVar [[r.DetailMode:2]]
+[2021.02.15-18.22.09:099][  0]LogConfig: Setting CVar [[r.TranslucencyVolumeBlur:1]]
+[2021.02.15-18.22.09:099][  0]LogConfig: Setting CVar [[r.MaterialQualityLevel:1 ; High quality]]
+[2021.02.15-18.22.09:099][  0]LogConfig: Setting CVar [[r.SSS.Scale:1]]
+[2021.02.15-18.22.09:099][  0]LogConfig: Setting CVar [[r.SSS.SampleSet:2]]
+[2021.02.15-18.22.09:099][  0]LogConfig: Setting CVar [[r.SSS.Quality:1]]
+[2021.02.15-18.22.09:099][  0]LogConfig: Setting CVar [[r.SSS.HalfRes:0]]
+[2021.02.15-18.22.09:099][  0]LogConfig: Setting CVar [[r.SSGI.Quality:3]]
+[2021.02.15-18.22.09:099][  0]LogConfig: Setting CVar [[r.EmitterSpawnRateScale:1.0]]
+[2021.02.15-18.22.09:099][  0]LogConfig: Setting CVar [[r.ParticleLightQuality:2]]
+[2021.02.15-18.22.09:099][  0]LogConfig: Setting CVar [[r.SkyAtmosphere.AerialPerspectiveLUT.FastApplyOnOpaque:1 ; Always have FastSkyLUT 1 in this case to avoid wrong sky]]
+[2021.02.15-18.22.09:099][  0]LogConfig: Setting CVar [[r.SkyAtmosphere.AerialPerspectiveLUT.SampleCountPerSlice:1]]
+[2021.02.15-18.22.09:099][  0]LogConfig: Setting CVar [[r.SkyAtmosphere.AerialPerspectiveLUT.DepthResolution:16.0]]
+[2021.02.15-18.22.09:099][  0]LogConfig: Setting CVar [[r.SkyAtmosphere.FastSkyLUT:1]]
+[2021.02.15-18.22.09:099][  0]LogConfig: Setting CVar [[r.SkyAtmosphere.FastSkyLUT.SampleCountMin:4.0]]
+[2021.02.15-18.22.09:099][  0]LogConfig: Setting CVar [[r.SkyAtmosphere.FastSkyLUT.SampleCountMax:32.0]]
+[2021.02.15-18.22.09:099][  0]LogConfig: Setting CVar [[r.SkyAtmosphere.SampleCountMin:4.0]]
+[2021.02.15-18.22.09:099][  0]LogConfig: Setting CVar [[r.SkyAtmosphere.SampleCountMax:32.0]]
+[2021.02.15-18.22.09:099][  0]LogConfig: Setting CVar [[r.SkyAtmosphere.TransmittanceLUT.UseSmallFormat:0]]
+[2021.02.15-18.22.09:099][  0]LogConfig: Setting CVar [[r.SkyAtmosphere.TransmittanceLUT.SampleCount:10.0]]
+[2021.02.15-18.22.09:099][  0]LogConfig: Setting CVar [[r.SkyAtmosphere.MultiScatteringLUT.SampleCount:15.0]]
+[2021.02.15-18.22.09:099][  0]LogConfig: Applying CVar settings from Section [FoliageQuality@3] File [D:/UnRealEngine/TwoDSSG/Saved/Config/Windows/Scalability.ini]
+[2021.02.15-18.22.09:099][  0]LogConfig: Setting CVar [[foliage.DensityScale:1.0]]
+[2021.02.15-18.22.09:099][  0]LogConfig: Setting CVar [[grass.DensityScale:1.0]]
+[2021.02.15-18.22.09:099][  0]LogConfig: Applying CVar settings from Section [ShadingQuality@3] File [D:/UnRealEngine/TwoDSSG/Saved/Config/Windows/Scalability.ini]
+[2021.02.15-18.22.09:099][  0]LogConfig: Setting CVar [[r.HairStrands.SkyLighting.SampleCount:16]]
+[2021.02.15-18.22.09:099][  0]LogConfig: Setting CVar [[r.HairStrands.SkyLighting.JitterIntegration:0]]
+[2021.02.15-18.22.09:099][  0]LogConfig: Setting CVar [[r.HairStrands.SkyAO.SampleCount:16]]
+[2021.02.15-18.22.09:099][  0]LogConfig: Setting CVar [[r.HairStrands.DeepShadow.SuperSampling:0]]
+[2021.02.15-18.22.09:099][  0]LogConfig: Setting CVar [[r.HairStrands.VisibilityPPLL:0]]
+[2021.02.15-18.22.09:099][  0]LogConfig: Setting CVar [[r.HairStrands.RasterizationScale:0.5]]
+[2021.02.15-18.22.09:099][  0]LogConfig: Setting CVar [[r.HairStrands.VelocityRasterizationScale:1]]
+[2021.02.15-18.22.09:100][  0]LogInit: Selected Device Profile: [Windows]
+[2021.02.15-18.22.09:100][  0]LogInit: Applying CVar settings loaded from the selected device profile: [Windows]
+[2021.02.15-18.22.09:100][  0]LogHAL: Display: Platform has ~ 16 GB [17000046592 / 17179869184 / 16], which maps to Larger [LargestMinGB=32, LargerMinGB=12, DefaultMinGB=8, SmallerMinGB=6, SmallestMinGB=0)
+[2021.02.15-18.22.09:100][  0]LogInit: Going up to parent DeviceProfile []
+[2021.02.15-18.22.09:100][  0]LogConfig: Applying CVar settings from Section [ViewDistanceQuality@Cine] File [D:/UnRealEngine/TwoDSSG/Saved/Config/Windows/Scalability.ini]
+[2021.02.15-18.22.09:100][  0]LogConfig: Setting CVar [[r.SkeletalMeshLODBias:0]]
+[2021.02.15-18.22.09:100][  0]LogConfig: Setting CVar [[r.ViewDistanceScale:10.0]]
+[2021.02.15-18.22.09:100][  0]LogConfig: Applying CVar settings from Section [AntiAliasingQuality@0] File [D:/UnRealEngine/TwoDSSG/Saved/Config/Windows/Scalability.ini]
+[2021.02.15-18.22.09:100][  0]LogConfig: Setting CVar [[r.PostProcessAAQuality:0]]
+[2021.02.15-18.22.09:100][  0]LogConfig: Applying CVar settings from Section [ShadowQuality@Cine] File [D:/UnRealEngine/TwoDSSG/Saved/Config/Windows/Scalability.ini]
+[2021.02.15-18.22.09:100][  0]LogConfig: Setting CVar [[r.LightFunctionQuality:1]]
+[2021.02.15-18.22.09:100][  0]LogConfig: Setting CVar [[r.ShadowQuality:5]]
+[2021.02.15-18.22.09:100][  0]LogConfig: Setting CVar [[r.Shadow.CSM.MaxCascades:10]]
+[2021.02.15-18.22.09:100][  0]LogConfig: Setting CVar [[r.Shadow.MaxResolution:4096]]
+[2021.02.15-18.22.09:100][  0]LogConfig: Setting CVar [[r.Shadow.MaxCSMResolution:4096]]
+[2021.02.15-18.22.09:100][  0]LogConfig: Setting CVar [[r.Shadow.RadiusThreshold:0]]
+[2021.02.15-18.22.09:100][  0]LogConfig: Setting CVar [[r.Shadow.DistanceScale:1.0]]
+[2021.02.15-18.22.09:100][  0]LogConfig: Setting CVar [[r.Shadow.CSM.TransitionScale:1.0]]
+[2021.02.15-18.22.09:100][  0]LogConfig: Setting CVar [[r.Shadow.PreShadowResolutionFactor:1.0]]
+[2021.02.15-18.22.09:100][  0]LogConfig: Setting CVar [[r.DistanceFieldShadowing:1]]
+[2021.02.15-18.22.09:100][  0]LogConfig: Setting CVar [[r.DistanceFieldAO:1]]
+[2021.02.15-18.22.09:100][  0]LogConfig: Setting CVar [[r.AOQuality:2]]
+[2021.02.15-18.22.09:100][  0]LogConfig: Setting CVar [[r.VolumetricFog:1]]
+[2021.02.15-18.22.09:100][  0]LogConfig: Setting CVar [[r.VolumetricFog.GridPixelSize:4]]
+[2021.02.15-18.22.09:100][  0]LogConfig: Setting CVar [[r.VolumetricFog.GridSizeZ:128]]
+[2021.02.15-18.22.09:100][  0]LogConfig: Setting CVar [[r.VolumetricFog.HistoryMissSupersampleCount:16]]
+[2021.02.15-18.22.09:100][  0]LogConfig: Setting CVar [[r.LightMaxDrawDistanceScale:1]]
+[2021.02.15-18.22.09:100][  0]LogConfig: Setting CVar [[r.CapsuleShadows:1]]
+[2021.02.15-18.22.09:100][  0]LogConfig: Applying CVar settings from Section [PostProcessQuality@3] File [D:/UnRealEngine/TwoDSSG/Saved/Config/Windows/Scalability.ini]
+[2021.02.15-18.22.09:100][  0]LogConfig: Setting CVar [[r.MotionBlurQuality:4]]
+[2021.02.15-18.22.09:100][  0]LogConfig: Setting CVar [[r.AmbientOcclusionMipLevelFactor:0.4]]
+[2021.02.15-18.22.09:100][  0]LogConfig: Setting CVar [[r.AmbientOcclusionMaxQuality:100]]
+[2021.02.15-18.22.09:100][  0]LogConfig: Setting CVar [[r.AmbientOcclusionLevels:-1]]
+[2021.02.15-18.22.09:100][  0]LogConfig: Setting CVar [[r.AmbientOcclusionRadiusScale:1.0]]
+[2021.02.15-18.22.09:100][  0]LogConfig: Setting CVar [[r.DepthOfFieldQuality:2]]
+[2021.02.15-18.22.09:100][  0]LogConfig: Setting CVar [[r.RenderTargetPoolMin:400]]
+[2021.02.15-18.22.09:100][  0]LogConfig: Setting CVar [[r.LensFlareQuality:2]]
+[2021.02.15-18.22.09:100][  0]LogConfig: Setting CVar [[r.SceneColorFringeQuality:1]]
+[2021.02.15-18.22.09:100][  0]LogConfig: Setting CVar [[r.EyeAdaptationQuality:2]]
+[2021.02.15-18.22.09:100][  0]LogConfig: Setting CVar [[r.BloomQuality:5]]
+[2021.02.15-18.22.09:100][  0]LogConfig: Setting CVar [[r.FastBlurThreshold:100]]
+[2021.02.15-18.22.09:100][  0]LogConfig: Setting CVar [[r.Upscale.Quality:3]]
+[2021.02.15-18.22.09:100][  0]LogConfig: Setting CVar [[r.Tonemapper.GrainQuantization:1]]
+[2021.02.15-18.22.09:100][  0]LogConfig: Setting CVar [[r.LightShaftQuality:1]]
+[2021.02.15-18.22.09:100][  0]LogConfig: Setting CVar [[r.Filter.SizeScale:1]]
+[2021.02.15-18.22.09:100][  0]LogConfig: Setting CVar [[r.Tonemapper.Quality:5]]
+[2021.02.15-18.22.09:100][  0]LogConfig: Setting CVar [[r.DOF.Gather.AccumulatorQuality:1        ; higher gathering accumulator quality]]
+[2021.02.15-18.22.09:100][  0]LogConfig: Setting CVar [[r.DOF.Gather.PostfilterMethod:1          ; Median3x3 postfilering method]]
+[2021.02.15-18.22.09:100][  0]LogConfig: Setting CVar [[r.DOF.Gather.EnableBokehSettings:0       ; no bokeh simulation when gathering]]
+[2021.02.15-18.22.09:100][  0]LogConfig: Setting CVar [[r.DOF.Gather.RingCount:4                 ; medium number of samples when gathering]]
+[2021.02.15-18.22.09:100][  0]LogConfig: Setting CVar [[r.DOF.Scatter.ForegroundCompositing:1    ; additive foreground scattering]]
+[2021.02.15-18.22.09:100][  0]LogConfig: Setting CVar [[r.DOF.Scatter.BackgroundCompositing:2    ; additive background scattering]]
+[2021.02.15-18.22.09:100][  0]LogConfig: Setting CVar [[r.DOF.Scatter.EnableBokehSettings:1      ; bokeh simulation when scattering]]
+[2021.02.15-18.22.09:101][  0]LogConfig: Setting CVar [[r.DOF.Scatter.MaxSpriteRatio:0.1         ; only a maximum of 10% of scattered bokeh]]
+[2021.02.15-18.22.09:101][  0]LogConfig: Setting CVar [[r.DOF.Recombine.Quality:1                ; cheap slight out of focus]]
+[2021.02.15-18.22.09:101][  0]LogConfig: Setting CVar [[r.DOF.Recombine.EnableBokehSettings:0    ; no bokeh simulation on slight out of focus]]
+[2021.02.15-18.22.09:101][  0]LogConfig: Setting CVar [[r.DOF.TemporalAAQuality:1                ; more stable temporal accumulation]]
+[2021.02.15-18.22.09:101][  0]LogConfig: Setting CVar [[r.DOF.Kernel.MaxForegroundRadius:0.025]]
+[2021.02.15-18.22.09:101][  0]LogConfig: Setting CVar [[r.DOF.Kernel.MaxBackgroundRadius:0.025]]
+[2021.02.15-18.22.09:101][  0]LogConfig: Applying CVar settings from Section [TextureQuality@Cine] File [D:/UnRealEngine/TwoDSSG/Saved/Config/Windows/Scalability.ini]
+[2021.02.15-18.22.09:101][  0]LogConfig: Setting CVar [[r.Streaming.MipBias:0]]
+[2021.02.15-18.22.09:101][  0]LogConfig: Setting CVar [[r.Streaming.AmortizeCPUToGPUCopy:0]]
+[2021.02.15-18.22.09:101][  0]LogConfig: Setting CVar [[r.Streaming.MaxNumTexturesToStreamPerFrame:0]]
+[2021.02.15-18.22.09:101][  0]LogConfig: Setting CVar [[r.Streaming.Boost:1]]
+[2021.02.15-18.22.09:101][  0]LogConfig: Setting CVar [[r.MaxAnisotropy:8]]
+[2021.02.15-18.22.09:101][  0]LogConfig: Setting CVar [[r.VT.MaxAnisotropy:8]]
+[2021.02.15-18.22.09:101][  0]LogConfig: Setting CVar [[r.Streaming.LimitPoolSizeToVRAM:0]]
+[2021.02.15-18.22.09:101][  0]LogConfig: Setting CVar [[r.Streaming.PoolSize:3000]]
+[2021.02.15-18.22.09:101][  0]LogConfig: Setting CVar [[r.Streaming.MaxEffectiveScreenSize:0]]
+[2021.02.15-18.22.09:101][  0]LogConfig: Applying CVar settings from Section [EffectsQuality@Cine] File [D:/UnRealEngine/TwoDSSG/Saved/Config/Windows/Scalability.ini]
+[2021.02.15-18.22.09:101][  0]LogConfig: Setting CVar [[r.TranslucencyLightingVolumeDim:64]]
+[2021.02.15-18.22.09:101][  0]LogConfig: Setting CVar [[r.RefractionQuality:2]]
+[2021.02.15-18.22.09:101][  0]LogConfig: Setting CVar [[r.SSR.Quality:4]]
+[2021.02.15-18.22.09:101][  0]LogConfig: Setting CVar [[r.SSR.HalfResSceneColor:0]]
+[2021.02.15-18.22.09:101][  0]LogConfig: Setting CVar [[r.SceneColorFormat:4]]
+[2021.02.15-18.22.09:101][  0]LogConfig: Setting CVar [[r.DetailMode:2]]
+[2021.02.15-18.22.09:101][  0]LogConfig: Setting CVar [[r.TranslucencyVolumeBlur:1]]
+[2021.02.15-18.22.09:101][  0]LogConfig: Setting CVar [[r.MaterialQualityLevel:1 ; High quality]]
+[2021.02.15-18.22.09:101][  0]LogConfig: Setting CVar [[r.SSS.Scale:1]]
+[2021.02.15-18.22.09:101][  0]LogConfig: Setting CVar [[r.SSS.SampleSet:2]]
+[2021.02.15-18.22.09:101][  0]LogConfig: Setting CVar [[r.SSS.Quality:1]]
+[2021.02.15-18.22.09:101][  0]LogConfig: Setting CVar [[r.SSS.HalfRes:0]]
+[2021.02.15-18.22.09:101][  0]LogConfig: Setting CVar [[r.SSGI.Quality:4]]
+[2021.02.15-18.22.09:101][  0]LogConfig: Setting CVar [[r.EmitterSpawnRateScale:1.0]]
+[2021.02.15-18.22.09:101][  0]LogConfig: Setting CVar [[r.ParticleLightQuality:2]]
+[2021.02.15-18.22.09:101][  0]LogConfig: Setting CVar [[r.SkyAtmosphere.AerialPerspectiveLUT.FastApplyOnOpaque:0]]
+[2021.02.15-18.22.09:101][  0]LogConfig: Setting CVar [[r.SkyAtmosphere.AerialPerspectiveLUT.SampleCountPerSlice:2]]
+[2021.02.15-18.22.09:101][  0]LogConfig: Setting CVar [[r.SkyAtmosphere.AerialPerspectiveLUT.DepthResolution:32.0]]
+[2021.02.15-18.22.09:101][  0]LogConfig: Setting CVar [[r.SkyAtmosphere.FastSkyLUT:0]]
+[2021.02.15-18.22.09:101][  0]LogConfig: Setting CVar [[r.SkyAtmosphere.FastSkyLUT.SampleCountMin:4.0]]
+[2021.02.15-18.22.09:101][  0]LogConfig: Setting CVar [[r.SkyAtmosphere.FastSkyLUT.SampleCountMax:32.0]]
+[2021.02.15-18.22.09:101][  0]LogConfig: Setting CVar [[r.SkyAtmosphere.SampleCountMin:8.0]]
+[2021.02.15-18.22.09:101][  0]LogConfig: Setting CVar [[r.SkyAtmosphere.SampleCountMax:32.0]]
+[2021.02.15-18.22.09:101][  0]LogConfig: Setting CVar [[r.SkyAtmosphere.TransmittanceLUT.UseSmallFormat:0]]
+[2021.02.15-18.22.09:101][  0]LogConfig: Setting CVar [[r.SkyAtmosphere.TransmittanceLUT.SampleCount:30.0]]
+[2021.02.15-18.22.09:101][  0]LogConfig: Setting CVar [[r.SkyAtmosphere.MultiScatteringLUT.SampleCount:20.0]]
+[2021.02.15-18.22.09:101][  0]LogConfig: Applying CVar settings from Section [FoliageQuality@3] File [D:/UnRealEngine/TwoDSSG/Saved/Config/Windows/Scalability.ini]
+[2021.02.15-18.22.09:101][  0]LogConfig: Setting CVar [[foliage.DensityScale:1.0]]
+[2021.02.15-18.22.09:101][  0]LogConfig: Setting CVar [[grass.DensityScale:1.0]]
+[2021.02.15-18.22.09:101][  0]LogConfig: Applying CVar settings from Section [ShadingQuality@Cine] File [D:/UnRealEngine/TwoDSSG/Saved/Config/Windows/Scalability.ini]
+[2021.02.15-18.22.09:101][  0]LogConfig: Setting CVar [[r.HairStrands.SkyLighting.SampleCount:64]]
+[2021.02.15-18.22.09:101][  0]LogConfig: Setting CVar [[r.HairStrands.SkyLighting.JitterIntegration:1]]
+[2021.02.15-18.22.09:101][  0]LogConfig: Setting CVar [[r.HairStrands.SkyAO.SampleCount:32]]
+[2021.02.15-18.22.09:101][  0]LogConfig: Setting CVar [[r.HairStrands.DeepShadow.SuperSampling:1]]
+[2021.02.15-18.22.09:101][  0]LogConfig: Setting CVar [[r.HairStrands.RasterizationScale:1]]
+[2021.02.15-18.22.09:101][  0]LogConfig: Setting CVar [[r.HairStrands.VelocityRasterizationScale:1]]
+[2021.02.15-18.22.09:101][  0]LogConfig: Setting CVar [[r.HairStrands.VisibilityPPLL:1]]
+[2021.02.15-18.22.09:102][  0]LogConfig: Applying CVar settings from Section [Startup] File [../../../Engine/Config/ConsoleVariables.ini]
+[2021.02.15-18.22.09:102][  0]LogConfig: Setting CVar [[net.UseAdaptiveNetUpdateFrequency:0]]
+[2021.02.15-18.22.09:102][  0]LogConfig: Setting CVar [[p.chaos.AllowCreatePhysxBodies:1]]
+[2021.02.15-18.22.09:102][  0]LogConfig: Setting CVar [[fx.SkipVectorVMBackendOptimizations:1]]
+[2021.02.15-18.22.09:102][  0]LogConfig: Applying CVar settings from Section [ConsoleVariables] File [D:/UnRealEngine/TwoDSSG/Saved/Config/Windows/Engine.ini]
+[2021.02.15-18.22.09:102][  0]LogInit: Computer: DESKTOP-JCBO26C
+[2021.02.15-18.22.09:102][  0]LogInit: User: sagiph
+[2021.02.15-18.22.09:102][  0]LogInit: CPU Page size=4096, Cores=4
+[2021.02.15-18.22.09:102][  0]LogInit: High frequency timer resolution =10.000000 MHz
+[2021.02.15-18.22.09:102][  0]LogMemory: Memory total: Physical=15.8GB (16GB approx)
+[2021.02.15-18.22.09:102][  0]LogMemory: Platform Memory Stats for Windows
+[2021.02.15-18.22.09:102][  0]LogMemory: Process Physical Memory: 115.41 MB used, 115.42 MB peak
+[2021.02.15-18.22.09:102][  0]LogMemory: Process Virtual Memory: 97.33 MB used, 97.33 MB peak
+[2021.02.15-18.22.09:102][  0]LogMemory: Physical Memory: 5924.29 MB used,  10288.22 MB free, 16212.51 MB total
+[2021.02.15-18.22.09:102][  0]LogMemory: Virtual Memory: 5130.64 MB used,  134212600.00 MB free, 134217728.00 MB total
+[2021.02.15-18.22.09:109][  0]LogWindows: WindowsPlatformFeatures enabled
+[2021.02.15-18.22.09:169][  0]LogInit: Physics initialised using underlying interface: PhysX
+[2021.02.15-18.22.09:169][  0]LogInit: Using OS detected language (he-IL).
+[2021.02.15-18.22.09:170][  0]LogInit: Using OS detected locale (he-IL).
+[2021.02.15-18.22.09:172][  0]LogTextLocalizationManager: No localization for 'he-IL' exists, so 'en' will be used for the language.
+[2021.02.15-18.22.09:412][  0]LogInit: Setting process to per monitor DPI aware
+[2021.02.15-18.22.09:445][  0]LogSlate: New Slate User Created.  User Index 0, Is Virtual User: 0
+[2021.02.15-18.22.09:445][  0]LogSlate: Slate User Registered.  User Index 0, Is Virtual User: 0
+[2021.02.15-18.22.09:615][  0]LogHMD: Failed to initialize OpenVR with code 110
+[2021.02.15-18.22.09:615][  0]LogD3D11RHI: D3D11 min allowed feature level: 11_0
+[2021.02.15-18.22.09:615][  0]LogD3D11RHI: D3D11 max allowed feature level: 11_0
+[2021.02.15-18.22.09:615][  0]LogD3D11RHI: D3D11 adapters:
+[2021.02.15-18.22.09:734][  0]LogD3D11RHI:    0. 'NVIDIA GeForce GTX 960' (Feature Level 11_0)
+[2021.02.15-18.22.09:734][  0]LogD3D11RHI:       2007/0/8106 MB DedicatedVideo/DedicatedSystem/SharedSystem, Outputs:2, VendorId:0x10de
+[2021.02.15-18.22.09:738][  0]LogD3D11RHI:    1. 'Microsoft Basic Render Driver' (Feature Level 11_0)
+[2021.02.15-18.22.09:738][  0]LogD3D11RHI:       0/0/8106 MB DedicatedVideo/DedicatedSystem/SharedSystem, Outputs:0, VendorId:0x1414
+[2021.02.15-18.22.09:738][  0]LogD3D11RHI: Chosen D3D11 Adapter: 0
+[2021.02.15-18.22.09:745][  0]LogD3D11RHI: Creating new Direct3DDevice
+[2021.02.15-18.22.09:745][  0]LogD3D11RHI:     GPU DeviceId: 0x1401 (for the marketing name, search the web for "GPU Device Id")
+[2021.02.15-18.22.09:745][  0]LogWindows: EnumDisplayDevices:
+[2021.02.15-18.22.09:746][  0]LogWindows:    0. 'NVIDIA GeForce GTX 960' (P:0 D:1)
+[2021.02.15-18.22.09:746][  0]LogWindows:    1. 'NVIDIA GeForce GTX 960' (P:1 D:1)
+[2021.02.15-18.22.09:746][  0]LogWindows:    2. 'NVIDIA GeForce GTX 960' (P:0 D:0)
+[2021.02.15-18.22.09:747][  0]LogWindows:    3. 'NVIDIA GeForce GTX 960' (P:0 D:0)
+[2021.02.15-18.22.09:747][  0]LogWindows: DebugString: FoundDriverCount:4 
+[2021.02.15-18.22.09:747][  0]LogD3D11RHI:     Adapter Name: NVIDIA GeForce GTX 960
+[2021.02.15-18.22.09:747][  0]LogD3D11RHI:   Driver Version: 456.71 (internal:27.21.14.5671, unified:456.71)
+[2021.02.15-18.22.09:747][  0]LogD3D11RHI:      Driver Date: 9-30-2020
+[2021.02.15-18.22.09:747][  0]LogRHI: Texture pool is 1405 MB (70% of 2007 MB)
+[2021.02.15-18.22.09:826][  0]LogD3D11RHI: RHI has support for 64 bit atomics
+[2021.02.15-18.22.09:829][  0]LogD3D11RHI: [Aftermath] Enabled and primed
+[2021.02.15-18.22.09:829][  0]LogD3D11RHI: Async texture creation enabled
+[2021.02.15-18.22.09:829][  0]LogD3D11RHI: Array index from any shader is supported
+[2021.02.15-18.22.09:878][  0]LogD3D11RHI: GPU Timing Frequency: 1000.000000 (Debug: 2 1)
+[2021.02.15-18.22.10:305][  0]LogTargetPlatformManager: Display: Loaded TargetPlatform 'AllDesktop'
+[2021.02.15-18.22.10:330][  0]LogTargetPlatformManager: Display: Loaded TargetPlatform 'Android'
+[2021.02.15-18.22.10:330][  0]LogTargetPlatformManager: Display: Loaded TargetPlatform 'Android_ASTC'
+[2021.02.15-18.22.10:330][  0]LogTargetPlatformManager: Display: Loaded TargetPlatform 'Android_DXT'
+[2021.02.15-18.22.10:330][  0]LogTargetPlatformManager: Display: Loaded TargetPlatform 'Android_ETC2'
+[2021.02.15-18.22.10:330][  0]LogTargetPlatformManager: Display: Loaded TargetPlatform 'AndroidClient'
+[2021.02.15-18.22.10:330][  0]LogTargetPlatformManager: Display: Loaded TargetPlatform 'Android_ASTCClient'
+[2021.02.15-18.22.10:330][  0]LogTargetPlatformManager: Display: Loaded TargetPlatform 'Android_DXTClient'
+[2021.02.15-18.22.10:330][  0]LogTargetPlatformManager: Display: Loaded TargetPlatform 'Android_ETC2Client'
+[2021.02.15-18.22.10:330][  0]LogTargetPlatformManager: Display: Loaded TargetPlatform 'Android_Multi'
+[2021.02.15-18.22.10:331][  0]LogTargetPlatformManager: Display: Loaded TargetPlatform 'Android_MultiClient'
+[2021.02.15-18.22.10:355][  0]LogTargetPlatformManager: Display: Loaded TargetPlatform 'IOSClient'
+[2021.02.15-18.22.10:355][  0]LogTargetPlatformManager: Display: Loaded TargetPlatform 'IOS'
+[2021.02.15-18.22.10:366][  0]LogTargetPlatformManager: Display: Loaded TargetPlatform 'Linux'
+[2021.02.15-18.22.10:377][  0]LogTargetPlatformManager: Display: Loaded TargetPlatform 'LinuxNoEditor'
+[2021.02.15-18.22.10:388][  0]LogTargetPlatformManager: Display: Loaded TargetPlatform 'LinuxClient'
+[2021.02.15-18.22.10:399][  0]LogTargetPlatformManager: Display: Loaded TargetPlatform 'LinuxServer'
+[2021.02.15-18.22.10:409][  0]LogTargetPlatformManager: Display: Loaded TargetPlatform 'LinuxAArch64NoEditor'
+[2021.02.15-18.22.10:421][  0]LogTargetPlatformManager: Display: Loaded TargetPlatform 'LinuxAArch64Client'
+[2021.02.15-18.22.10:432][  0]LogTargetPlatformManager: Display: Loaded TargetPlatform 'LinuxAArch64Server'
+[2021.02.15-18.22.10:463][  0]LogTargetPlatformManager: Display: Loaded TargetPlatform 'Lumin'
+[2021.02.15-18.22.10:463][  0]LogTargetPlatformManager: Display: Loaded TargetPlatform 'LuminClient'
+[2021.02.15-18.22.10:480][  0]LogTargetPlatformManager: Display: Loaded TargetPlatform 'TVOSClient'
+[2021.02.15-18.22.10:480][  0]LogTargetPlatformManager: Display: Loaded TargetPlatform 'TVOS'
+[2021.02.15-18.22.10:490][  0]LogTargetPlatformManager: Display: Loaded TargetPlatform 'WindowsNoEditor'
+[2021.02.15-18.22.10:500][  0]LogTargetPlatformManager: Display: Loaded TargetPlatform 'Windows'
+[2021.02.15-18.22.10:510][  0]LogTargetPlatformManager: Display: Loaded TargetPlatform 'WindowsClient'
+[2021.02.15-18.22.10:521][  0]LogTargetPlatformManager: Display: Loaded TargetPlatform 'WindowsServer'
+[2021.02.15-18.22.10:521][  0]LogTargetPlatformManager: Display: Building Assets For Windows
+[2021.02.15-18.22.10:529][  0]LogAudioDebug: Display: Lib vorbis DLL was dynamically loaded.
+[2021.02.15-18.22.10:597][  0]LogShaderCompilers: Guid format shader working directory is 28 characters bigger than the processId version (../../../../TwoDSSG/Intermediate/Shaders/WorkingDirectory/5816/).
+[2021.02.15-18.22.10:597][  0]LogShaderCompilers: Cleaned the shader compiler working directory 'C:/Users/sagiph/AppData/Local/Temp/UnrealShaderWorkingDir/1E27E3724C73E6DDCA1398BF63CC507B/'.
+[2021.02.15-18.22.10:598][  0]LogXGEController: Cannot use XGE Controller as Incredibuild is not installed on this machine.
+[2021.02.15-18.22.10:598][  0]LogShaderCompilers: Cannot use XGE Shader Compiler as Incredibuild is not installed on this machine.
+[2021.02.15-18.22.10:598][  0]LogShaderCompilers: Display: Using Local Shader Compiler.
+[2021.02.15-18.22.11:499][  0]LogDerivedDataCache: Display: Max Cache Size: 512 MB
+[2021.02.15-18.22.11:569][  0]LogDerivedDataCache: Loaded boot cache 0.07s 76MB C:/Users/sagiph/AppData/Local/UnrealEngine/4.25/DerivedDataCache/Boot.ddc.
+[2021.02.15-18.22.11:569][  0]LogDerivedDataCache: Display: Loaded Boot cache: C:/Users/sagiph/AppData/Local/UnrealEngine/4.25/DerivedDataCache/Boot.ddc
+[2021.02.15-18.22.11:570][  0]LogDerivedDataCache: FDerivedDataBackendGraph:  Pak pak cache file ../../../../TwoDSSG/DerivedDataCache/DDC.ddp not found, will not use a pak cache.
+[2021.02.15-18.22.11:570][  0]LogDerivedDataCache: Unable to find inner node Pak for hierarchical cache Hierarchy.
+[2021.02.15-18.22.11:570][  0]LogDerivedDataCache: FDerivedDataBackendGraph:  CompressedPak pak cache file ../../../../TwoDSSG/DerivedDataCache/Compressed.ddp not found, will not use a pak cache.
+[2021.02.15-18.22.11:570][  0]LogDerivedDataCache: Unable to find inner node CompressedPak for hierarchical cache Hierarchy.
+[2021.02.15-18.22.11:582][  0]LogDerivedDataCache: Display: Pak cache opened for reading ../../../Engine/DerivedDataCache/Compressed.ddp.
+[2021.02.15-18.22.11:582][  0]LogDerivedDataCache: FDerivedDataBackendGraph:  EnterprisePak pak cache file ../../../Enterprise/DerivedDataCache/Compressed.ddp not found, will not use a pak cache.
+[2021.02.15-18.22.11:582][  0]LogDerivedDataCache: Unable to find inner node EnterprisePak for hierarchical cache Hierarchy.
+[2021.02.15-18.22.11:584][  0]LogDerivedDataCache: Using Local data cache path C:/Users/sagiph/AppData/Local/UnrealEngine/Common/DerivedDataCache: Writable
+[2021.02.15-18.22.11:584][  0]LogDerivedDataCache: Shared data cache path not found in *engine.ini, will not use an Shared cache.
+[2021.02.15-18.22.11:584][  0]LogDerivedDataCache: Unable to find inner node Shared for hierarchical cache Hierarchy.
+[2021.02.15-18.22.11:647][  0]LogSlate: Using FreeType 2.10.0
+[2021.02.15-18.22.11:647][  0]LogSlate: SlateFontServices - WITH_FREETYPE: 1, WITH_HARFBUZZ: 1
+[2021.02.15-18.22.11:680][  0]LogAssetRegistry: FAssetRegistry took 0.0027 seconds to start up
+[2021.02.15-18.22.11:943][  0]LogInit: Selected Device Profile: [Windows]
+[2021.02.15-18.22.12:120][  0]LogMeshReduction: Using QuadricMeshReduction for automatic static mesh reduction
+[2021.02.15-18.22.12:120][  0]LogMeshReduction: Using SimplygonMeshReduction for automatic skeletal mesh reduction
+[2021.02.15-18.22.12:120][  0]LogMeshReduction: Using ProxyLODMeshReduction for automatic mesh merging
+[2021.02.15-18.22.12:120][  0]LogMeshReduction: No distributed automatic mesh merging module available
+[2021.02.15-18.22.12:120][  0]LogMeshMerging: No distributed automatic mesh merging module available
+[2021.02.15-18.22.12:139][  0]LogNetVersion: TwoDSSG 1.0.0, NetCL: 13144385, EngineNetVer: 14, GameNetVer: 0 (Checksum: 294286351)
+[2021.02.15-18.22.12:660][  0]LogAISub: UAISubsystem::UAISubsystem AISubsystem (0000019A7B5DC140), frame # 0
+[2021.02.15-18.22.12:660][  0]LogAISub: UAISubsystem::UAISubsystem AIPerceptionSystem (0000019A7B522AC0), frame # 0
+[2021.02.15-18.22.12:662][  0]LogAISub: UAISubsystem::UAISubsystem EnvQueryManager (0000019A7B578A00), frame # 0
+[2021.02.15-18.22.12:797][  0]LogPackageLocalizationCache: Processed 19 localized package path(s) for 1 prioritized culture(s) in 0.127695 seconds
+[2021.02.15-18.22.12:803][  0]LogUObjectArray: 15917 objects as part of root set at end of initial load.
+[2021.02.15-18.22.12:803][  0]LogUObjectAllocator: 3965568 out of 0 bytes used by permanent object pool.
+[2021.02.15-18.22.12:803][  0]LogUObjectArray: CloseDisregardForGC: 0/0 objects in disregard for GC pool
+[2021.02.15-18.22.13:212][  0]LogTcpMessaging: Initializing TcpMessaging bridge
+[2021.02.15-18.22.13:217][  0]LogUdpMessaging: Initializing bridge on interface 0.0.0.0:0 to multicast group 230.0.0.1:6666.
+[2021.02.15-18.22.13:304][  0]SourceControl: Source control is disabled
+[2021.02.15-18.22.13:304][  0]SourceControl: Source control is disabled
+[2021.02.15-18.22.13:307][  0]SourceControl: Source control is disabled
+[2021.02.15-18.22.13:310][  0]SourceControl: Source control is disabled
+[2021.02.15-18.22.13:320][  0]SourceControl: Source control is disabled
+[2021.02.15-18.22.13:580][  0]LogAndroidPermission: UAndroidPermissionCallbackProxy::GetInstance
+[2021.02.15-18.22.13:602][  0]LogAudioCaptureCore: Display: No Audio Capture implementations found. Audio input will be silent.
+[2021.02.15-18.22.13:602][  0]LogAudioCaptureCore: Display: No Audio Capture implementations found. Audio input will be silent.
+[2021.02.15-18.22.13:658][  0]LogOcInput: OculusInput pre-init called
+[2021.02.15-18.22.13:669][  0]LogWindows: Failed to load 'OVRPlugin.dll' (GetLastError=126)
+[2021.02.15-18.22.13:669][  0]LogWindows: File 'OVRPlugin.dll' does not exist
+[2021.02.15-18.22.13:734][  0]LogEngine: Initializing Engine...
+[2021.02.15-18.22.13:736][  0]LogHMD: Failed to initialize OpenVR with code 110
+[2021.02.15-18.22.13:736][  0]LogMagicLeap: Warning: VR disabled because ZI is not enabled.  To enable, in the editor, Edit -> Project Settings -> Plugins -> Magic Leap Plugin -> Enable Zero Iteration
+[2021.02.15-18.22.13:737][  0]LogStats: UGameplayTagsManager::InitializeManager -  0.000 s
+[2021.02.15-18.22.13:884][  0]LogInit: Initializing FReadOnlyCVARCache
+[2021.02.15-18.22.13:892][  0]LogAIModule: Creating AISystem for world Untitled
+[2021.02.15-18.22.13:892][  0]LogAISub: UAISubsystem::UAISubsystem EnvQueryManager (0000019A03FA9A00), frame # 0
+[2021.02.15-18.22.13:892][  0]LogAISub: UAISubsystem::UAISubsystem AIPerceptionSystem (0000019A03F7FB00), frame # 0
+[2021.02.15-18.22.13:920][  0]LogAudioMixer: Display: Audio Mixer Platform Settings:
+[2021.02.15-18.22.13:921][  0]LogAudioMixer: Display: 	Sample Rate:						  48000
+[2021.02.15-18.22.13:921][  0]LogAudioMixer: Display: 	Callback Buffer Frame Size Requested: 1024
+[2021.02.15-18.22.13:921][  0]LogAudioMixer: Display: 	Callback Buffer Frame Size To Use:	  1024
+[2021.02.15-18.22.13:921][  0]LogAudioMixer: Display: 	Number of buffers to queue:			  2
+[2021.02.15-18.22.13:921][  0]LogAudioMixer: Display: 	Max Channels (voices):				  32
+[2021.02.15-18.22.13:921][  0]LogAudioMixer: Display: 	Number of Async Source Workers:		  0
+[2021.02.15-18.22.13:921][  0]LogAudio: Display: AudioDevice MaxSources: 32
+[2021.02.15-18.22.13:921][  0]LogAudio: Display: Using built-in audio occlusion.
+[2021.02.15-18.22.13:921][  0]LogAudioMixer: Display: Initializing audio mixer.
+[2021.02.15-18.22.13:933][  0]LogAudioMixer: Display: 0: FrontLeft
+[2021.02.15-18.22.13:933][  0]LogAudioMixer: Display: 1: FrontRight
+[2021.02.15-18.22.14:009][  0]LogAudioMixer: Display: Using Audio Device Speakers (Realtek High Definition Audio)
+[2021.02.15-18.22.14:015][  0]LogAudioMixer: Display: Initializing Sound Submixes...
+[2021.02.15-18.22.14:017][  0]LogAudioMixer: Display: Creating Master Submix 'MasterSubmixDefault'
+[2021.02.15-18.22.14:017][  0]LogAudioMixer: Display: Creating Master Submix 'MasterReverbSubmixDefault'
+[2021.02.15-18.22.14:019][  0]LogAudioMixer: Display: Creating Master Submix 'MasterEQSubmixDefault'
+[2021.02.15-18.22.14:020][  0]LogInit: FAudioDevice initialized.
+[2021.02.15-18.22.14:021][  0]LogNetVersion: Set ProjectVersion to 1.0.0.0. Version Checksum will be recalculated on next use.
+[2021.02.15-18.22.14:210][  0]LogDerivedDataCache: Saved boot cache 0.19s 76MB C:/Users/sagiph/AppData/Local/UnrealEngine/4.25/DerivedDataCache/Boot.ddc.
+[2021.02.15-18.22.14:216][  0]LogInit: Texture streaming: Enabled
+[2021.02.15-18.22.14:234][  0]LogEngineSessionManager: EngineSessionManager initialized
+[2021.02.15-18.22.14:234][  0]LogEditorSessionSummary: Verbose: Initializing EditorSessionSummaryWriter for editor session tracking
+[2021.02.15-18.22.14:236][  0]LogEditorSessionSummary: EditorSessionSummaryWriter initialized
+[2021.02.15-18.22.14:325][  0]LogInit: Transaction tracking system initialized
+[2021.02.15-18.22.14:346][  0]BlueprintLog: New page: Editor Load
+[2021.02.15-18.22.14:416][  0]LocalizationService: Localization service is disabled
+[2021.02.15-18.22.14:768][  0]LogCook: Display: Max memory allowance for cook 16384mb min free memory 0mb
+[2021.02.15-18.22.14:768][  0]LogCook: Display: Mobile HDR setting 0
+[2021.02.15-18.22.15:273][  0]LogFileCache: Scanning file cache for directory 'D:/UnRealEngine/TwoDSSG/Content/' took 0.20s
+[2021.02.15-18.22.15:273][  0]SourceControl: Source control is disabled
+[2021.02.15-18.22.15:273][  0]LogUnrealEdMisc: Loading editor; pre map load, took 8.307
+[2021.02.15-18.22.15:273][  0]Cmd: MAP LOAD FILE="../../../../TwoDSSG/Content/2DSideScrollerBP/Maps/2DSideScrollerExampleMap.umap" TEMPLATE=0 SHOWPROGRESS=1 FEATURELEVEL=3
+[2021.02.15-18.22.15:274][  0]LightingResults: New page: Lighting Build
+[2021.02.15-18.22.15:274][  0]LogWorld: UWorld::CleanupWorld for Untitled, bSessionEnded=true, bCleanupResources=true
+[2021.02.15-18.22.15:274][  0]LogSlate: InvalidateAllWidgets triggered.  All widgets were invalidated
+[2021.02.15-18.22.15:274][  0]MapCheck: New page: Map Check
+[2021.02.15-18.22.15:275][  0]LightingResults: New page: Lighting Build
+[2021.02.15-18.22.15:284][  0]LogAISub: UAISubsystem::~UAISubsystem EnvQueryManager (0000019A03FA9A00), frame # 0
+[2021.02.15-18.22.15:284][  0]LogAISub: UAISubsystem::~UAISubsystem AIPerceptionSystem (0000019A03F7FB00), frame # 0
+[2021.02.15-18.22.15:285][  0]LogUObjectHash: Compacting FUObjectHashTables data took   1.16ms
+[2021.02.15-18.22.17:160][  0]LogAIModule: Creating AISystem for world 2DSideScrollerExampleMap
+[2021.02.15-18.22.17:161][  0]LogAISub: UAISubsystem::UAISubsystem EnvQueryManager (0000019A072A9400), frame # 0
+[2021.02.15-18.22.17:161][  0]LogAISub: UAISubsystem::UAISubsystem AIPerceptionSystem (0000019A0B238900), frame # 0
+[2021.02.15-18.22.17:253][  0]LogEditorServer: Finished looking for orphan Actors (0.000 secs)
+[2021.02.15-18.22.17:272][  0]LogUObjectHash: Compacting FUObjectHashTables data took   0.87ms
+[2021.02.15-18.22.17:273][  0]Cmd: MAP CHECKDEP NOCLEARLOG
+[2021.02.15-18.22.17:273][  0]MapCheck: Map check complete: 0 Error(s), 0 Warning(s), took 0.094ms to complete.
+[2021.02.15-18.22.17:273][  0]LogFileHelpers: Loading map '2DSideScrollerExampleMap' took 2.000
+[2021.02.15-18.22.17:276][  0]LogUnrealEdMisc: Total Editor Startup Time, took 10.309
+[2021.02.15-18.22.17:705][  0]LogSlate: Updating window title bar state: overlay mode, drag disabled, window buttons hidden, title bar hidden
+[2021.02.15-18.22.17:714][  0]LogSlate: Updating window title bar state: overlay mode, drag disabled, window buttons hidden, title bar hidden
+[2021.02.15-18.22.17:724][  0]LogSlate: Updating window title bar state: overlay mode, drag disabled, window buttons hidden, title bar hidden
+[2021.02.15-18.22.17:733][  0]LogSlate: Updating window title bar state: overlay mode, drag disabled, window buttons hidden, title bar hidden
+[2021.02.15-18.22.17:840][  0]LogCollectionManager: Loaded 0 collections in 0.001199 seconds
+[2021.02.15-18.22.17:944][  0]LogFileCache: Scanning file cache for directory 'D:/UnRealEngine/TwoDSSG/Saved/Collections/' took 0.00s
+[2021.02.15-18.22.17:944][  0]LogFileCache: Scanning file cache for directory 'D:/UnRealEngine/TwoDSSG/Content/Developers/sagiph/Collections/' took 0.00s
+[2021.02.15-18.22.17:944][  0]LogFileCache: Scanning file cache for directory 'D:/UnRealEngine/TwoDSSG/Content/Collections/' took 0.00s
+[2021.02.15-18.22.17:944][  0]LogContentBrowser: Native class hierarchy populated in 0.0201 seconds. Added 3427 classes and 821 folders.
+[2021.02.15-18.22.17:986][  0]LogContentBrowser: Native class hierarchy updated for 'WidgetCarousel' in 0.0005 seconds. Added 0 classes and 0 folders.
+[2021.02.15-18.22.19:574][  0]LogContentBrowser: Native class hierarchy updated for 'AddContentDialog' in 0.0003 seconds. Added 0 classes and 0 folders.
+[2021.02.15-18.22.19:602][  0]LogContentBrowser: Native class hierarchy updated for 'SceneOutliner' in 0.0004 seconds. Added 2 classes and 0 folders.
+[2021.02.15-18.22.20:135][  0]LogSlate: Took 0.000184 seconds to synchronously load lazily loaded font '../../../Engine/Content/Slate/Fonts/Roboto-Regular.ttf' (155K)
+[2021.02.15-18.22.20:149][  0]LogSlate: Took 0.000180 seconds to synchronously load lazily loaded font '../../../Engine/Content/Slate/Fonts/Roboto-Bold.ttf' (160K)
+[2021.02.15-18.22.20:184][  0]LogSlate: Took 0.017959 seconds to synchronously load lazily loaded font '../../../Engine/Content/Editor/Slate/Fonts/FontAwesome.ttf' (139K)
+[2021.02.15-18.22.20:563][  0]LogRenderer: Reallocating scene render targets to support 1120x580 Format 10 NumSamples 1 (Frame:1).
+[2021.02.15-18.22.20:838][  0]LogSlate: Took 0.020571 seconds to synchronously load lazily loaded font '../../../Engine/Content/Slate/Fonts/Roboto-Light.ttf' (167K)
+[2021.02.15-18.22.21:021][  0]LogSlate: Took 0.047756 seconds to synchronously load lazily loaded font '../../../Engine/Content/Slate/Fonts/DroidSansFallback.ttf' (3848K)
+[2021.02.15-18.22.21:096][  0]LogContentBrowser: Native class hierarchy updated for 'HierarchicalLODOutliner' in 0.0003 seconds. Added 0 classes and 0 folders.
+[2021.02.15-18.22.21:096][  0]LogLoad: (Engine Initialization) Total time: 14.13 seconds
+[2021.02.15-18.22.21:096][  0]LogLoad: (Engine Initialization) Total Blueprint compile time: 0.00 seconds
+[2021.02.15-18.22.21:143][  0]LogAssetRegistry: Asset discovery search completed in 9.4632 seconds
+[2021.02.15-18.22.21:147][  0]LogCollectionManager: Fixed up redirectors for 0 collections in 0.000003 seconds (updated 0 objects)
+[2021.02.15-18.22.21:173][  0]LogContentStreaming: Texture pool size now 3000 MB
+[2021.02.15-18.31.17:505][313]LogSlate: Took 0.000190 seconds to synchronously load lazily loaded font '../../../Engine/Content/Slate/Fonts/Roboto-Light.ttf' (167K)
+[2021.02.15-18.31.17:524][313]LogAssetEditorSubsystem: Opening Asset editor for WidgetBlueprint /Game/HUD/MainUI.MainUI
+[2021.02.15-18.31.18:402][313]LogContentBrowser: Native class hierarchy updated for 'BlueprintGraph' in 0.0006 seconds. Added 125 classes and 0 folders.
+[2021.02.15-18.31.20:312][313]LogSlate: Took 0.000260 seconds to synchronously load lazily loaded font '../../../Engine/Content/Slate/Fonts/Roboto-BoldCondensed.ttf' (158K)
+[2021.02.15-18.31.34:390][646]LogAssetEditorSubsystem: Opening Asset editor for Blueprint /Game/2DSideScrollerBP/Blueprints/2DSideScrollerCharacter.2DSideScrollerCharacter
+[2021.02.15-18.31.35:422][647]LogSlate: Took 0.025952 seconds to synchronously load lazily loaded font '../../../Engine/Content/Slate/Fonts/Roboto-Italic.ttf' (157K)
+[2021.02.15-18.32.32:424][715]LogAssetEditorSubsystem: Opening Asset editor for UserDefinedStruct /Game/Structures/ST_Item.ST_Item
+[2021.02.15-18.32.36:252][144]LogSlate: Window 'ST_Item' being destroyed
+[2021.02.15-18.32.36:257][144]LogSlate: Window 'ST_Item' being destroyed
+[2021.02.15-18.32.36:298][144]LogWorld: UWorld::CleanupWorld for World_1, bSessionEnded=true, bCleanupResources=true
+[2021.02.15-18.32.36:298][144]LogSlate: InvalidateAllWidgets triggered.  All widgets were invalidated
+[2021.02.15-18.32.36:304][144]LogWorld: UWorld::CleanupWorld for World_0, bSessionEnded=true, bCleanupResources=true
+[2021.02.15-18.32.36:304][144]LogSlate: InvalidateAllWidgets triggered.  All widgets were invalidated
+[2021.02.15-18.32.36:471][144]LogWorld: UWorld::CleanupWorld for World_2, bSessionEnded=true, bCleanupResources=true
+[2021.02.15-18.32.36:471][144]LogSlate: InvalidateAllWidgets triggered.  All widgets were invalidated
+[2021.02.15-18.32.51:505][806]LogAssetEditorSubsystem: Opening Asset editor for Blueprint /Game/2DSideScrollerBP/Blueprints/2DSideScrollerCharacter.2DSideScrollerCharacter
+[2021.02.15-18.33.35:089][802]LogAssetEditorSubsystem: Opening Asset editor for Blueprint /Game/Libraries/BFL_Inventory.BFL_Inventory
+[2021.02.15-18.34.45:699][189]LogSlate: Last resort fallback font was requested. Font: '../../../Engine/Content/Slate/Fonts/DroidSansFallback.ttf', Character: 'ע (U+05e2)'
+[2021.02.15-18.34.45:762][189]LogSlate: Took 0.057358 seconds to synchronously load lazily loaded font '../../../Engine/Content/SlateDebug/Fonts/LastResort.ttf' (5269K)
+[2021.02.15-18.34.47:970][444]LogWindowsTextInputMethodSystem: Display: IME system now deactivated.
+[2021.02.15-18.34.47:970][444]LogWindowsTextInputMethodSystem: Display: IME system now deactivated.
+[2021.02.15-18.35.00:157][794]Cmd: OBJ SAVEPACKAGE PACKAGE="/Game/Libraries/BFL_Inventory" FILE="../../../../TwoDSSG/Content/Libraries/BFL_Inventory.uasset" SILENT=true
+[2021.02.15-18.35.00:365][794]LogSavePackage: Moving '../../../../TwoDSSG/Saved/BFL_Inventory1C8717A240A6C3A565A48AA67A8B660F.tmp' to '../../../../TwoDSSG/Content/Libraries/BFL_Inventory.uasset'
+[2021.02.15-18.35.00:393][794]AssetCheck: New page: Asset Save: BFL_Inventory
+[2021.02.15-18.35.00:393][794]LogContentValidation: Display: Validating Blueprint /Game/Libraries/BFL_Inventory.BFL_Inventory
+[2021.02.15-18.35.00:700][827]BlueprintLog: New page: Compile BFL_Inventory
+[2021.02.15-18.35.00:809][827]LogUObjectHash: Compacting FUObjectHashTables data took   4.48ms
+[2021.02.15-18.35.00:877][827]LogSlate: Took 0.020952 seconds to synchronously load lazily loaded font '../../../Engine/Content/Slate/Fonts/DroidSansMono.ttf' (77K)
+[2021.02.15-18.35.27:415][370]LogUObjectHash: Compacting FUObjectHashTables data took   3.18ms
+[2021.02.15-18.35.27:490][370]LogSavePackage: Moving '../../../../TwoDSSG/Saved/2DSideScrollerExampleMap_Auto1CEFAB9A141D18824832B5B830CE83A9D.tmp' to '../../../../TwoDSSG/Saved/Autosaves/Game/2DSideScrollerBP/Maps/2DSideScrollerExampleMap_Auto1.umap'
+[2021.02.15-18.35.27:503][370]LogFileHelpers: Editor autosave (incl. sublevels) for '/Game/2DSideScrollerBP/Maps/2DSideScrollerExampleMap' took 0.137
+[2021.02.15-18.35.27:503][370]LogFileHelpers: Editor autosave (incl. sublevels) for all levels took 0.137
+[2021.02.15-18.35.27:504][370]OBJ SavePackage: Generating thumbnails for [0] asset(s) in package [/Game/2DSideScrollerBP/Blueprints/2DSideScrollerCharacter] ([1] browsable assets)...
+[2021.02.15-18.35.27:504][370]OBJ SavePackage: Finished generating thumbnails for package [/Game/2DSideScrollerBP/Blueprints/2DSideScrollerCharacter]
+[2021.02.15-18.35.27:561][370]LogSavePackage: Moving '../../../../TwoDSSG/Saved/2DSideScrollerCharacter_Auto1B33A569B4A6FE512C61E6BAD937BDC16.tmp' to '../../../../TwoDSSG/Saved/Autosaves/Game/2DSideScrollerBP/Blueprints/2DSideScrollerCharacter_Auto1.uasset'
+[2021.02.15-18.35.27:577][370]LogFileHelpers: Auto-saving content packages took 0.074
+[2021.02.15-19.27.26:355][565]LogUObjectHash: Compacting FUObjectHashTables data took   0.73ms
+[2021.02.15-19.27.26:359][565]LogFileHelpers: Editor autosave (incl. sublevels) for '/Game/2DSideScrollerBP/Maps/2DSideScrollerExampleMap' took 0.040
+[2021.02.15-19.27.26:381][565]OBJ SavePackage: Generating thumbnails for [0] asset(s) in package [/Game/Libraries/BFL_Inventory] ([1] browsable assets)...
+[2021.02.15-19.27.26:381][565]OBJ SavePackage: Finished generating thumbnails for package [/Game/Libraries/BFL_Inventory]
+[2021.02.15-19.27.26:381][565]Cmd: OBJ SAVEPACKAGE PACKAGE="/Game/Libraries/BFL_Inventory" FILE="../../../../TwoDSSG/Saved/Autosaves/Game/Libraries/BFL_Inventory_Auto2.uasset" SILENT=false AUTOSAVING=true
+[2021.02.15-19.27.26:434][565]LogSavePackage: Moving '../../../../TwoDSSG/Saved/BFL_Inventory_Auto268A25BE74FE9168EFFADCEA1DBAB40B9.tmp' to '../../../../TwoDSSG/Saved/Autosaves/Game/Libraries/BFL_Inventory_Auto2.uasset'
+[2021.02.15-19.27.26:482][565]LogFileHelpers: Auto-saving content packages took 0.123
+[2021.02.15-19.28.55:693][ 59]LogTemp: Repeating last play command: New Editor Window (PIE)
+[2021.02.15-19.28.55:782][ 59]LogPlayLevel: PlayLevel: No blueprints needed recompiling
+[2021.02.15-19.28.55:873][ 59]PIE: New page: PIE session: 2DSideScrollerExampleMap (15 בפבר׳ 2021, 23:28:55)
+[2021.02.15-19.28.55:898][ 59]LogOnline: OSS: Creating online subsystem instance for: NULL
+[2021.02.15-19.28.55:913][ 59]LogOnline: OSS: TryLoadSubsystemAndSetDefault: Loaded subsystem for module [NULL]
+[2021.02.15-19.28.55:935][ 59]LogPlayLevel: Creating play world package: /Game/2DSideScrollerBP/Maps/UEDPIE_0_2DSideScrollerExampleMap
+[2021.02.15-19.28.55:984][ 59]LogPlayLevel: PIE: StaticDuplicateObject took: (0.048278s)
+[2021.02.15-19.28.56:016][ 59]LogAIModule: Creating AISystem for world 2DSideScrollerExampleMap
+[2021.02.15-19.28.56:017][ 59]LogAISub: UAISubsystem::UAISubsystem EnvQueryManager (0000019A306D0600), frame # 52059
+[2021.02.15-19.28.56:017][ 59]LogAISub: UAISubsystem::UAISubsystem AIPerceptionSystem (0000019A31CC51C0), frame # 52059
+[2021.02.15-19.28.56:018][ 59]LogPlayLevel: PIE: World Init took: (0.033284s)
+[2021.02.15-19.28.56:027][ 59]LogPlayLevel: PIE: Created PIE world by copying editor world from /Game/2DSideScrollerBP/Maps/2DSideScrollerExampleMap.2DSideScrollerExampleMap to /Game/2DSideScrollerBP/Maps/UEDPIE_0_2DSideScrollerExampleMap.2DSideScrollerExampleMap (0.082247s)
+[2021.02.15-19.28.56:090][ 59]LogUObjectHash: Compacting FUObjectHashTables data took   3.89ms
+[2021.02.15-19.28.56:100][ 59]LogAudioMixer: Display: Audio Mixer Platform Settings:
+[2021.02.15-19.28.56:100][ 59]LogAudioMixer: Display: 	Sample Rate:						  48000
+[2021.02.15-19.28.56:100][ 59]LogAudioMixer: Display: 	Callback Buffer Frame Size Requested: 1024
+[2021.02.15-19.28.56:100][ 59]LogAudioMixer: Display: 	Callback Buffer Frame Size To Use:	  1024
+[2021.02.15-19.28.56:100][ 59]LogAudioMixer: Display: 	Number of buffers to queue:			  2
+[2021.02.15-19.28.56:100][ 59]LogAudioMixer: Display: 	Max Channels (voices):				  32
+[2021.02.15-19.28.56:100][ 59]LogAudioMixer: Display: 	Number of Async Source Workers:		  0
+[2021.02.15-19.28.56:100][ 59]LogAudio: Display: AudioDevice MaxSources: 32
+[2021.02.15-19.28.56:101][ 59]LogAudio: Display: Using built-in audio occlusion.
+[2021.02.15-19.28.56:101][ 59]LogAudioMixer: Display: Initializing audio mixer.
+[2021.02.15-19.28.56:104][ 59]LogAudioMixer: Display: 0: FrontLeft
+[2021.02.15-19.28.56:104][ 59]LogAudioMixer: Display: 1: FrontRight
+[2021.02.15-19.28.56:132][ 59]LogAudioMixer: Display: Using Audio Device Speakers (Realtek High Definition Audio)
+[2021.02.15-19.28.56:132][ 59]LogAudioMixer: Display: Initializing Sound Submixes...
+[2021.02.15-19.28.56:132][ 59]LogAudioMixer: Display: Creating Master Submix 'MasterSubmixDefault'
+[2021.02.15-19.28.56:132][ 59]LogAudioMixer: Display: Creating Master Submix 'MasterReverbSubmixDefault'
+[2021.02.15-19.28.56:133][ 59]LogAudioMixer: Display: Creating Master Submix 'MasterEQSubmixDefault'
+[2021.02.15-19.28.56:148][ 59]LogInit: FAudioDevice initialized.
+[2021.02.15-19.28.56:209][ 59]LogSlate: Updating window title bar state: overlay mode, drag disabled, window buttons hidden, title bar hidden
+[2021.02.15-19.28.56:229][ 59]LogLoad: Game class is '2DSideScrollerGameMode_C'
+[2021.02.15-19.28.56:234][ 59]LogWorld: Bringing World /Game/2DSideScrollerBP/Maps/UEDPIE_0_2DSideScrollerExampleMap.2DSideScrollerExampleMap up for play (max tick rate 0) at 2021.02.15-21.28.56
+[2021.02.15-19.28.56:259][ 59]LogWorld: Bringing up level for play took: 0.015510
+[2021.02.15-19.28.56:260][ 59]LogOnline: OSS: Creating online subsystem instance for: :Context_6
+[2021.02.15-19.28.56:503][ 59]LogContentBrowser: Native class hierarchy updated for 'MovieSceneCapture' in 0.0005 seconds. Added 20 classes and 0 folders.
+[2021.02.15-19.28.56:702][ 59]LogScript: Warning: Accessed None trying to read property CallFunc_AddChildToCanvas_ReturnValue
+	BFL_Inventory_C /Game/Libraries/BFL_Inventory.Default__BFL_Inventory_C
+	Function /Game/Libraries/BFL_Inventory.BFL_Inventory_C:InitInventory:00D6
+[2021.02.15-19.28.56:703][ 59]PIE: Error: Blueprint Runtime Error: "Accessed None trying to read property CallFunc_AddChildToCanvas_ReturnValue". Blueprint:  BFL_Inventory Function:  Init Inventory Graph:  InitInventory Node:  Set Auto Size
+[2021.02.15-19.28.56:703][ 59]LogScript: Warning: Accessed None trying to read property CallFunc_AddChildToCanvas_ReturnValue
+	BFL_Inventory_C /Game/Libraries/BFL_Inventory.Default__BFL_Inventory_C
+	Function /Game/Libraries/BFL_Inventory.BFL_Inventory_C:InitInventory:00F9
+[2021.02.15-19.28.56:704][ 59]PIE: Error: Blueprint Runtime Error: "Accessed None trying to read property CallFunc_AddChildToCanvas_ReturnValue". Blueprint:  BFL_Inventory Function:  Init Inventory Graph:  InitInventory Node:  Set Anchors
+[2021.02.15-19.28.56:704][ 59]LogScript: Warning: Accessed None trying to read property CallFunc_AddChildToCanvas_ReturnValue
+	BFL_Inventory_C /Game/Libraries/BFL_Inventory.Default__BFL_Inventory_C
+	Function /Game/Libraries/BFL_Inventory.BFL_Inventory_C:InitInventory:01A4
+[2021.02.15-19.28.56:705][ 59]PIE: Error: Blueprint Runtime Error: "Accessed None trying to read property CallFunc_AddChildToCanvas_ReturnValue". Blueprint:  BFL_Inventory Function:  Init Inventory Graph:  InitInventory Node:  Set Offsets
+[2021.02.15-19.28.56:712][ 59]LogScript: Warning: Accessed None trying to read property inventoryPanel
+	BFL_Inventory_C /Game/Libraries/BFL_Inventory.Default__BFL_Inventory_C
+	Function /Game/Libraries/BFL_Inventory.BFL_Inventory_C:InitInventory:0689
+[2021.02.15-19.28.56:713][ 59]PIE: Error: Blueprint Runtime Error: "Accessed None trying to read property inventoryPanel". Blueprint:  BFL_Inventory Function:  Init Inventory Graph:  InitInventory Node:  Add
+[2021.02.15-19.28.56:713][ 59]LogScript: Warning: Accessed None
+	BFL_Inventory_C /Game/Libraries/BFL_Inventory.Default__BFL_Inventory_C
+	Function /Game/Libraries/BFL_Inventory.BFL_Inventory_C:InitInventory:066A
+[2021.02.15-19.28.56:713][ 59]PIE: Error: Blueprint Runtime Error: "Accessed None". Blueprint:  BFL_Inventory Function:  Init Inventory Graph:  InitInventory Node:  Add
+[2021.02.15-19.28.56:713][ 59]LogScript: Warning: Accessed None trying to read property inventoryPanel
+	BFL_Inventory_C /Game/Libraries/BFL_Inventory.Default__BFL_Inventory_C
+	Function /Game/Libraries/BFL_Inventory.BFL_Inventory_C:InitInventory:06BF
+[2021.02.15-19.28.56:714][ 59]PIE: Error: Blueprint Runtime Error: "Accessed None trying to read property inventoryPanel". Blueprint:  BFL_Inventory Function:  Init Inventory Graph:  InitInventory Node:  Add Child to Wrap Box
+[2021.02.15-19.28.56:714][ 59]LogScript: Warning: Accessed None
+	BFL_Inventory_C /Game/Libraries/BFL_Inventory.Default__BFL_Inventory_C
+	Function /Game/Libraries/BFL_Inventory.BFL_Inventory_C:InitInventory:06D4
+[2021.02.15-19.28.56:714][ 59]PIE: Error: Blueprint Runtime Error: "Accessed None". Blueprint:  BFL_Inventory Function:  Init Inventory Graph:  InitInventory Node:  Add Child to Wrap Box
+[2021.02.15-19.28.56:715][ 59]LogBlueprintUserMessages: [None] Created Inventory Slot
+[2021.02.15-19.28.56:717][ 59]LogScript: Warning: Accessed None trying to read property inventoryPanel
+	BFL_Inventory_C /Game/Libraries/BFL_Inventory.Default__BFL_Inventory_C
+	Function /Game/Libraries/BFL_Inventory.BFL_Inventory_C:InitInventory:0689
+[2021.02.15-19.28.56:717][ 59]PIE: Error: Blueprint Runtime Error: "Accessed None trying to read property inventoryPanel". Blueprint:  BFL_Inventory Function:  Init Inventory Graph:  InitInventory Node:  Add
+[2021.02.15-19.28.56:717][ 59]LogScript: Warning: Accessed None
+	BFL_Inventory_C /Game/Libraries/BFL_Inventory.Default__BFL_Inventory_C
+	Function /Game/Libraries/BFL_Inventory.BFL_Inventory_C:InitInventory:066A
+[2021.02.15-19.28.56:717][ 59]PIE: Error: Blueprint Runtime Error: "Accessed None". Blueprint:  BFL_Inventory Function:  Init Inventory Graph:  InitInventory Node:  Add
+[2021.02.15-19.28.56:717][ 59]LogScript: Warning: Accessed None trying to read property inventoryPanel
+	BFL_Inventory_C /Game/Libraries/BFL_Inventory.Default__BFL_Inventory_C
+	Function /Game/Libraries/BFL_Inventory.BFL_Inventory_C:InitInventory:06BF
+[2021.02.15-19.28.56:718][ 59]PIE: Error: Blueprint Runtime Error: "Accessed None trying to read property inventoryPanel". Blueprint:  BFL_Inventory Function:  Init Inventory Graph:  InitInventory Node:  Add Child to Wrap Box
+[2021.02.15-19.28.56:718][ 59]LogScript: Warning: Accessed None
+	BFL_Inventory_C /Game/Libraries/BFL_Inventory.Default__BFL_Inventory_C
+	Function /Game/Libraries/BFL_Inventory.BFL_Inventory_C:InitInventory:06D4
+[2021.02.15-19.28.56:718][ 59]PIE: Error: Blueprint Runtime Error: "Accessed None". Blueprint:  BFL_Inventory Function:  Init Inventory Graph:  InitInventory Node:  Add Child to Wrap Box
+[2021.02.15-19.28.56:718][ 59]LogBlueprintUserMessages: [None] Created Inventory Slot
+[2021.02.15-19.28.56:719][ 59]LogScript: Warning: Accessed None trying to read property inventoryPanel
+	BFL_Inventory_C /Game/Libraries/BFL_Inventory.Default__BFL_Inventory_C
+	Function /Game/Libraries/BFL_Inventory.BFL_Inventory_C:InitInventory:0689
+[2021.02.15-19.28.56:719][ 59]PIE: Error: Blueprint Runtime Error: "Accessed None trying to read property inventoryPanel". Blueprint:  BFL_Inventory Function:  Init Inventory Graph:  InitInventory Node:  Add
+[2021.02.15-19.28.56:719][ 59]LogScript: Warning: Accessed None
+	BFL_Inventory_C /Game/Libraries/BFL_Inventory.Default__BFL_Inventory_C
+	Function /Game/Libraries/BFL_Inventory.BFL_Inventory_C:InitInventory:066A
+[2021.02.15-19.28.56:720][ 59]PIE: Error: Blueprint Runtime Error: "Accessed None". Blueprint:  BFL_Inventory Function:  Init Inventory Graph:  InitInventory Node:  Add
+[2021.02.15-19.28.56:720][ 59]LogScript: Warning: Accessed None trying to read property inventoryPanel
+	BFL_Inventory_C /Game/Libraries/BFL_Inventory.Default__BFL_Inventory_C
+	Function /Game/Libraries/BFL_Inventory.BFL_Inventory_C:InitInventory:06BF
+[2021.02.15-19.28.56:720][ 59]PIE: Error: Blueprint Runtime Error: "Accessed None trying to read property inventoryPanel". Blueprint:  BFL_Inventory Function:  Init Inventory Graph:  InitInventory Node:  Add Child to Wrap Box
+[2021.02.15-19.28.56:720][ 59]LogScript: Warning: Accessed None
+	BFL_Inventory_C /Game/Libraries/BFL_Inventory.Default__BFL_Inventory_C
+	Function /Game/Libraries/BFL_Inventory.BFL_Inventory_C:InitInventory:06D4
+[2021.02.15-19.28.56:720][ 59]PIE: Error: Blueprint Runtime Error: "Accessed None". Blueprint:  BFL_Inventory Function:  Init Inventory Graph:  InitInventory Node:  Add Child to Wrap Box
+[2021.02.15-19.28.56:720][ 59]LogBlueprintUserMessages: [None] Created Inventory Slot
+[2021.02.15-19.28.56:721][ 59]LogScript: Warning: Accessed None trying to read property inventoryPanel
+	BFL_Inventory_C /Game/Libraries/BFL_Inventory.Default__BFL_Inventory_C
+	Function /Game/Libraries/BFL_Inventory.BFL_Inventory_C:InitInventory:0689
+[2021.02.15-19.28.56:722][ 59]PIE: Error: Blueprint Runtime Error: "Accessed None trying to read property inventoryPanel". Blueprint:  BFL_Inventory Function:  Init Inventory Graph:  InitInventory Node:  Add
+[2021.02.15-19.28.56:722][ 59]LogScript: Warning: Accessed None
+	BFL_Inventory_C /Game/Libraries/BFL_Inventory.Default__BFL_Inventory_C
+	Function /Game/Libraries/BFL_Inventory.BFL_Inventory_C:InitInventory:066A
+[2021.02.15-19.28.56:722][ 59]PIE: Error: Blueprint Runtime Error: "Accessed None". Blueprint:  BFL_Inventory Function:  Init Inventory Graph:  InitInventory Node:  Add
+[2021.02.15-19.28.56:722][ 59]PIE: Error: Blueprint Runtime Error: "Accessed None trying to read property inventoryPanel". Blueprint:  BFL_Inventory Function:  Init Inventory Graph:  InitInventory Node:  Add Child to Wrap Box
+[2021.02.15-19.28.56:722][ 59]PIE: Error: Blueprint Runtime Error: "Accessed None". Blueprint:  BFL_Inventory Function:  Init Inventory Graph:  InitInventory Node:  Add Child to Wrap Box
+[2021.02.15-19.28.56:723][ 59]LogBlueprintUserMessages: [None] Created Inventory Slot
+[2021.02.15-19.28.56:724][ 59]PIE: Error: Blueprint Runtime Error: "Accessed None trying to read property inventoryPanel". Blueprint:  BFL_Inventory Function:  Init Inventory Graph:  InitInventory Node:  Add
+[2021.02.15-19.28.56:724][ 59]PIE: Error: Blueprint Runtime Error: "Accessed None". Blueprint:  BFL_Inventory Function:  Init Inventory Graph:  InitInventory Node:  Add
+[2021.02.15-19.28.56:725][ 59]PIE: Error: Blueprint Runtime Error: "Accessed None trying to read property inventoryPanel". Blueprint:  BFL_Inventory Function:  Init Inventory Graph:  InitInventory Node:  Add Child to Wrap Box
+[2021.02.15-19.28.56:725][ 59]PIE: Error: Blueprint Runtime Error: "Accessed None". Blueprint:  BFL_Inventory Function:  Init Inventory Graph:  InitInventory Node:  Add Child to Wrap Box
+[2021.02.15-19.28.56:725][ 59]LogBlueprintUserMessages: [None] Created Inventory Slot
+[2021.02.15-19.28.56:726][ 59]PIE: Error: Blueprint Runtime Error: "Accessed None trying to read property inventoryPanel". Blueprint:  BFL_Inventory Function:  Init Inventory Graph:  InitInventory Node:  Add
+[2021.02.15-19.28.56:727][ 59]PIE: Error: Blueprint Runtime Error: "Accessed None". Blueprint:  BFL_Inventory Function:  Init Inventory Graph:  InitInventory Node:  Add
+[2021.02.15-19.28.56:727][ 59]PIE: Error: Blueprint Runtime Error: "Accessed None trying to read property inventoryPanel". Blueprint:  BFL_Inventory Function:  Init Inventory Graph:  InitInventory Node:  Add Child to Wrap Box
+[2021.02.15-19.28.56:727][ 59]PIE: Error: Blueprint Runtime Error: "Accessed None". Blueprint:  BFL_Inventory Function:  Init Inventory Graph:  InitInventory Node:  Add Child to Wrap Box
+[2021.02.15-19.28.56:727][ 59]LogBlueprintUserMessages: [None] Created Inventory Slot
+[2021.02.15-19.28.56:728][ 59]PIE: Error: Blueprint Runtime Error: "Accessed None trying to read property inventoryPanel". Blueprint:  BFL_Inventory Function:  Init Inventory Graph:  InitInventory Node:  Add
+[2021.02.15-19.28.56:729][ 59]PIE: Error: Blueprint Runtime Error: "Accessed None". Blueprint:  BFL_Inventory Function:  Init Inventory Graph:  InitInventory Node:  Add
+[2021.02.15-19.28.56:729][ 59]PIE: Error: Blueprint Runtime Error: "Accessed None trying to read property inventoryPanel". Blueprint:  BFL_Inventory Function:  Init Inventory Graph:  InitInventory Node:  Add Child to Wrap Box
+[2021.02.15-19.28.56:729][ 59]PIE: Error: Blueprint Runtime Error: "Accessed None". Blueprint:  BFL_Inventory Function:  Init Inventory Graph:  InitInventory Node:  Add Child to Wrap Box
+[2021.02.15-19.28.56:729][ 59]LogBlueprintUserMessages: [None] Created Inventory Slot
+[2021.02.15-19.28.56:730][ 59]PIE: Error: Blueprint Runtime Error: "Accessed None trying to read property inventoryPanel". Blueprint:  BFL_Inventory Function:  Init Inventory Graph:  InitInventory Node:  Add
+[2021.02.15-19.28.56:730][ 59]PIE: Error: Blueprint Runtime Error: "Accessed None". Blueprint:  BFL_Inventory Function:  Init Inventory Graph:  InitInventory Node:  Add
+[2021.02.15-19.28.56:731][ 59]PIE: Error: Blueprint Runtime Error: "Accessed None trying to read property inventoryPanel". Blueprint:  BFL_Inventory Function:  Init Inventory Graph:  InitInventory Node:  Add Child to Wrap Box
+[2021.02.15-19.28.56:731][ 59]PIE: Error: Blueprint Runtime Error: "Accessed None". Blueprint:  BFL_Inventory Function:  Init Inventory Graph:  InitInventory Node:  Add Child to Wrap Box
+[2021.02.15-19.28.56:731][ 59]LogBlueprintUserMessages: [None] Created Inventory Slot
+[2021.02.15-19.28.56:732][ 59]PIE: Error: Blueprint Runtime Error: "Accessed None trying to read property inventoryPanel". Blueprint:  BFL_Inventory Function:  Init Inventory Graph:  InitInventory Node:  Add
+[2021.02.15-19.28.56:732][ 59]PIE: Error: Blueprint Runtime Error: "Accessed None". Blueprint:  BFL_Inventory Function:  Init Inventory Graph:  InitInventory Node:  Add
+[2021.02.15-19.28.56:732][ 59]PIE: Error: Blueprint Runtime Error: "Accessed None trying to read property inventoryPanel". Blueprint:  BFL_Inventory Function:  Init Inventory Graph:  InitInventory Node:  Add Child to Wrap Box
+[2021.02.15-19.28.56:732][ 59]PIE: Error: Blueprint Runtime Error: "Accessed None". Blueprint:  BFL_Inventory Function:  Init Inventory Graph:  InitInventory Node:  Add Child to Wrap Box
+[2021.02.15-19.28.56:732][ 59]LogBlueprintUserMessages: [None] Created Inventory Slot
+[2021.02.15-19.28.56:733][ 59]PIE: Error: Blueprint Runtime Error: "Accessed None trying to read property inventoryPanel". Blueprint:  BFL_Inventory Function:  Init Inventory Graph:  InitInventory Node:  Add
+[2021.02.15-19.28.56:733][ 59]PIE: Error: Blueprint Runtime Error: "Accessed None". Blueprint:  BFL_Inventory Function:  Init Inventory Graph:  InitInventory Node:  Add
+[2021.02.15-19.28.56:733][ 59]PIE: Error: Blueprint Runtime Error: "Accessed None trying to read property inventoryPanel". Blueprint:  BFL_Inventory Function:  Init Inventory Graph:  InitInventory Node:  Add Child to Wrap Box
+[2021.02.15-19.28.56:733][ 59]PIE: Error: Blueprint Runtime Error: "Accessed None". Blueprint:  BFL_Inventory Function:  Init Inventory Graph:  InitInventory Node:  Add Child to Wrap Box
+[2021.02.15-19.28.56:733][ 59]LogBlueprintUserMessages: [None] Created Inventory Slot
+[2021.02.15-19.28.56:734][ 59]PIE: Error: Blueprint Runtime Error: "Accessed None trying to read property inventoryPanel". Blueprint:  BFL_Inventory Function:  Init Inventory Graph:  InitInventory Node:  Add
+[2021.02.15-19.28.56:735][ 59]PIE: Error: Blueprint Runtime Error: "Accessed None". Blueprint:  BFL_Inventory Function:  Init Inventory Graph:  InitInventory Node:  Add
+[2021.02.15-19.28.56:735][ 59]PIE: Error: Blueprint Runtime Error: "Accessed None trying to read property inventoryPanel". Blueprint:  BFL_Inventory Function:  Init Inventory Graph:  InitInventory Node:  Add Child to Wrap Box
+[2021.02.15-19.28.56:735][ 59]PIE: Error: Blueprint Runtime Error: "Accessed None". Blueprint:  BFL_Inventory Function:  Init Inventory Graph:  InitInventory Node:  Add Child to Wrap Box
+[2021.02.15-19.28.56:735][ 59]LogBlueprintUserMessages: [None] Created Inventory Slot
+[2021.02.15-19.28.56:736][ 59]PIE: Error: Blueprint Runtime Error: "Accessed None trying to read property inventoryPanel". Blueprint:  BFL_Inventory Function:  Init Inventory Graph:  InitInventory Node:  Add
+[2021.02.15-19.28.56:736][ 59]PIE: Error: Blueprint Runtime Error: "Accessed None". Blueprint:  BFL_Inventory Function:  Init Inventory Graph:  InitInventory Node:  Add
+[2021.02.15-19.28.56:736][ 59]PIE: Error: Blueprint Runtime Error: "Accessed None trying to read property inventoryPanel". Blueprint:  BFL_Inventory Function:  Init Inventory Graph:  InitInventory Node:  Add Child to Wrap Box
+[2021.02.15-19.28.56:736][ 59]PIE: Error: Blueprint Runtime Error: "Accessed None". Blueprint:  BFL_Inventory Function:  Init Inventory Graph:  InitInventory Node:  Add Child to Wrap Box
+[2021.02.15-19.28.56:736][ 59]LogBlueprintUserMessages: [None] Created Inventory Slot
+[2021.02.15-19.28.56:737][ 59]PIE: Error: Blueprint Runtime Error: "Accessed None trying to read property inventoryPanel". Blueprint:  BFL_Inventory Function:  Init Inventory Graph:  InitInventory Node:  Add
+[2021.02.15-19.28.56:737][ 59]PIE: Error: Blueprint Runtime Error: "Accessed None". Blueprint:  BFL_Inventory Function:  Init Inventory Graph:  InitInventory Node:  Add
+[2021.02.15-19.28.56:737][ 59]PIE: Error: Blueprint Runtime Error: "Accessed None trying to read property inventoryPanel". Blueprint:  BFL_Inventory Function:  Init Inventory Graph:  InitInventory Node:  Add Child to Wrap Box
+[2021.02.15-19.28.56:737][ 59]PIE: Error: Blueprint Runtime Error: "Accessed None". Blueprint:  BFL_Inventory Function:  Init Inventory Graph:  InitInventory Node:  Add Child to Wrap Box
+[2021.02.15-19.28.56:737][ 59]LogBlueprintUserMessages: [None] Created Inventory Slot
+[2021.02.15-19.28.56:738][ 59]PIE: Error: Blueprint Runtime Error: "Accessed None trying to read property inventoryPanel". Blueprint:  BFL_Inventory Function:  Init Inventory Graph:  InitInventory Node:  Add
+[2021.02.15-19.28.56:738][ 59]PIE: Error: Blueprint Runtime Error: "Accessed None". Blueprint:  BFL_Inventory Function:  Init Inventory Graph:  InitInventory Node:  Add
+[2021.02.15-19.28.56:738][ 59]PIE: Error: Blueprint Runtime Error: "Accessed None trying to read property inventoryPanel". Blueprint:  BFL_Inventory Function:  Init Inventory Graph:  InitInventory Node:  Add Child to Wrap Box
+[2021.02.15-19.28.56:739][ 59]PIE: Error: Blueprint Runtime Error: "Accessed None". Blueprint:  BFL_Inventory Function:  Init Inventory Graph:  InitInventory Node:  Add Child to Wrap Box
+[2021.02.15-19.28.56:739][ 59]LogBlueprintUserMessages: [None] Created Inventory Slot
+[2021.02.15-19.28.56:739][ 59]PIE: Error: Blueprint Runtime Error: "Accessed None trying to read property inventoryPanel". Blueprint:  BFL_Inventory Function:  Init Inventory Graph:  InitInventory Node:  Add
+[2021.02.15-19.28.56:739][ 59]PIE: Error: Blueprint Runtime Error: "Accessed None". Blueprint:  BFL_Inventory Function:  Init Inventory Graph:  InitInventory Node:  Add
+[2021.02.15-19.28.56:740][ 59]PIE: Error: Blueprint Runtime Error: "Accessed None trying to read property inventoryPanel". Blueprint:  BFL_Inventory Function:  Init Inventory Graph:  InitInventory Node:  Add Child to Wrap Box
+[2021.02.15-19.28.56:740][ 59]PIE: Error: Blueprint Runtime Error: "Accessed None". Blueprint:  BFL_Inventory Function:  Init Inventory Graph:  InitInventory Node:  Add Child to Wrap Box
+[2021.02.15-19.28.56:740][ 59]LogBlueprintUserMessages: [None] Created Inventory Slot
+[2021.02.15-19.28.56:740][ 59]PIE: Error: Blueprint Runtime Error: "Accessed None trying to read property inventoryPanel". Blueprint:  BFL_Inventory Function:  Init Inventory Graph:  InitInventory Node:  Add
+[2021.02.15-19.28.56:741][ 59]PIE: Error: Blueprint Runtime Error: "Accessed None". Blueprint:  BFL_Inventory Function:  Init Inventory Graph:  InitInventory Node:  Add
+[2021.02.15-19.28.56:741][ 59]PIE: Error: Blueprint Runtime Error: "Accessed None trying to read property inventoryPanel". Blueprint:  BFL_Inventory Function:  Init Inventory Graph:  InitInventory Node:  Add Child to Wrap Box
+[2021.02.15-19.28.56:741][ 59]PIE: Error: Blueprint Runtime Error: "Accessed None". Blueprint:  BFL_Inventory Function:  Init Inventory Graph:  InitInventory Node:  Add Child to Wrap Box
+[2021.02.15-19.28.56:741][ 59]LogBlueprintUserMessages: [None] Created Inventory Slot
+[2021.02.15-19.28.56:741][ 59]PIE: Error: Blueprint Runtime Error: "Accessed None trying to read property gameInstanceRef". Blueprint:  BFL_Inventory Function:  Init Inventory Graph:  InitInventory Node:  Branch
+[2021.02.15-19.28.56:741][ 59]PIE: Error: Blueprint Runtime Error: "Accessed None". Blueprint:  BFL_Inventory Function:  Init Inventory Graph:  InitInventory Node:  Branch
+[2021.02.15-19.28.56:742][ 59]PIE: Error: Blueprint Runtime Error: "Accessed None trying to read property inventoryPanel". Blueprint:  BFL_Inventory Function:  Init Inventory Graph:  ForEachLoop Node:  Branch
+[2021.02.15-19.28.56:742][ 59]PIE: Error: Blueprint Runtime Error: "Accessed None". Blueprint:  BFL_Inventory Function:  Init Inventory Graph:  ForEachLoop Node:  Branch
+[2021.02.15-19.28.56:790][ 59]PIE: Server logged in
+[2021.02.15-19.28.56:795][ 59]PIE: Play in editor total start time 1.065 seconds.
+[2021.02.15-19.28.57:070][ 60]LogRenderer: Reallocating scene render targets to support 1280x720 Format 10 NumSamples 1 (Frame:1).
+[2021.02.15-19.29.08:088][269]LogSlate: Window 'TwoDSSG Preview [NetMode: Standalone] (64-bit/Windows) ' being destroyed
+[2021.02.15-19.29.08:109][269]LogWorld: BeginTearingDown for /Game/2DSideScrollerBP/Maps/UEDPIE_0_2DSideScrollerExampleMap
+[2021.02.15-19.29.08:109][269]LogWorld: UWorld::CleanupWorld for 2DSideScrollerExampleMap, bSessionEnded=true, bCleanupResources=true
+[2021.02.15-19.29.08:109][269]LogSlate: InvalidateAllWidgets triggered.  All widgets were invalidated
+[2021.02.15-19.29.08:120][269]LogPlayLevel: Display: Shutting down PIE online subsystems
+[2021.02.15-19.29.08:130][269]LogSlate: InvalidateAllWidgets triggered.  All widgets were invalidated
+[2021.02.15-19.29.08:179][269]LogAISub: UAISubsystem::~UAISubsystem AIPerceptionSystem (0000019A31CC51C0), frame # 53269
+[2021.02.15-19.29.08:180][269]LogAISub: UAISubsystem::~UAISubsystem EnvQueryManager (0000019A306D0600), frame # 53269
+[2021.02.15-19.29.08:201][269]LogUObjectHash: Compacting FUObjectHashTables data took   3.77ms
+[2021.02.15-19.29.08:368][270]LogPlayLevel: Display: Destroying online subsystem :Context_6
+[2021.02.15-19.29.48:361][702]LogSlate: Window 'Message Log' being destroyed
+[2021.02.15-19.29.48:365][702]LogSlate: Window 'Message Log' being destroyed
+[2021.02.15-19.30.00:339][ 96]LogAssetEditorSubsystem: Opening Asset editor for WidgetBlueprint /Game/HUD/WG_Inventory.WG_Inventory
+[2021.02.15-19.30.14:660][532]LogEditorViewport: Clicking Background
+[2021.02.15-19.37.31:934][267]LogAssetEditorSubsystem: Opening Asset editor for WidgetBlueprint /Game/HUD/WG_InvSlot.WG_InvSlot
+[2021.02.15-19.37.48:803][556]BlueprintLog: New page: Compile WG_InvSlot
+[2021.02.15-19.37.49:045][556]LogUObjectHash: Compacting FUObjectHashTables data took   4.15ms
+[2021.02.15-19.38.19:803][530]LogUObjectHash: Compacting FUObjectHashTables data took   3.68ms
+[2021.02.15-19.38.19:848][530]LogSavePackage: Moving '../../../../TwoDSSG/Saved/2DSideScrollerExampleMap_Auto3A1EBC762461A07C462CE8AB1F07F199D.tmp' to '../../../../TwoDSSG/Saved/Autosaves/Game/2DSideScrollerBP/Maps/2DSideScrollerExampleMap_Auto3.umap'
+[2021.02.15-19.38.19:850][530]LogFileHelpers: Editor autosave (incl. sublevels) for '/Game/2DSideScrollerBP/Maps/2DSideScrollerExampleMap' took 0.086
+[2021.02.15-19.38.19:850][530]LogFileHelpers: Editor autosave (incl. sublevels) for all levels took 0.086
+[2021.02.15-19.38.19:850][530]OBJ SavePackage: Generating thumbnails for [0] asset(s) in package [/Game/Libraries/BFL_Inventory] ([1] browsable assets)...
+[2021.02.15-19.38.19:850][530]OBJ SavePackage: Finished generating thumbnails for package [/Game/Libraries/BFL_Inventory]
+[2021.02.15-19.38.19:850][530]Cmd: OBJ SAVEPACKAGE PACKAGE="/Game/Libraries/BFL_Inventory" FILE="../../../../TwoDSSG/Saved/Autosaves/Game/Libraries/BFL_Inventory_Auto3.uasset" SILENT=false AUTOSAVING=true
+[2021.02.15-19.38.19:897][530]LogSavePackage: Moving '../../../../TwoDSSG/Saved/BFL_Inventory_Auto3AD972BB74EF4F38B0EB520B870D5035E.tmp' to '../../../../TwoDSSG/Saved/Autosaves/Game/Libraries/BFL_Inventory_Auto3.uasset'
+[2021.02.15-19.38.19:926][530]OBJ SavePackage: Generating thumbnails for [0] asset(s) in package [/Game/HUD/WG_InvSlot] ([1] browsable assets)...
+[2021.02.15-19.38.19:926][530]OBJ SavePackage: Finished generating thumbnails for package [/Game/HUD/WG_InvSlot]
+[2021.02.15-19.38.19:926][530]Cmd: OBJ SAVEPACKAGE PACKAGE="/Game/HUD/WG_InvSlot" FILE="../../../../TwoDSSG/Saved/Autosaves/Game/HUD/WG_InvSlot_Auto3.uasset" SILENT=false AUTOSAVING=true
+[2021.02.15-19.38.20:010][530]LogSavePackage: Moving '../../../../TwoDSSG/Saved/WG_InvSlot_Auto39AD36A0045E2A47E3C4F90972F6625C5.tmp' to '../../../../TwoDSSG/Saved/Autosaves/Game/HUD/WG_InvSlot_Auto3.uasset'
+[2021.02.15-19.38.20:051][530]LogFileHelpers: Auto-saving content packages took 0.201
+[2021.02.15-19.39.56:583][103]LogSlate: Took 0.022728 seconds to synchronously load lazily loaded font '../../../Engine/Content/Slate/Fonts/Roboto-BoldCondensedItalic.ttf' (160K)
+[2021.02.15-19.40.55:324][768]BlueprintLog: New page: Compile WG_InvSlot
+[2021.02.15-19.40.55:394][768]LogUObjectHash: Compacting FUObjectHashTables data took   4.03ms
+[2021.02.15-19.42.05:000][701]LogSlate: Window 'Color Picker' being destroyed
+[2021.02.15-19.42.41:350][571]LogSlate: Window 'Color Picker' being destroyed
+[2021.02.15-19.43.54:161][233]BlueprintLog: New page: Compile WG_InvSlot
+[2021.02.15-19.43.54:232][233]LogUObjectHash: Compacting FUObjectHashTables data took   3.56ms
+[2021.02.15-19.45.44:764][210]LogEditorTransaction: Undo Delete current selection
+[2021.02.15-19.48.00:165][296]BlueprintLog: New page: Compile WG_InvSlot
+[2021.02.15-19.48.00:245][296]LogUObjectHash: Compacting FUObjectHashTables data took   4.13ms
+[2021.02.15-19.49.53:171][182]BlueprintLog: New page: Compile WG_InvSlot
+[2021.02.15-19.49.53:247][182]LogUObjectHash: Compacting FUObjectHashTables data took   3.64ms
+[2021.02.15-19.50.20:144][817]BlueprintLog: New page: Compile WG_InvSlot
+[2021.02.15-19.50.20:216][817]LogUObjectHash: Compacting FUObjectHashTables data took   3.69ms
+[2021.02.15-19.50.52:450][552]LogSlate: Window 'Change Variable Type' being destroyed
+[2021.02.15-19.50.53:452][553]LogUObjectHash: Compacting FUObjectHashTables data took   3.59ms
+[2021.02.15-19.50.53:491][553]LogSavePackage: Moving '../../../../TwoDSSG/Saved/2DSideScrollerExampleMap_Auto4C729D0C04B8E3F909CBB7FAC537BA993.tmp' to '../../../../TwoDSSG/Saved/Autosaves/Game/2DSideScrollerBP/Maps/2DSideScrollerExampleMap_Auto4.umap'
+[2021.02.15-19.50.53:492][553]LogFileHelpers: Editor autosave (incl. sublevels) for '/Game/2DSideScrollerBP/Maps/2DSideScrollerExampleMap' took 0.194
+[2021.02.15-19.50.53:492][553]LogFileHelpers: Editor autosave (incl. sublevels) for all levels took 0.194
+[2021.02.15-19.50.53:493][553]OBJ SavePackage: Generating thumbnails for [0] asset(s) in package [/Game/Libraries/BFL_Inventory] ([1] browsable assets)...
+[2021.02.15-19.50.53:493][553]OBJ SavePackage: Finished generating thumbnails for package [/Game/Libraries/BFL_Inventory]
+[2021.02.15-19.50.53:493][553]Cmd: OBJ SAVEPACKAGE PACKAGE="/Game/Libraries/BFL_Inventory" FILE="../../../../TwoDSSG/Saved/Autosaves/Game/Libraries/BFL_Inventory_Auto4.uasset" SILENT=false AUTOSAVING=true
+[2021.02.15-19.50.53:533][553]LogSavePackage: Moving '../../../../TwoDSSG/Saved/BFL_Inventory_Auto40C411CAA4E122C896DCC84A1DAC58FA4.tmp' to '../../../../TwoDSSG/Saved/Autosaves/Game/Libraries/BFL_Inventory_Auto4.uasset'
+[2021.02.15-19.50.53:534][553]OBJ SavePackage: Generating thumbnails for [0] asset(s) in package [/Game/HUD/WG_InvSlot] ([1] browsable assets)...
+[2021.02.15-19.50.53:534][553]OBJ SavePackage: Finished generating thumbnails for package [/Game/HUD/WG_InvSlot]
+[2021.02.15-19.50.53:534][553]Cmd: OBJ SAVEPACKAGE PACKAGE="/Game/HUD/WG_InvSlot" FILE="../../../../TwoDSSG/Saved/Autosaves/Game/HUD/WG_InvSlot_Auto4.uasset" SILENT=false AUTOSAVING=true
+[2021.02.15-19.50.53:595][553]LogSavePackage: Moving '../../../../TwoDSSG/Saved/WG_InvSlot_Auto49D12A7BB4CC5830F9F69A2B879B82991.tmp' to '../../../../TwoDSSG/Saved/Autosaves/Game/HUD/WG_InvSlot_Auto4.uasset'
+[2021.02.15-19.50.53:596][553]LogFileHelpers: Auto-saving content packages took 0.103
+[2021.02.15-19.50.55:963][764]LogSlate: Window 'Find in Blueprints' being destroyed
+[2021.02.15-19.50.55:967][764]LogSlate: Window 'Find in Blueprints' being destroyed
+[2021.02.15-19.51.23:638][301]BlueprintLog: New page: Compile WG_InvSlot
+[2021.02.15-19.51.23:707][301]LogUObjectHash: Compacting FUObjectHashTables data took   4.75ms
+[2021.02.15-19.51.33:598][227]Cmd: OBJ SAVEPACKAGE PACKAGE="/Game/HUD/WG_InvSlot" FILE="../../../../TwoDSSG/Content/HUD/WG_InvSlot.uasset" SILENT=true
+[2021.02.15-19.51.33:631][227]LogSavePackage: Moving '../../../../TwoDSSG/Saved/WG_InvSlotFDC482B548F764FA3847748B09B5D7D0.tmp' to '../../../../TwoDSSG/Content/HUD/WG_InvSlot.uasset'
+[2021.02.15-19.51.33:656][227]AssetCheck: New page: Asset Save: WG_InvSlot
+[2021.02.15-19.51.33:656][227]LogContentValidation: Display: Validating WidgetBlueprint /Game/HUD/WG_InvSlot.WG_InvSlot
+[2021.02.15-19.52.13:326][ 54]LogWorld: UWorld::CleanupWorld for World_8, bSessionEnded=true, bCleanupResources=true
+[2021.02.15-19.52.13:326][ 54]LogSlate: InvalidateAllWidgets triggered.  All widgets were invalidated
+[2021.02.15-19.52.13:331][ 54]LogWorld: UWorld::CleanupWorld for World_7, bSessionEnded=true, bCleanupResources=true
+[2021.02.15-19.52.13:331][ 54]LogSlate: InvalidateAllWidgets triggered.  All widgets were invalidated
+[2021.02.15-19.52.22:394][  0]LogAssetEditorSubsystem: Opening Asset editor for WidgetBlueprint /Game/HUD/MainUI.MainUI
+[2021.02.15-19.59.39:493][924]BlueprintLog: New page: Compile WG_Inventory
+[2021.02.15-19.59.39:551][924]LogUObjectHash: Compacting FUObjectHashTables data took   3.85ms
+[2021.02.15-20.00.17:664][477]LogEditorTransaction: Undo Edit Padding
+[2021.02.15-20.02.03:540][979]BlueprintLog: New page: Compile WG_Inventory
+[2021.02.15-20.02.03:593][979]LogUObjectHash: Compacting FUObjectHashTables data took   3.83ms
+[2021.02.15-20.02.17:708][273]BlueprintLog: New page: Compile WG_Inventory
+[2021.02.15-20.02.17:757][273]LogUObjectHash: Compacting FUObjectHashTables data took   3.54ms
+[2021.02.15-20.02.18:324][316]Cmd: OBJ SAVEPACKAGE PACKAGE="/Game/HUD/WG_Inventory" FILE="../../../../TwoDSSG/Content/HUD/WG_Inventory.uasset" SILENT=true
+[2021.02.15-20.02.18:353][316]LogSavePackage: Moving '../../../../TwoDSSG/Saved/WG_Inventory49A4A3E042D5B77137864F93ECA96799.tmp' to '../../../../TwoDSSG/Content/HUD/WG_Inventory.uasset'
+[2021.02.15-20.02.18:365][316]AssetCheck: New page: Asset Save: WG_Inventory
+[2021.02.15-20.02.18:365][316]LogContentValidation: Display: Validating WidgetBlueprint /Game/HUD/WG_Inventory.WG_Inventory
+[2021.02.15-20.02.50:747][635]BlueprintLog: New page: Compile WG_Inventory
+[2021.02.15-20.02.50:799][635]LogUObjectHash: Compacting FUObjectHashTables data took   3.64ms
+[2021.02.15-20.02.51:273][663]BlueprintLog: New page: Compile WG_Inventory
+[2021.02.15-20.02.51:322][663]LogUObjectHash: Compacting FUObjectHashTables data took   3.89ms
+[2021.02.15-20.02.51:876][692]Cmd: OBJ SAVEPACKAGE PACKAGE="/Game/HUD/WG_Inventory" FILE="../../../../TwoDSSG/Content/HUD/WG_Inventory.uasset" SILENT=true
+[2021.02.15-20.02.51:897][692]LogSavePackage: Moving '../../../../TwoDSSG/Saved/WG_InventoryDCF7D9874B7E3F8A3D6BDE989275E190.tmp' to '../../../../TwoDSSG/Content/HUD/WG_Inventory.uasset'
+[2021.02.15-20.02.51:910][692]AssetCheck: New page: Asset Save: WG_Inventory
+[2021.02.15-20.02.51:910][692]LogContentValidation: Display: Validating WidgetBlueprint /Game/HUD/WG_Inventory.WG_Inventory
+[2021.02.15-20.03.19:815][154]LogUObjectHash: Compacting FUObjectHashTables data took   3.74ms
+[2021.02.15-20.03.19:846][154]LogSavePackage: Moving '../../../../TwoDSSG/Saved/2DSideScrollerExampleMap_Auto56997EFD842E35B9EA92CBCA18F9AEDA2.tmp' to '../../../../TwoDSSG/Saved/Autosaves/Game/2DSideScrollerBP/Maps/2DSideScrollerExampleMap_Auto5.umap'
+[2021.02.15-20.03.19:854][154]LogFileHelpers: Editor autosave (incl. sublevels) for '/Game/2DSideScrollerBP/Maps/2DSideScrollerExampleMap' took 0.079
+[2021.02.15-20.03.19:854][154]LogFileHelpers: Editor autosave (incl. sublevels) for all levels took 0.079
+[2021.02.15-20.03.19:854][154]OBJ SavePackage: Generating thumbnails for [0] asset(s) in package [/Game/2DSideScrollerBP/Blueprints/2DSideScrollerCharacter] ([1] browsable assets)...
+[2021.02.15-20.03.19:854][154]OBJ SavePackage: Finished generating thumbnails for package [/Game/2DSideScrollerBP/Blueprints/2DSideScrollerCharacter]
+[2021.02.15-20.03.19:927][154]LogSavePackage: Moving '../../../../TwoDSSG/Saved/2DSideScrollerCharacter_Auto5015D079A471C013CECC367BE84A50793.tmp' to '../../../../TwoDSSG/Saved/Autosaves/Game/2DSideScrollerBP/Blueprints/2DSideScrollerCharacter_Auto5.uasset'
+[2021.02.15-20.03.19:934][154]OBJ SavePackage: Generating thumbnails for [0] asset(s) in package [/Game/Libraries/BFL_Inventory] ([1] browsable assets)...
+[2021.02.15-20.03.19:934][154]OBJ SavePackage: Finished generating thumbnails for package [/Game/Libraries/BFL_Inventory]
+[2021.02.15-20.03.19:934][154]Cmd: OBJ SAVEPACKAGE PACKAGE="/Game/Libraries/BFL_Inventory" FILE="../../../../TwoDSSG/Saved/Autosaves/Game/Libraries/BFL_Inventory_Auto5.uasset" SILENT=false AUTOSAVING=true
+[2021.02.15-20.03.19:990][154]LogSavePackage: Moving '../../../../TwoDSSG/Saved/BFL_Inventory_Auto52FB3F09744B4C707D49F8EB1779318F7.tmp' to '../../../../TwoDSSG/Saved/Autosaves/Game/Libraries/BFL_Inventory_Auto5.uasset'
+[2021.02.15-20.03.20:028][154]OBJ SavePackage: Generating thumbnails for [0] asset(s) in package [/Game/HUD/WG_InvSlot] ([1] browsable assets)...
+[2021.02.15-20.03.20:028][154]OBJ SavePackage: Finished generating thumbnails for package [/Game/HUD/WG_InvSlot]
+[2021.02.15-20.03.20:028][154]Cmd: OBJ SAVEPACKAGE PACKAGE="/Game/HUD/WG_InvSlot" FILE="../../../../TwoDSSG/Saved/Autosaves/Game/HUD/WG_InvSlot_Auto5.uasset" SILENT=false AUTOSAVING=true
+[2021.02.15-20.03.20:067][154]LogSavePackage: Moving '../../../../TwoDSSG/Saved/WG_InvSlot_Auto52778A3D44C7252D77D8FAB8B21729494.tmp' to '../../../../TwoDSSG/Saved/Autosaves/Game/HUD/WG_InvSlot_Auto5.uasset'
+[2021.02.15-20.03.20:067][154]LogFileHelpers: Auto-saving content packages took 0.213
+[2021.02.15-20.43.53:331][431]LogWindowsTextInputMethodSystem: Display: IME system now deactivated.
+[2021.02.15-20.43.53:332][431]LogWindowsTextInputMethodSystem: Display: IME system now deactivated.
+[2021.02.15-20.44.13:196][590]LogWindowsTextInputMethodSystem: Display: IME system now deactivated.
+[2021.02.15-20.44.13:196][590]LogWindowsTextInputMethodSystem: Display: IME system now deactivated.
+[2021.02.15-20.44.23:044][515]LogAssetEditorSubsystem: Opening Asset editor for Blueprint /Game/HUD/ActionInterface.ActionInterface
+[2021.02.15-20.45.09:734][732]BlueprintLog: New page: Compile ActionInterface
+[2021.02.15-20.45.09:780][732]LogUObjectHash: Compacting FUObjectHashTables data took   3.97ms
+[2021.02.15-20.46.29:783][799]BlueprintLog: New page: Compile ActionInterface
+[2021.02.15-20.46.29:822][799]LogUObjectHash: Compacting FUObjectHashTables data took   4.07ms
+[2021.02.15-20.46.30:311][838]Cmd: OBJ SAVEPACKAGE PACKAGE="/Game/HUD/ActionInterface" FILE="../../../../TwoDSSG/Content/HUD/ActionInterface.uasset" SILENT=true
+[2021.02.15-20.46.30:320][838]LogSavePackage: Moving '../../../../TwoDSSG/Saved/ActionInterfaceDCF4DAB849BBABC5FCBE7CB2B8AEFE25.tmp' to '../../../../TwoDSSG/Content/HUD/ActionInterface.uasset'
+[2021.02.15-20.46.30:334][838]AssetCheck: New page: Asset Save: ActionInterface
+[2021.02.15-20.46.30:334][838]LogContentValidation: Display: Validating Blueprint /Game/HUD/ActionInterface.ActionInterface
+[2021.02.15-20.46.31:551][952]LogWorld: UWorld::CleanupWorld for World_11, bSessionEnded=true, bCleanupResources=true
+[2021.02.15-20.46.31:551][952]LogSlate: InvalidateAllWidgets triggered.  All widgets were invalidated
+[2021.02.15-20.46.47:476][705]LogAssetEditorSubsystem: Opening Asset editor for UserDefinedStruct /Game/Structures/ST_Item.ST_Item
+[2021.02.15-20.48.24:290][501]LogUObjectHash: Compacting FUObjectHashTables data took   4.38ms
+[2021.02.15-20.48.24:291][501]LogFileHelpers: Editor autosave (incl. sublevels) for '/Game/2DSideScrollerBP/Maps/2DSideScrollerExampleMap' took 0.048
+[2021.02.15-20.48.24:291][501]OBJ SavePackage: Generating thumbnails for [0] asset(s) in package [/Game/Libraries/BFL_Inventory] ([1] browsable assets)...
+[2021.02.15-20.48.24:291][501]OBJ SavePackage: Finished generating thumbnails for package [/Game/Libraries/BFL_Inventory]
+[2021.02.15-20.48.24:291][501]Cmd: OBJ SAVEPACKAGE PACKAGE="/Game/Libraries/BFL_Inventory" FILE="../../../../TwoDSSG/Saved/Autosaves/Game/Libraries/BFL_Inventory_Auto6.uasset" SILENT=false AUTOSAVING=true
+[2021.02.15-20.48.24:360][501]LogSavePackage: Moving '../../../../TwoDSSG/Saved/BFL_Inventory_Auto672762A14423C6B96E03C6FA71BEE524A.tmp' to '../../../../TwoDSSG/Saved/Autosaves/Game/Libraries/BFL_Inventory_Auto6.uasset'
+[2021.02.15-20.48.24:361][501]OBJ SavePackage: Generating thumbnails for [0] asset(s) in package [/Game/Structures/ST_Item] ([1] browsable assets)...
+[2021.02.15-20.48.24:361][501]OBJ SavePackage: Finished generating thumbnails for package [/Game/Structures/ST_Item]
+[2021.02.15-20.48.24:361][501]Cmd: OBJ SAVEPACKAGE PACKAGE="/Game/Structures/ST_Item" FILE="../../../../TwoDSSG/Saved/Autosaves/Game/Structures/ST_Item_Auto6.uasset" SILENT=false AUTOSAVING=true
+[2021.02.15-20.48.24:385][501]LogSavePackage: Moving '../../../../TwoDSSG/Saved/ST_Item_Auto6988121DA48B1EE57EB4E63AEF64E87AA.tmp' to '../../../../TwoDSSG/Saved/Autosaves/Game/Structures/ST_Item_Auto6.uasset'
+[2021.02.15-20.48.24:385][501]OBJ SavePackage: Generating thumbnails for [0] asset(s) in package [/Game/HUD/WG_InvSlot] ([1] browsable assets)...
+[2021.02.15-20.48.24:385][501]OBJ SavePackage: Finished generating thumbnails for package [/Game/HUD/WG_InvSlot]
+[2021.02.15-20.48.24:385][501]Cmd: OBJ SAVEPACKAGE PACKAGE="/Game/HUD/WG_InvSlot" FILE="../../../../TwoDSSG/Saved/Autosaves/Game/HUD/WG_InvSlot_Auto6.uasset" SILENT=false AUTOSAVING=true
+[2021.02.15-20.48.24:416][501]LogSavePackage: Moving '../../../../TwoDSSG/Saved/WG_InvSlot_Auto6CB05B7DD41DAF26FFD6C7EB9564293DB.tmp' to '../../../../TwoDSSG/Saved/Autosaves/Game/HUD/WG_InvSlot_Auto6.uasset'
+[2021.02.15-20.48.24:441][501]LogFileHelpers: Auto-saving content packages took 0.150
+[2021.02.15-20.48.45:977][566]Cmd: OBJ SAVEPACKAGE PACKAGE="/Game/Structures/ST_Item" FILE="../../../../TwoDSSG/Content/Structures/ST_Item.uasset" SILENT=true
+[2021.02.15-20.48.45:993][566]LogSavePackage: Moving '../../../../TwoDSSG/Saved/ST_Item006F63D244D0823F1F79C58CA16D1275.tmp' to '../../../../TwoDSSG/Content/Structures/ST_Item.uasset'
+[2021.02.15-20.48.46:019][566]AssetCheck: New page: Asset Save: ST_Item
+[2021.02.15-20.48.46:019][566]LogContentValidation: Display: Validating UserDefinedStruct /Game/Structures/ST_Item.ST_Item
+[2021.02.15-20.58.54:499][139]LogUObjectHash: Compacting FUObjectHashTables data took   4.32ms
+[2021.02.15-20.58.54:501][139]LogFileHelpers: Editor autosave (incl. sublevels) for '/Game/2DSideScrollerBP/Maps/2DSideScrollerExampleMap' took 0.053
+[2021.02.15-20.58.54:501][139]OBJ SavePackage: Generating thumbnails for [0] asset(s) in package [/Game/HUD/MainUI] ([1] browsable assets)...
+[2021.02.15-20.58.54:502][139]OBJ SavePackage: Finished generating thumbnails for package [/Game/HUD/MainUI]
+[2021.02.15-20.58.54:502][139]Cmd: OBJ SAVEPACKAGE PACKAGE="/Game/HUD/MainUI" FILE="../../../../TwoDSSG/Saved/Autosaves/Game/HUD/MainUI_Auto7.uasset" SILENT=false AUTOSAVING=true
+[2021.02.15-20.58.54:537][139]LogSavePackage: Moving '../../../../TwoDSSG/Saved/MainUI_Auto7E90B6FAA4EEF14FBD0D08E92AF7BD30D.tmp' to '../../../../TwoDSSG/Saved/Autosaves/Game/HUD/MainUI_Auto7.uasset'
+[2021.02.15-20.58.54:538][139]LogFileHelpers: Auto-saving content packages took 0.037
+[2021.02.15-21.21.04:935][412]BlueprintLog: New page: Compile 2DSideScrollerCharacter
+[2021.02.15-21.21.05:042][412]LogUObjectHash: Compacting FUObjectHashTables data took   4.23ms
+[2021.02.15-21.21.33:189][622]LogTemp: Repeating last play command: New Editor Window (PIE)
+[2021.02.15-21.21.33:211][622]BlueprintLog: New page: Pre-Play auto-recompile
+[2021.02.15-21.21.33:212][622]LogPlayLevel: [PlayLevel] Compiling BFL_Inventory before play...
+[2021.02.15-21.21.33:259][622]LogPlayLevel: [PlayLevel] Compiling MainUI before play...
+[2021.02.15-21.21.33:325][622]LogPlayLevel: [PlayLevel] Compiling WG_InvSlot before play...
+[2021.02.15-21.21.33:497][622]LogUObjectHash: Compacting FUObjectHashTables data took   3.76ms
+[2021.02.15-21.21.33:498][622]LogPlayLevel: PlayLevel: Blueprint regeneration took 287 ms (3 blueprints)
+[2021.02.15-21.21.33:498][622]PIE: New page: PIE session: 2DSideScrollerExampleMap (16 בפבר׳ 2021, 1:21:33)
+[2021.02.15-21.21.33:498][622]LogPlayLevel: Creating play world package: /Game/2DSideScrollerBP/Maps/UEDPIE_0_2DSideScrollerExampleMap
+[2021.02.15-21.21.33:501][622]LogPlayLevel: PIE: StaticDuplicateObject took: (0.002246s)
+[2021.02.15-21.21.33:502][622]LogAIModule: Creating AISystem for world 2DSideScrollerExampleMap
+[2021.02.15-21.21.33:502][622]LogAISub: UAISubsystem::UAISubsystem EnvQueryManager (0000019A8D601000), frame # 274622
+[2021.02.15-21.21.33:502][622]LogAISub: UAISubsystem::UAISubsystem AIPerceptionSystem (0000019AA1C0C680), frame # 274622
+[2021.02.15-21.21.33:502][622]LogPlayLevel: PIE: World Init took: (0.001284s)
+[2021.02.15-21.21.33:502][622]LogPlayLevel: PIE: Created PIE world by copying editor world from /Game/2DSideScrollerBP/Maps/2DSideScrollerExampleMap.2DSideScrollerExampleMap to /Game/2DSideScrollerBP/Maps/UEDPIE_0_2DSideScrollerExampleMap.2DSideScrollerExampleMap (0.003732s)
+[2021.02.15-21.21.33:536][622]LogUObjectHash: Compacting FUObjectHashTables data took   2.42ms
+[2021.02.15-21.21.33:537][622]LogAudioMixer: Display: Audio Mixer Platform Settings:
+[2021.02.15-21.21.33:537][622]LogAudioMixer: Display: 	Sample Rate:						  48000
+[2021.02.15-21.21.33:537][622]LogAudioMixer: Display: 	Callback Buffer Frame Size Requested: 1024
+[2021.02.15-21.21.33:537][622]LogAudioMixer: Display: 	Callback Buffer Frame Size To Use:	  1024
+[2021.02.15-21.21.33:537][622]LogAudioMixer: Display: 	Number of buffers to queue:			  2
+[2021.02.15-21.21.33:537][622]LogAudioMixer: Display: 	Max Channels (voices):				  32
+[2021.02.15-21.21.33:537][622]LogAudioMixer: Display: 	Number of Async Source Workers:		  0
+[2021.02.15-21.21.33:537][622]LogAudio: Display: AudioDevice MaxSources: 32
+[2021.02.15-21.21.33:538][622]LogAudio: Display: Using built-in audio occlusion.
+[2021.02.15-21.21.33:538][622]LogAudioMixer: Display: Initializing audio mixer.
+[2021.02.15-21.21.33:541][622]LogAudioMixer: Display: 0: FrontLeft
+[2021.02.15-21.21.33:541][622]LogAudioMixer: Display: 1: FrontRight
+[2021.02.15-21.21.33:565][622]LogAudioMixer: Display: Using Audio Device Speakers (Realtek High Definition Audio)
+[2021.02.15-21.21.33:565][622]LogAudioMixer: Display: Initializing Sound Submixes...
+[2021.02.15-21.21.33:565][622]LogAudioMixer: Display: Creating Master Submix 'MasterSubmixDefault'
+[2021.02.15-21.21.33:565][622]LogAudioMixer: Display: Creating Master Submix 'MasterReverbSubmixDefault'
+[2021.02.15-21.21.33:565][622]LogAudioMixer: Display: Creating Master Submix 'MasterEQSubmixDefault'
+[2021.02.15-21.21.33:581][622]LogInit: FAudioDevice initialized.
+[2021.02.15-21.21.33:632][622]LogSlate: Updating window title bar state: overlay mode, drag disabled, window buttons hidden, title bar hidden
+[2021.02.15-21.21.33:632][622]LogLoad: Game class is '2DSideScrollerGameMode_C'
+[2021.02.15-21.21.33:633][622]LogWorld: Bringing World /Game/2DSideScrollerBP/Maps/UEDPIE_0_2DSideScrollerExampleMap.2DSideScrollerExampleMap up for play (max tick rate 0) at 2021.02.15-23.21.33
+[2021.02.15-21.21.33:634][622]LogWorld: Bringing up level for play took: 0.000911
+[2021.02.15-21.21.33:634][622]LogOnline: OSS: Creating online subsystem instance for: :Context_14
+[2021.02.15-21.21.33:658][622]PIE: Server logged in
+[2021.02.15-21.21.33:660][622]PIE: Play in editor total start time 0.45 seconds.
+[2021.02.15-21.21.37:097][854]LogSlate: Updating window title bar state: overlay mode, drag disabled, window buttons hidden, title bar hidden
+[2021.02.15-21.21.37:097][854]LogWorld: BeginTearingDown for /Game/2DSideScrollerBP/Maps/UEDPIE_0_2DSideScrollerExampleMap
+[2021.02.15-21.21.37:098][854]LogSlate: Window 'TwoDSSG Preview [NetMode: Standalone] (64-bit/Windows) ' being destroyed
+[2021.02.15-21.21.37:106][854]LogWorld: UWorld::CleanupWorld for 2DSideScrollerExampleMap, bSessionEnded=true, bCleanupResources=true
+[2021.02.15-21.21.37:106][854]LogSlate: InvalidateAllWidgets triggered.  All widgets were invalidated
+[2021.02.15-21.21.37:114][854]LogPlayLevel: Display: Shutting down PIE online subsystems
+[2021.02.15-21.21.37:119][854]LogSlate: InvalidateAllWidgets triggered.  All widgets were invalidated
+[2021.02.15-21.21.37:175][854]LogAISub: UAISubsystem::~UAISubsystem AIPerceptionSystem (0000019AA1C0C680), frame # 274854
+[2021.02.15-21.21.37:175][854]LogAISub: UAISubsystem::~UAISubsystem EnvQueryManager (0000019A8D601000), frame # 274854
+[2021.02.15-21.21.37:178][854]LogUObjectHash: Compacting FUObjectHashTables data took   2.56ms
+[2021.02.15-21.21.37:223][855]LogPlayLevel: Display: Destroying online subsystem :Context_14
+[2021.02.15-21.21.53:564][117]BlueprintLog: New page: Compile WG_Inventory
+[2021.02.15-21.21.53:619][117]LogUObjectHash: Compacting FUObjectHashTables data took   3.30ms
+[2021.02.15-21.22.20:005][623]LogUObjectHash: Compacting FUObjectHashTables data took   3.84ms
+[2021.02.15-21.22.20:050][623]LogSavePackage: Moving '../../../../TwoDSSG/Saved/2DSideScrollerExampleMap_Auto8C56F765946FBF99E713A8C932B3A26B7.tmp' to '../../../../TwoDSSG/Saved/Autosaves/Game/2DSideScrollerBP/Maps/2DSideScrollerExampleMap_Auto8.umap'
+[2021.02.15-21.22.20:072][623]LogFileHelpers: Editor autosave (incl. sublevels) for '/Game/2DSideScrollerBP/Maps/2DSideScrollerExampleMap' took 0.180
+[2021.02.15-21.22.20:072][623]LogFileHelpers: Editor autosave (incl. sublevels) for all levels took 0.180
+[2021.02.15-21.22.20:072][623]OBJ SavePackage: Generating thumbnails for [0] asset(s) in package [/Game/2DSideScrollerBP/Blueprints/2DSideScrollerCharacter] ([1] browsable assets)...
+[2021.02.15-21.22.20:072][623]OBJ SavePackage: Finished generating thumbnails for package [/Game/2DSideScrollerBP/Blueprints/2DSideScrollerCharacter]
+[2021.02.15-21.22.20:131][623]LogSavePackage: Moving '../../../../TwoDSSG/Saved/2DSideScrollerCharacter_Auto8A7C23E974FDCB13285E12AAC650D88DE.tmp' to '../../../../TwoDSSG/Saved/Autosaves/Game/2DSideScrollerBP/Blueprints/2DSideScrollerCharacter_Auto8.uasset'
+[2021.02.15-21.22.20:145][623]OBJ SavePackage: Generating thumbnails for [0] asset(s) in package [/Game/Libraries/BFL_Inventory] ([1] browsable assets)...
+[2021.02.15-21.22.20:146][623]OBJ SavePackage: Finished generating thumbnails for package [/Game/Libraries/BFL_Inventory]
+[2021.02.15-21.22.20:146][623]Cmd: OBJ SAVEPACKAGE PACKAGE="/Game/Libraries/BFL_Inventory" FILE="../../../../TwoDSSG/Saved/Autosaves/Game/Libraries/BFL_Inventory_Auto8.uasset" SILENT=false AUTOSAVING=true
+[2021.02.15-21.22.20:193][623]LogSavePackage: Moving '../../../../TwoDSSG/Saved/BFL_Inventory_Auto8C13B27784F06B2379461FD917266B961.tmp' to '../../../../TwoDSSG/Saved/Autosaves/Game/Libraries/BFL_Inventory_Auto8.uasset'
+[2021.02.15-21.22.20:195][623]OBJ SavePackage: Generating thumbnails for [0] asset(s) in package [/Game/HUD/MainUI] ([1] browsable assets)...
+[2021.02.15-21.22.20:195][623]OBJ SavePackage: Finished generating thumbnails for package [/Game/HUD/MainUI]
+[2021.02.15-21.22.20:195][623]Cmd: OBJ SAVEPACKAGE PACKAGE="/Game/HUD/MainUI" FILE="../../../../TwoDSSG/Saved/Autosaves/Game/HUD/MainUI_Auto8.uasset" SILENT=false AUTOSAVING=true
+[2021.02.15-21.22.20:255][623]LogSavePackage: Moving '../../../../TwoDSSG/Saved/MainUI_Auto839FE5EE9470F71E418DDC5B4890496F8.tmp' to '../../../../TwoDSSG/Saved/Autosaves/Game/HUD/MainUI_Auto8.uasset'
+[2021.02.15-21.22.20:256][623]OBJ SavePackage: Generating thumbnails for [0] asset(s) in package [/Game/HUD/WG_Inventory] ([1] browsable assets)...
+[2021.02.15-21.22.20:256][623]OBJ SavePackage: Finished generating thumbnails for package [/Game/HUD/WG_Inventory]
+[2021.02.15-21.22.20:256][623]Cmd: OBJ SAVEPACKAGE PACKAGE="/Game/HUD/WG_Inventory" FILE="../../../../TwoDSSG/Saved/Autosaves/Game/HUD/WG_Inventory_Auto8.uasset" SILENT=false AUTOSAVING=true
+[2021.02.15-21.22.20:281][623]LogSavePackage: Moving '../../../../TwoDSSG/Saved/WG_Inventory_Auto84415322843A736EE93E19FAE547F0C75.tmp' to '../../../../TwoDSSG/Saved/Autosaves/Game/HUD/WG_Inventory_Auto8.uasset'
+[2021.02.15-21.22.20:282][623]LogFileHelpers: Auto-saving content packages took 0.209
+[2021.02.15-21.24.12:196][ 95]LogAssetEditorSubsystem: Opening Asset editor for WidgetBlueprint /Game/HUD/WG_InvSlot.WG_InvSlot
+[2021.02.15-21.28.38:718][ 87]LogSlate: Window 'Color Picker' being destroyed
+[2021.02.15-21.28.49:705][939]LogSlate: Window 'Color Picker' being destroyed
+[2021.02.15-21.33.43:987][396]LogUObjectHash: Compacting FUObjectHashTables data took   4.50ms
+[2021.02.15-21.33.43:989][396]LogFileHelpers: Editor autosave (incl. sublevels) for '/Game/2DSideScrollerBP/Maps/2DSideScrollerExampleMap' took 0.051
+[2021.02.15-21.33.43:989][396]OBJ SavePackage: Generating thumbnails for [0] asset(s) in package [/Game/HUD/WG_InvSlot] ([1] browsable assets)...
+[2021.02.15-21.33.43:989][396]OBJ SavePackage: Finished generating thumbnails for package [/Game/HUD/WG_InvSlot]
+[2021.02.15-21.33.43:990][396]Cmd: OBJ SAVEPACKAGE PACKAGE="/Game/HUD/WG_InvSlot" FILE="../../../../TwoDSSG/Saved/Autosaves/Game/HUD/WG_InvSlot_Auto9.uasset" SILENT=false AUTOSAVING=true
+[2021.02.15-21.33.44:027][396]LogSavePackage: Moving '../../../../TwoDSSG/Saved/WG_InvSlot_Auto999552A254AAC78BEF3E13AA364686A70.tmp' to '../../../../TwoDSSG/Saved/Autosaves/Game/HUD/WG_InvSlot_Auto9.uasset'
+[2021.02.15-21.33.44:028][396]LogFileHelpers: Auto-saving content packages took 0.038
+[2021.02.15-21.36.04:585][749]LogAudioMixer: Display: Audio Buffer Underrun detected.
+[2021.02.15-21.36.27:799][818]LogAudioMixer: Display: Audio Buffer Underrun detected.
+[2021.02.15-21.36.34:600][838]LogAudioMixer: Display: Audio Buffer Underrun detected.
+[2021.02.15-21.36.34:600][838]LogAudioMixer: Display: Audio Buffer Underrun detected.
+[2021.02.15-21.37.16:132][962]AssetReimport: New page: Outstanding source content changes 1:37:16
+[2021.02.15-21.37.16:146][962]LogFactory: FactoryCreateFile: Texture with ReimportTextureFactory (0 0 D:/UnRealEngine/TwoDSSG/Content/Sprites/InventoryIconCreator.psd)
+[2021.02.15-21.37.16:436][963]LogFactory: FactoryCreateFile: Texture with ReimportTextureFactory (0 0 D:/UnRealEngine/TwoDSSG/Content/Sprites/InventoryUI.psd)
+[2021.02.15-21.37.16:607][963]Cmd: OBJ SAVEPACKAGE PACKAGE="/Game/Sprites/InventoryIconCreator" FILE="../../../../TwoDSSG/Content/Sprites/InventoryIconCreator.uasset" SILENT=true
+[2021.02.15-21.37.16:637][963]LogSavePackage: Moving '../../../../TwoDSSG/Saved/InventoryIconCreator11CB1DB94A60DC27D67EA096756EBD09.tmp' to '../../../../TwoDSSG/Content/Sprites/InventoryIconCreator.uasset'
+[2021.02.15-21.37.16:644][963]Cmd: OBJ SAVEPACKAGE PACKAGE="/Game/Sprites/InventoryUI" FILE="../../../../TwoDSSG/Content/Sprites/InventoryUI.uasset" SILENT=true
+[2021.02.15-21.37.16:675][963]LogSavePackage: Moving '../../../../TwoDSSG/Saved/InventoryUI11946D5E470BBACFB8FDA895E053AE98.tmp' to '../../../../TwoDSSG/Content/Sprites/InventoryUI.uasset'
+[2021.02.15-21.37.16:782][964]AssetCheck: New page: Asset Save: multiple assets
+[2021.02.15-21.37.16:782][964]LogContentValidation: Display: Validating Texture2D /Game/Sprites/InventoryIconCreator.InventoryIconCreator
+[2021.02.15-21.37.16:782][964]LogContentValidation: Display: Validating Texture2D /Game/Sprites/InventoryUI.InventoryUI
+[2021.02.15-21.37.19:823][973]AssetReimport: Importing new asset /Game/Sprites/InventoryIconCreator.
+[2021.02.15-21.37.19:823][973]AssetReimport: Importing new asset /Game/Sprites/InventoryUI.
+[2021.02.15-21.38.07:382][114]LogAudioMixer: Display: Audio Buffer Underrun detected.
+[2021.02.15-21.38.18:212][146]LogAudioMixer: Display: Audio Buffer Underrun detected.
+[2021.02.15-21.41.03:611][ 14]LogLinker: Warning: While loading '../../../../TwoDSSG/Content/InventorySystem/Consumables/HealthPotion.uasset' failed to load '/Game/ThirdPersonBP/Blueprints/ThirdPersonCharacter': Can't find file.
+[2021.02.15-21.41.03:611][ 14]LogLinker: Warning: While loading '../../../../TwoDSSG/Content/InventorySystem/Consumables/HealthPotion.uasset' failed to load '/Game/ThirdPersonBP/Blueprints/ThirdPersonCharacter': Can't find file.
+[2021.02.15-21.41.03:615][ 14]LogLinker: Warning: While loading '../../../../TwoDSSG/Content/InventorySystem/UI/InventoryWG.uasset' failed to load '/Game/ThirdPersonBP/Blueprints/ThirdPersonCharacter': Can't find file.
+[2021.02.15-21.41.03:615][ 14]LogLinker: Warning: While loading '../../../../TwoDSSG/Content/InventorySystem/UI/InventoryWG.uasset' failed to load '/Game/ThirdPersonBP/Blueprints/ThirdPersonCharacter': Can't find file.
+[2021.02.15-21.41.03:616][ 14]LogLinker: Warning: While loading '../../../../TwoDSSG/Content/InventorySystem/UI/InventoryWG.uasset' failed to load '/Game/ThirdPersonBP/Blueprints/ThirdPersonCharacter': Can't find file.
+[2021.02.15-21.41.03:616][ 14]LogLinker: Warning: While loading '../../../../TwoDSSG/Content/InventorySystem/UI/InventoryWG.uasset' failed to load '/Game/ThirdPersonBP/Blueprints/ThirdPersonCharacter': Can't find file.
+[2021.02.15-21.41.03:619][ 14]LogLinker: Warning: While loading '../../../../TwoDSSG/Content/InventorySystem/UI/InventorySlotWG.uasset' failed to load '/Game/ThirdPersonBP/Blueprints/ThirdPersonCharacter': Can't find file.
+[2021.02.15-21.41.03:619][ 14]LogLinker: Warning: While loading '../../../../TwoDSSG/Content/InventorySystem/UI/InventorySlotWG.uasset' failed to load '/Game/ThirdPersonBP/Blueprints/ThirdPersonCharacter': Can't find file.
+[2021.02.15-21.41.03:621][ 14]LogLinker: Warning: While loading '../../../../TwoDSSG/Content/InventorySystem/UI/InventorySlotWG.uasset' failed to load '/Game/ThirdPersonBP/Blueprints/ThirdPersonCharacter': Can't find file.
+[2021.02.15-21.41.03:621][ 14]LogLinker: Warning: While loading '../../../../TwoDSSG/Content/InventorySystem/UI/InventorySlotWG.uasset' failed to load '/Game/ThirdPersonBP/Blueprints/ThirdPersonCharacter': Can't find file.
+[2021.02.15-21.41.03:628][ 14]LogLinker: Warning: While loading '../../../../TwoDSSG/Content/InventorySystem/UI/InventorySlotWG.uasset' failed to load '/Game/ThirdPersonBP/Blueprints/ThirdPersonCharacter': Can't find file.
+[2021.02.15-21.41.03:628][ 14]LogLinker: Warning: While loading '../../../../TwoDSSG/Content/InventorySystem/UI/InventorySlotWG.uasset' failed to load '/Game/ThirdPersonBP/Blueprints/ThirdPersonCharacter': Can't find file.
+[2021.02.15-21.41.03:628][ 14]LogLinker: Warning: While loading '../../../../TwoDSSG/Content/InventorySystem/UI/InventorySlotWG.uasset' failed to load '/Game/ThirdPersonBP/Blueprints/ThirdPersonCharacter': Can't find file.
+[2021.02.15-21.41.03:628][ 14]LogLinker: Warning: While loading '../../../../TwoDSSG/Content/InventorySystem/UI/InventorySlotWG.uasset' failed to load '/Game/ThirdPersonBP/Blueprints/ThirdPersonCharacter': Can't find file.
+[2021.02.15-21.41.03:632][ 14]LogLinker: Warning: While loading '../../../../TwoDSSG/Content/InventorySystem/UI/InventorySlotWG.uasset' failed to load '/Game/ThirdPersonBP/Blueprints/ThirdPersonCharacter': Can't find file.
+[2021.02.15-21.41.03:632][ 14]LoadErrors: Failed to load /Game/ThirdPersonBP/Blueprints/ThirdPersonCharacter.ThirdPersonCharacter_C Referenced by K2Node_DynamicCast_1
+[2021.02.15-21.41.03:632][ 14]LogLinker: Warning: While loading '../../../../TwoDSSG/Content/InventorySystem/UI/InventorySlotWG.uasset' failed to load '/Game/ThirdPersonBP/Blueprints/ThirdPersonCharacter': Can't find file.
+[2021.02.15-21.41.03:632][ 14]LogLinker: Warning: While loading '../../../../TwoDSSG/Content/InventorySystem/UI/InventorySlotWG.uasset' failed to load '/Game/ThirdPersonBP/Blueprints/ThirdPersonCharacter': Can't find file.
+[2021.02.15-21.41.03:632][ 14]LogLinker: Warning: While loading '../../../../TwoDSSG/Content/InventorySystem/UI/InventorySlotWG.uasset' failed to load '/Game/ThirdPersonBP/Blueprints/ThirdPersonCharacter': Can't find file.
+[2021.02.15-21.41.03:636][ 14]LogLinker: Warning: While loading '../../../../TwoDSSG/Content/InventorySystem/UI/InventorySlotWG.uasset' failed to load '/Game/ThirdPersonBP/Blueprints/ThirdPersonCharacter': Can't find file.
+[2021.02.15-21.41.03:636][ 14]LogLinker: Warning: While loading '../../../../TwoDSSG/Content/InventorySystem/UI/InventorySlotWG.uasset' failed to load '/Game/ThirdPersonBP/Blueprints/ThirdPersonCharacter': Can't find file.
+[2021.02.15-21.41.03:641][ 14]LogLinker: Warning: While loading '../../../../TwoDSSG/Content/InventorySystem/UI/InventoryWG.uasset' failed to load '/Game/ThirdPersonBP/Blueprints/ThirdPersonCharacter': Can't find file.
+[2021.02.15-21.41.03:641][ 14]LogLinker: Warning: While loading '../../../../TwoDSSG/Content/InventorySystem/UI/InventoryWG.uasset' failed to load '/Game/ThirdPersonBP/Blueprints/ThirdPersonCharacter': Can't find file.
+[2021.02.15-21.41.03:641][ 14]LogLinker: Warning: While loading '../../../../TwoDSSG/Content/InventorySystem/UI/InventoryWG.uasset' failed to load '/Game/ThirdPersonBP/Blueprints/ThirdPersonCharacter': Can't find file.
+[2021.02.15-21.41.03:641][ 14]LoadErrors: Failed to load /Game/ThirdPersonBP/Blueprints/ThirdPersonCharacter.ThirdPersonCharacter_C Referenced by K2Node_DynamicCast_0
+[2021.02.15-21.41.03:642][ 14]LogLinker: Warning: While loading '../../../../TwoDSSG/Content/InventorySystem/UI/InventoryWG.uasset' failed to load '/Game/ThirdPersonBP/Blueprints/ThirdPersonCharacter': Can't find file.
+[2021.02.15-21.41.03:642][ 14]LogLinker: Warning: While loading '../../../../TwoDSSG/Content/InventorySystem/UI/InventoryWG.uasset' failed to load '/Game/ThirdPersonBP/Blueprints/ThirdPersonCharacter': Can't find file.
+[2021.02.15-21.41.03:642][ 14]LogLinker: Warning: While loading '../../../../TwoDSSG/Content/InventorySystem/UI/InventoryWG.uasset' failed to load '/Game/ThirdPersonBP/Blueprints/ThirdPersonCharacter': Can't find file.
+[2021.02.15-21.41.03:642][ 14]LogLinker: Warning: While loading '../../../../TwoDSSG/Content/InventorySystem/UI/InventoryWG.uasset' failed to load '/Game/ThirdPersonBP/Blueprints/ThirdPersonCharacter': Can't find file.
+[2021.02.15-21.41.03:642][ 14]LoadErrors: Failed to load /Game/ThirdPersonBP/Blueprints/ThirdPersonCharacter.ThirdPersonCharacter_C Referenced by K2Node_VariableGet_0
+[2021.02.15-21.41.03:642][ 14]LogLinker: Warning: While loading '../../../../TwoDSSG/Content/InventorySystem/UI/InventoryWG.uasset' failed to load '/Game/ThirdPersonBP/Blueprints/ThirdPersonCharacter': Can't find file.
+[2021.02.15-21.41.03:642][ 14]LogLinker: Warning: While loading '../../../../TwoDSSG/Content/InventorySystem/UI/InventoryWG.uasset' failed to load '/Game/ThirdPersonBP/Blueprints/ThirdPersonCharacter': Can't find file.
+[2021.02.15-21.41.03:642][ 14]LogLinker: Warning: While loading '../../../../TwoDSSG/Content/InventorySystem/UI/InventoryWG.uasset' failed to load '/Game/ThirdPersonBP/Blueprints/ThirdPersonCharacter': Can't find file.
+[2021.02.15-21.41.03:716][ 14]LogBlueprint: Warning: [Compiler HealthPotion] Could not find a variable named "Inventory" in 'HealthPotion'.
+Make sure 'HealthPotion' has been compiled for  Get Inventory
+[2021.02.15-21.41.03:728][ 14]LogBlueprint: Error: [Compiler HealthPotion] Can't connect pins  Return Value  and  Object : This cast has an invalid target type (was the class deleted without a redirect?).
+[2021.02.15-21.41.03:728][ 14]LogBlueprint: Error: [Compiler HealthPotion] Can't connect pins  Object  and  Return Value : This cast has an invalid target type (was the class deleted without a redirect?).
+[2021.02.15-21.41.03:741][ 14]LogBlueprint: Error: [Compiler HealthPotion] In use pin  As Third Person Character  no longer exists on node  Bad cast node . Please refresh node or break links to remove pin.
+[2021.02.15-21.41.03:754][ 14]LogBlueprint: Error: [Compiler InventorySlotWG] Can't connect pins  Object  and  Return Value : This cast has an invalid target type (was the class deleted without a redirect?).
+[2021.02.15-21.41.03:754][ 14]LogBlueprint: Error: [Compiler InventorySlotWG] In use pin  As Third Person Character  no longer exists on node  Bad cast node . Please refresh node or break links to remove pin.
+[2021.02.15-21.41.03:754][ 14]LogBlueprint: Error: [Compiler InventorySlotWG] Can't connect pins  Return Value  and  Object : This cast has an invalid target type (was the class deleted without a redirect?).
+[2021.02.15-21.41.03:772][ 14]LogBlueprint: Error: [Compiler HealthPotion] The property associated with  Inventory  could not be found in '/Game/InventorySystem/Consumables/HealthPotion.HealthPotion_C'
+[2021.02.15-21.41.03:799][ 14]LogLinker: Warning: While loading '../../../../TwoDSSG/Content/InventorySystem/Consumables/HealthPotion.uasset' failed to load '/Game/ThirdPersonBP/Blueprints/ThirdPersonCharacter': Can't find file.
+[2021.02.15-21.41.03:799][ 14]LogLinker: Warning: While loading '../../../../TwoDSSG/Content/InventorySystem/Consumables/HealthPotion.uasset' failed to load '/Game/ThirdPersonBP/Blueprints/ThirdPersonCharacter': Can't find file.
+[2021.02.15-21.41.03:820][ 14]LogTexture: Display: Building textures: healthpotionIcon (BGRA8, 73X73)
+[2021.02.15-21.41.03:820][ 14]LogTexture: Display: Building textures: BLANK (BGRA8, 277X253)
+[2021.02.15-21.41.03:820][ 14]LogTexture: Display: Building textures: InventoryBG (BGRA8, 1053X405)
+[2021.02.15-21.41.03:820][ 14]LogMaterial: Display: Missing cached shader map for material CorkColour, compiling. 
+[2021.02.15-21.41.04:057][ 14]LogMaterial: Display: Missing cached shader map for material Health, compiling. 
+[2021.02.15-21.41.04:091][ 14]LogShaderCompilers: Display: Worker (1/3): shaders left to compile 15
+[2021.02.15-21.41.04:091][ 14]LogShaderCompilers: Display: Worker (2/3): shaders left to compile 9
+[2021.02.15-21.41.04:091][ 14]LogShaderCompilers: Display: Worker (3/3): shaders left to compile 3
+[2021.02.15-21.41.04:091][ 14]LogStaticMesh: Building static mesh CONSUME_POTION...
+[2021.02.15-21.41.04:269][ 14]LogStaticMesh: Built static mesh [0.18s] /Game/InventorySystem/Consumables/CONSUME_POTION.CONSUME_POTION
+[2021.02.15-21.41.04:439][ 14]LogAssetEditorSubsystem: Opening Asset editor for UserDefinedStruct /Game/InventorySystem/Struct_ItemInfo.Struct_ItemInfo
+[2021.02.15-21.41.07:097][297]LogShaderCompilers: Display: Worker (3/3): shaders left to compile 15
+[2021.02.15-21.41.12:650][879]LogShaderCompilers: Display: Worker (1/3): shaders left to compile 9
+[2021.02.15-21.41.12:793][895]LogShaderCompilers: Display: Worker (2/3): shaders left to compile 5
+[2021.02.15-21.41.13:851][  2]LogShaderCompilers: Display: Worker (3/3): shaders left to compile 3
+[2021.02.15-21.41.14:682][ 93]LogShaderCompilers: Display: Worker (2/3): shaders left to compile 1
+[2021.02.15-21.41.19:708][663]LogAssetEditorSubsystem: Opening Asset editor for Blueprint /Game/InventorySystem/InventoryInst.InventoryInst
+[2021.02.15-21.41.30:276][723]LogAssetEditorSubsystem: Opening Asset editor for Blueprint /Game/InventorySystem/InteractInterface.InteractInterface
+[2021.02.15-21.41.42:050][992]LogWorld: UWorld::CleanupWorld for World_15, bSessionEnded=true, bCleanupResources=true
+[2021.02.15-21.41.42:050][992]LogSlate: InvalidateAllWidgets triggered.  All widgets were invalidated
+[2021.02.15-21.41.51:542][ 61]LogAssetEditorSubsystem: Opening Asset editor for WidgetBlueprint /Game/InventorySystem/UI/InventorySlotWG.InventorySlotWG
+[2021.02.15-21.42.02:958][156]LogAssetEditorSubsystem: Opening Asset editor for WidgetBlueprint /Game/InventorySystem/UI/InventoryWG.InventoryWG
+[2021.02.15-21.42.12:108][ 50]LogAssetEditorSubsystem: Opening Asset editor for WidgetBlueprint /Game/HUD/WG_ItemTooltip.WG_ItemTooltip
+[2021.02.15-21.42.16:059][374]LogWorld: UWorld::CleanupWorld for World_21, bSessionEnded=true, bCleanupResources=true
+[2021.02.15-21.42.16:059][374]LogSlate: InvalidateAllWidgets triggered.  All widgets were invalidated
+[2021.02.15-21.42.16:064][374]LogWorld: UWorld::CleanupWorld for World_20, bSessionEnded=true, bCleanupResources=true
+[2021.02.15-21.42.16:064][374]LogSlate: InvalidateAllWidgets triggered.  All widgets were invalidated
+[2021.02.15-21.42.29:525][862]LogUObjectHash: Compacting FUObjectHashTables data took   3.82ms
+[2021.02.15-21.42.37:919][862]LogSlate: Window 'Delete Assets' being destroyed
+[2021.02.15-21.42.47:039][862]LogWorld: UWorld::CleanupWorld for World_4, bSessionEnded=true, bCleanupResources=true
+[2021.02.15-21.42.47:039][862]LogSlate: InvalidateAllWidgets triggered.  All widgets were invalidated
+[2021.02.15-21.42.47:099][862]LogWorld: UWorld::CleanupWorld for World_6, bSessionEnded=true, bCleanupResources=true
+[2021.02.15-21.42.47:099][862]LogSlate: InvalidateAllWidgets triggered.  All widgets were invalidated
+[2021.02.15-21.42.47:105][862]LogWorld: UWorld::CleanupWorld for World_5, bSessionEnded=true, bCleanupResources=true
+[2021.02.15-21.42.47:105][862]LogSlate: InvalidateAllWidgets triggered.  All widgets were invalidated
+[2021.02.15-21.42.47:169][862]LogWorld: UWorld::CleanupWorld for World_13, bSessionEnded=true, bCleanupResources=true
+[2021.02.15-21.42.47:169][862]LogSlate: InvalidateAllWidgets triggered.  All widgets were invalidated
+[2021.02.15-21.42.47:191][862]LogWorld: UWorld::CleanupWorld for World_12, bSessionEnded=true, bCleanupResources=true
+[2021.02.15-21.42.47:191][862]LogSlate: InvalidateAllWidgets triggered.  All widgets were invalidated
+[2021.02.15-21.42.47:272][862]LogWorld: UWorld::CleanupWorld for World_10, bSessionEnded=true, bCleanupResources=true
+[2021.02.15-21.42.47:272][862]LogSlate: InvalidateAllWidgets triggered.  All widgets were invalidated
+[2021.02.15-21.42.47:294][862]LogWorld: UWorld::CleanupWorld for World_9, bSessionEnded=true, bCleanupResources=true
+[2021.02.15-21.42.47:295][862]LogSlate: InvalidateAllWidgets triggered.  All widgets were invalidated
+[2021.02.15-21.42.47:345][862]LogWorld: UWorld::CleanupWorld for World_3, bSessionEnded=true, bCleanupResources=true
+[2021.02.15-21.42.47:345][862]LogSlate: InvalidateAllWidgets triggered.  All widgets were invalidated
+[2021.02.15-21.42.47:402][862]LogUObjectGlobals: Force Deleting 4 Package(s):
+	Asset Name: /Game/HUD/WG_ItemTooltip.WG_ItemTooltip
+	Asset Name: /Game/HUD/WG_InvSlot.WG_InvSlot
+	Asset Name: /Game/HUD/WG_Inventory.WG_Inventory
+	Asset Name: /Game/HUD/WG_DraggenItem.WG_DraggenItem
+[2021.02.15-21.43.02:162][862]LogUObjectHash: Compacting FUObjectHashTables data took   3.12ms
+[2021.02.15-21.43.02:220][862]LogUObjectHash: Compacting FUObjectHashTables data took   3.50ms
+[2021.02.15-21.43.02:246][862]LogUObjectHash: Compacting FUObjectHashTables data took   0.45ms
+[2021.02.15-21.43.02:271][862]LogUObjectHash: Compacting FUObjectHashTables data took   0.51ms
+[2021.02.15-21.43.02:296][862]LogUObjectHash: Compacting FUObjectHashTables data took   1.45ms
+[2021.02.15-21.43.02:321][862]LogUObjectHash: Compacting FUObjectHashTables data took   0.42ms
+[2021.02.15-21.43.44:371][828]LogUObjectHash: Compacting FUObjectHashTables data took   0.42ms
+[2021.02.15-21.43.44:377][828]LogFileHelpers: Editor autosave (incl. sublevels) for '/Game/2DSideScrollerBP/Maps/2DSideScrollerExampleMap' took 0.030
+[2021.02.15-21.43.44:377][828]OBJ SavePackage: Generating thumbnails for [0] asset(s) in package [/Game/2DSideScrollerBP/Blueprints/2DSideScrollerCharacter] ([1] browsable assets)...
+[2021.02.15-21.43.44:377][828]OBJ SavePackage: Finished generating thumbnails for package [/Game/2DSideScrollerBP/Blueprints/2DSideScrollerCharacter]
+[2021.02.15-21.43.44:433][828]LogSavePackage: Moving '../../../../TwoDSSG/Saved/2DSideScrollerCharacter_Auto0064FE8694BC1367A257F848A0E368863.tmp' to '../../../../TwoDSSG/Saved/Autosaves/Game/2DSideScrollerBP/Blueprints/2DSideScrollerCharacter_Auto0.uasset'
+[2021.02.15-21.43.44:445][828]OBJ SavePackage: Generating thumbnails for [0] asset(s) in package [/Game/Libraries/BFL_Inventory] ([1] browsable assets)...
+[2021.02.15-21.43.44:445][828]OBJ SavePackage: Finished generating thumbnails for package [/Game/Libraries/BFL_Inventory]
+[2021.02.15-21.43.44:445][828]Cmd: OBJ SAVEPACKAGE PACKAGE="/Game/Libraries/BFL_Inventory" FILE="../../../../TwoDSSG/Saved/Autosaves/Game/Libraries/BFL_Inventory_Auto0.uasset" SILENT=false AUTOSAVING=true
+[2021.02.15-21.43.44:485][828]LogSavePackage: Moving '../../../../TwoDSSG/Saved/BFL_Inventory_Auto052D466AD4634B09D9221C18198D3C7EB.tmp' to '../../../../TwoDSSG/Saved/Autosaves/Game/Libraries/BFL_Inventory_Auto0.uasset'
+[2021.02.15-21.43.44:499][828]LogFileHelpers: Auto-saving content packages took 0.122
+[2021.02.15-21.45.08:440][690]LogAssetEditorSubsystem: Opening Asset editor for Blueprint /Game/HUD/ActionInterface.ActionInterface
+[2021.02.15-21.45.12:274][ 68]LogWorld: UWorld::CleanupWorld for World_22, bSessionEnded=true, bCleanupResources=true
+[2021.02.15-21.45.12:274][ 68]LogSlate: InvalidateAllWidgets triggered.  All widgets were invalidated
+[2021.02.15-21.45.18:107][715]LogAssetEditorSubsystem: Opening Asset editor for UserDefinedStruct /Game/Structures/ST_Item.ST_Item
+[2021.02.15-21.45.36:149][790]LogWindowsTextInputMethodSystem: Display: IME system now deactivated.
+[2021.02.15-21.45.36:149][790]LogWindowsTextInputMethodSystem: Display: IME system now deactivated.
+[2021.02.15-21.46.02:675][778]LogWorld: UWorld::CleanupWorld for World_19, bSessionEnded=true, bCleanupResources=true
+[2021.02.15-21.46.02:675][778]LogSlate: InvalidateAllWidgets triggered.  All widgets were invalidated
+[2021.02.15-21.46.02:695][778]LogWorld: UWorld::CleanupWorld for World_18, bSessionEnded=true, bCleanupResources=true
+[2021.02.15-21.46.02:695][778]LogSlate: InvalidateAllWidgets triggered.  All widgets were invalidated
+[2021.02.15-21.46.09:638][543]LogUObjectHash: Compacting FUObjectHashTables data took   2.56ms
+[2021.02.15-21.46.26:950][543]LogSlate: Window 'Replace References?' being destroyed
+[2021.02.15-21.46.26:955][543]Message dialog closed, result: Ok, title: Replace References?, text: This will replace any reference to the pending deleted assets with ST_Item; and then delete them.
+
+Are you sure?
+[2021.02.15-21.46.26:955][543]LogSlate: Window 'Delete Assets' being destroyed
+[2021.02.15-21.46.26:970][543]LogWorld: UWorld::CleanupWorld for World_14, bSessionEnded=true, bCleanupResources=true
+[2021.02.15-21.46.26:970][543]LogSlate: InvalidateAllWidgets triggered.  All widgets were invalidated
+[2021.02.15-21.46.27:018][543]LogSlate: Window 'InventorySlotWG' being destroyed
+[2021.02.15-21.46.27:027][543]LogWorld: UWorld::CleanupWorld for World_17, bSessionEnded=true, bCleanupResources=true
+[2021.02.15-21.46.27:028][543]LogSlate: InvalidateAllWidgets triggered.  All widgets were invalidated
+[2021.02.15-21.46.27:030][543]LogWorld: UWorld::CleanupWorld for World_16, bSessionEnded=true, bCleanupResources=true
+[2021.02.15-21.46.27:030][543]LogSlate: InvalidateAllWidgets triggered.  All widgets were invalidated
