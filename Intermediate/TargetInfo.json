@@ -1,19 +1,14 @@
 {
 	"Targets": [
 		{
-			"Name": "UnrealHeaderTool",
-			"Path": "C:\\Program Files\\Epic Games\\UE_4.27\\Engine\\Source\\Programs\\UnrealHeaderTool\\UnrealHeaderTool.Target.cs",
-			"Type": "Program"
-		},
-		{
-			"Name": "UE4Editor",
-			"Path": "C:\\Program Files\\Epic Games\\UE_4.27\\Engine\\Source\\UE4Editor.Target.cs",
-			"Type": "Editor"
-		},
-		{
-			"Name": "UE4Game",
-			"Path": "C:\\Program Files\\Epic Games\\UE_4.27\\Engine\\Source\\UE4Game.Target.cs",
+			"Name": "TwoDSSG",
+			"Path": "C:\\Users\\Sagi\\Documents\\Unreal Projects\\TwoDSSG 4.27\\Source\\TwoDSSG.Target.cs",
 			"Type": "Game"
+		},
+		{
+			"Name": "TwoDSSGEditor",
+			"Path": "C:\\Users\\Sagi\\Documents\\Unreal Projects\\TwoDSSG 4.27\\Source\\TwoDSSGEditor.Target.cs",
+			"Type": "Editor"
 		}
 	]
 }
