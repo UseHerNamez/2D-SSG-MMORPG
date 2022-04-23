@@ -28,7 +28,7 @@
 		"LinuxAArch64NoEditor",
 		"Lumin",
 		"MacNoEditor",
-		"TVOS",
-		"WindowsNoEditor"
+		"WindowsNoEditor",
+		"TVOS"
 	]
 }
