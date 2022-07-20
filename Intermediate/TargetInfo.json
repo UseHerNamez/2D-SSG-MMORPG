@@ -9,6 +9,11 @@
 			"Name": "TwoDSSGEditor",
 			"Path": "C:\\Users\\Sagi\\Documents\\Unreal Projects\\TwoDSSG 4.27\\Source\\TwoDSSGEditor.Target.cs",
 			"Type": "Editor"
+		},
+		{
+			"Name": "TwoDSSGServer",
+			"Path": "C:\\Users\\Sagi\\Documents\\Unreal Projects\\TwoDSSG 4.27\\Source\\TwoDSSGServer.Target.cs",
+			"Type": "Server"
 		}
 	]
 }

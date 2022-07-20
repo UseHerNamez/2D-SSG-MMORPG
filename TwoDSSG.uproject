@@ -1,6 +1,6 @@
 {
 	"FileVersion": 3,
-	"EngineAssociation": "4.27",
+	"EngineAssociation": "{4B35E415-4C83-14C8-AB65-63B8AAE20B04}",
 	"Category": "",
 	"Description": "",
 	"Modules": [
@@ -17,7 +17,7 @@
 		},
 		{
 			"Name": "PlayFab",
-			"Enabled": true,
+			"Enabled": false,
 			"MarketplaceURL": "com.epicgames.launcher://ue/marketplace/content/217fdf581b784571af03d3fb6580368f"
 		}
 	],
