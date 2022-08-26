@@ -1,4 +1,4 @@
-﻿Log file open, 08/25/22 12:32:38
+﻿Log file open, 08/26/22 13:13:54
 LogWindows: Failed to load 'aqProf.dll' (GetLastError=126)
 LogWindows: File 'aqProf.dll' does not exist
 LogWindows: Failed to load 'VtuneApi.dll' (GetLastError=126)
@@ -14,10 +14,10 @@ LogPakFile: PakFile PathHashIndexSize=71451
 LogPakFile: PakFile FullDirectoryIndexSize=129146
 LogShaderLibrary: Display: ShaderCodeLibraryPakFileMountedCallback: PakFile '../../../TwoDSSG/Content/Paks/TwoDSSG-WindowsServer.pak' (chunk index -1, root '../../../') mounted
 LogShaderLibrary: Display: ShaderCodeLibraryPakFileMountedCallback: pending pak file info (ChunkID:-1 Root:../../../ File:../../../TwoDSSG/Content/Paks/TwoDSSG-WindowsServer.pak)
-LogPakFile: OnPakFileMounted2Time == 0.000708
+LogPakFile: OnPakFileMounted2Time == 0.000079
 LogPlatformFile: Not using cached read wrapper
 LogTaskGraph: Started task graph with 5 named threads and 9 total threads with 1 sets of task threads.
-LogStats: Stats thread started at 0.288132
+LogStats: Stats thread started at 0.106009
 LogICUInternationalization: ICU TimeZone Detection - Raw Offset: +2:00, Platform Override: ''
 LogInit: Display: Loading text-based GConfig....
 LogPluginManager: Mounting plugin Paper2D
@@ -132,11 +132,11 @@ LogInit: Engine Version: 4.27.2-0+++UE4+Release-4.27
 LogInit: Compatible Engine Version: 4.27.0-0+++UE4+Release-4.27
 LogInit: Net CL: 0
 LogInit: OS: Windows 10 (Release 2009) (), CPU: Intel(R) Core(TM) i5-10500 CPU @ 3.10GHz, GPU: NVIDIA GeForce RTX 3070
-LogInit: Compiled (64-bit): Aug 21 2022 18:02:51
+LogInit: Compiled (64-bit): Aug 26 2022 12:55:47
 LogInit: Compiled with Visual C++: 19.29.30145.00
 LogInit: Build Configuration: Development
 LogInit: Branch Name: ++UE4+Release-4.27
-LogInit: Command Line:  -log
+LogInit: Command Line: 
 LogInit: Base Directory: C:/Users/Sagi/Documents/Unreal Projects/TwoDSSG 4.27/Packaged/WindowsServer/TwoDSSG/Binaries/Win64/
 LogInit: Allocator: binned2
 LogInit: Installed Engine Build: 0
@@ -191,327 +191,407 @@ LogInit: Object subsystem initialized
 LogConfig: Setting CVar [[con.DebugEarlyDefault:1]]
 LogConfig: Setting CVar [[r.setres:1280x720]]
 LogConfig: Setting CVar [[fx.NiagaraAllowRuntimeScalabilityChanges:1]]
-[2022.08.25-09.32.41:054][  0]LogConfig: Setting CVar [[con.DebugEarlyDefault:1]]
-[2022.08.25-09.32.41:054][  0]LogConfig: Setting CVar [[r.setres:1280x720]]
-[2022.08.25-09.32.41:054][  0]LogConfig: Setting CVar [[fx.NiagaraAllowRuntimeScalabilityChanges:1]]
-[2022.08.25-09.32.41:055][  0]LogConfig: Applying CVar settings from Section [/Script/Engine.RendererSettings] File [../../../TwoDSSG/Saved/Config/WindowsServer/Engine.ini]
-[2022.08.25-09.32.41:055][  0]LogConfig: Setting CVar [[r.GPUCrashDebugging:0]]
-[2022.08.25-09.32.41:055][  0]LogConfig: Setting CVar [[r.MobileHDR:0]]
-[2022.08.25-09.32.41:055][  0]LogConfig: Setting CVar [[r.DefaultFeature.AntiAliasing:0]]
-[2022.08.25-09.32.41:055][  0]LogConfig: Setting CVar [[r.TranslucentSortPolicy:2]]
-[2022.08.25-09.32.41:056][  0]LogConfig: Setting CVar [[r.DefaultFeature.AutoExposure:1]]
-[2022.08.25-09.32.41:056][  0]LogConfig: Applying CVar settings from Section [/Script/Engine.RendererOverrideSettings] File [../../../TwoDSSG/Saved/Config/WindowsServer/Engine.ini]
-[2022.08.25-09.32.41:056][  0]LogConfig: Applying CVar settings from Section [/Script/Engine.StreamingSettings] File [../../../TwoDSSG/Saved/Config/WindowsServer/Engine.ini]
-[2022.08.25-09.32.41:056][  0]LogConfig: Setting CVar [[s.MinBulkDataSizeForAsyncLoading:131072]]
-[2022.08.25-09.32.41:057][  0]LogConfig: Setting CVar [[s.AsyncLoadingThreadEnabled:0]]
-[2022.08.25-09.32.41:057][  0]LogConfig: Setting CVar [[s.EventDrivenLoaderEnabled:1]]
-[2022.08.25-09.32.41:057][  0]LogConfig: Setting CVar [[s.WarnIfTimeLimitExceeded:0]]
-[2022.08.25-09.32.41:057][  0]LogConfig: Setting CVar [[s.TimeLimitExceededMultiplier:1.5]]
-[2022.08.25-09.32.41:057][  0]LogConfig: Setting CVar [[s.TimeLimitExceededMinTime:0.005]]
-[2022.08.25-09.32.41:058][  0]LogConfig: Setting CVar [[s.UseBackgroundLevelStreaming:1]]
-[2022.08.25-09.32.41:058][  0]LogConfig: Setting CVar [[s.PriorityAsyncLoadingExtraTime:15.0]]
-[2022.08.25-09.32.41:058][  0]LogConfig: Setting CVar [[s.LevelStreamingActorsUpdateTimeLimit:5.0]]
-[2022.08.25-09.32.41:059][  0]LogConfig: Setting CVar [[s.PriorityLevelStreamingActorsUpdateExtraTime:5.0]]
-[2022.08.25-09.32.41:059][  0]LogConfig: Setting CVar [[s.LevelStreamingComponentsRegistrationGranularity:10]]
-[2022.08.25-09.32.41:059][  0]LogConfig: Setting CVar [[s.UnregisterComponentsTimeLimit:1.0]]
-[2022.08.25-09.32.41:059][  0]LogConfig: Setting CVar [[s.LevelStreamingComponentsUnregistrationGranularity:5]]
-[2022.08.25-09.32.41:060][  0]LogConfig: Setting CVar [[s.FlushStreamingOnExit:1]]
-[2022.08.25-09.32.41:060][  0]LogConfig: Applying CVar settings from Section [/Script/Engine.GarbageCollectionSettings] File [../../../TwoDSSG/Saved/Config/WindowsServer/Engine.ini]
-[2022.08.25-09.32.41:060][  0]LogConfig: Setting CVar [[gc.MaxObjectsNotConsideredByGC:1]]
-[2022.08.25-09.32.41:060][  0]LogConfig: Setting CVar [[gc.SizeOfPermanentObjectPool:0]]
-[2022.08.25-09.32.41:061][  0]LogConfig: Setting CVar [[gc.FlushStreamingOnGC:0]]
-[2022.08.25-09.32.41:061][  0]LogConfig: Setting CVar [[gc.NumRetriesBeforeForcingGC:10]]
-[2022.08.25-09.32.41:061][  0]LogConfig: Setting CVar [[gc.AllowParallelGC:1]]
-[2022.08.25-09.32.41:062][  0]LogConfig: Setting CVar [[gc.TimeBetweenPurgingPendingKillObjects:61.1]]
-[2022.08.25-09.32.41:062][  0]LogConfig: Setting CVar [[gc.MaxObjectsInEditor:25165824]]
-[2022.08.25-09.32.41:062][  0]LogConfig: Setting CVar [[gc.IncrementalBeginDestroyEnabled:1]]
-[2022.08.25-09.32.41:062][  0]LogConfig: Setting CVar [[gc.CreateGCClusters:1]]
-[2022.08.25-09.32.41:063][  0]LogConfig: Setting CVar [[gc.MinGCClusterSize:5]]
-[2022.08.25-09.32.41:063][  0]LogConfig: Setting CVar [[gc.ActorClusteringEnabled:0]]
-[2022.08.25-09.32.41:063][  0]LogConfig: Setting CVar [[gc.BlueprintClusteringEnabled:0]]
-[2022.08.25-09.32.41:063][  0]LogConfig: Setting CVar [[gc.UseDisregardForGCOnDedicatedServers:0]]
-[2022.08.25-09.32.41:063][  0]LogConfig: Setting CVar [[gc.MultithreadedDestructionEnabled:1]]
-[2022.08.25-09.32.41:064][  0]LogConfig: Applying CVar settings from Section [/Script/Engine.NetworkSettings] File [../../../TwoDSSG/Saved/Config/WindowsServer/Engine.ini]
-[2022.08.25-09.32.41:064][  0]LogConfig: Applying CVar settings from Section [ViewDistanceQuality@3] File [../../../TwoDSSG/Saved/Config/WindowsServer/Scalability.ini]
-[2022.08.25-09.32.41:064][  0]LogConfig: Setting CVar [[r.SkeletalMeshLODBias:0]]
-[2022.08.25-09.32.41:065][  0]LogConfig: Setting CVar [[r.ViewDistanceScale:1.0]]
-[2022.08.25-09.32.41:067][  0]LogConfig: Applying CVar settings from Section [AntiAliasingQuality@3] File [../../../TwoDSSG/Saved/Config/WindowsServer/Scalability.ini]
-[2022.08.25-09.32.41:068][  0]LogConfig: Setting CVar [[r.PostProcessAAQuality:4]]
-[2022.08.25-09.32.41:068][  0]LogConfig: Applying CVar settings from Section [ShadowQuality@3] File [../../../TwoDSSG/Saved/Config/WindowsServer/Scalability.ini]
-[2022.08.25-09.32.41:068][  0]LogConfig: Setting CVar [[r.LightFunctionQuality:1]]
-[2022.08.25-09.32.41:068][  0]LogConfig: Setting CVar [[r.ShadowQuality:5]]
-[2022.08.25-09.32.41:069][  0]LogConfig: Setting CVar [[r.Shadow.CSM.MaxCascades:10]]
-[2022.08.25-09.32.41:069][  0]LogConfig: Setting CVar [[r.Shadow.MaxResolution:2048]]
-[2022.08.25-09.32.41:069][  0]LogConfig: Setting CVar [[r.Shadow.MaxCSMResolution:2048]]
-[2022.08.25-09.32.41:069][  0]LogConfig: Setting CVar [[r.Shadow.RadiusThreshold:0.01]]
-[2022.08.25-09.32.41:069][  0]LogConfig: Setting CVar [[r.Shadow.DistanceScale:1.0]]
-[2022.08.25-09.32.41:070][  0]LogConfig: Setting CVar [[r.Shadow.CSM.TransitionScale:1.0]]
-[2022.08.25-09.32.41:071][  0]LogConfig: Setting CVar [[r.Shadow.PreShadowResolutionFactor:1.0]]
-[2022.08.25-09.32.41:071][  0]LogConfig: Setting CVar [[r.DistanceFieldShadowing:1]]
-[2022.08.25-09.32.41:071][  0]LogConfig: Setting CVar [[r.DistanceFieldAO:1]]
-[2022.08.25-09.32.41:071][  0]LogConfig: Setting CVar [[r.AOQuality:2]]
-[2022.08.25-09.32.41:071][  0]LogConfig: Setting CVar [[r.VolumetricFog:1]]
-[2022.08.25-09.32.41:072][  0]LogConfig: Setting CVar [[r.VolumetricFog.GridPixelSize:8]]
-[2022.08.25-09.32.41:072][  0]LogConfig: Setting CVar [[r.VolumetricFog.GridSizeZ:128]]
-[2022.08.25-09.32.41:072][  0]LogConfig: Setting CVar [[r.VolumetricFog.HistoryMissSupersampleCount:4]]
-[2022.08.25-09.32.41:072][  0]LogConfig: Setting CVar [[r.LightMaxDrawDistanceScale:1]]
-[2022.08.25-09.32.41:073][  0]LogConfig: Setting CVar [[r.CapsuleShadows:1]]
-[2022.08.25-09.32.41:073][  0]LogConfig: Applying CVar settings from Section [PostProcessQuality@3] File [../../../TwoDSSG/Saved/Config/WindowsServer/Scalability.ini]
-[2022.08.25-09.32.41:073][  0]LogConfig: Setting CVar [[r.MotionBlurQuality:4]]
-[2022.08.25-09.32.41:073][  0]LogConfig: Setting CVar [[r.AmbientOcclusionMipLevelFactor:0.4]]
-[2022.08.25-09.32.41:074][  0]LogConfig: Setting CVar [[r.AmbientOcclusionMaxQuality:100]]
-[2022.08.25-09.32.41:074][  0]LogConfig: Setting CVar [[r.AmbientOcclusionLevels:-1]]
-[2022.08.25-09.32.41:074][  0]LogConfig: Setting CVar [[r.AmbientOcclusionRadiusScale:1.0]]
-[2022.08.25-09.32.41:074][  0]LogConfig: Setting CVar [[r.DepthOfFieldQuality:2]]
-[2022.08.25-09.32.41:075][  0]LogConfig: Setting CVar [[r.RenderTargetPoolMin:400]]
-[2022.08.25-09.32.41:075][  0]LogConfig: Setting CVar [[r.LensFlareQuality:2]]
-[2022.08.25-09.32.41:075][  0]LogConfig: Setting CVar [[r.SceneColorFringeQuality:1]]
-[2022.08.25-09.32.41:075][  0]LogConfig: Setting CVar [[r.EyeAdaptationQuality:2]]
-[2022.08.25-09.32.41:076][  0]LogConfig: Setting CVar [[r.BloomQuality:5]]
-[2022.08.25-09.32.41:076][  0]LogConfig: Setting CVar [[r.FastBlurThreshold:100]]
-[2022.08.25-09.32.41:076][  0]LogConfig: Setting CVar [[r.Upscale.Quality:3]]
-[2022.08.25-09.32.41:076][  0]LogConfig: Setting CVar [[r.Tonemapper.GrainQuantization:1]]
-[2022.08.25-09.32.41:077][  0]LogConfig: Setting CVar [[r.LightShaftQuality:1]]
-[2022.08.25-09.32.41:077][  0]LogConfig: Setting CVar [[r.Filter.SizeScale:1]]
-[2022.08.25-09.32.41:077][  0]LogConfig: Setting CVar [[r.Tonemapper.Quality:5]]
-[2022.08.25-09.32.41:077][  0]LogConfig: Setting CVar [[r.DOF.Gather.AccumulatorQuality:1        ; higher gathering accumulator quality]]
-[2022.08.25-09.32.41:078][  0]LogConfig: Setting CVar [[r.DOF.Gather.PostfilterMethod:1          ; Median3x3 postfilering method]]
-[2022.08.25-09.32.41:078][  0]LogConfig: Setting CVar [[r.DOF.Gather.EnableBokehSettings:0       ; no bokeh simulation when gathering]]
-[2022.08.25-09.32.41:078][  0]LogConfig: Setting CVar [[r.DOF.Gather.RingCount:4                 ; medium number of samples when gathering]]
-[2022.08.25-09.32.41:078][  0]LogConfig: Setting CVar [[r.DOF.Scatter.ForegroundCompositing:1    ; additive foreground scattering]]
-[2022.08.25-09.32.41:079][  0]LogConfig: Setting CVar [[r.DOF.Scatter.BackgroundCompositing:2    ; additive background scattering]]
-[2022.08.25-09.32.41:079][  0]LogConfig: Setting CVar [[r.DOF.Scatter.EnableBokehSettings:1      ; bokeh simulation when scattering]]
-[2022.08.25-09.32.41:079][  0]LogConfig: Setting CVar [[r.DOF.Scatter.MaxSpriteRatio:0.1         ; only a maximum of 10% of scattered bokeh]]
-[2022.08.25-09.32.41:079][  0]LogConfig: Setting CVar [[r.DOF.Recombine.Quality:1                ; cheap slight out of focus]]
-[2022.08.25-09.32.41:080][  0]LogConfig: Setting CVar [[r.DOF.Recombine.EnableBokehSettings:0    ; no bokeh simulation on slight out of focus]]
-[2022.08.25-09.32.41:080][  0]LogConfig: Setting CVar [[r.DOF.TemporalAAQuality:1                ; more stable temporal accumulation]]
-[2022.08.25-09.32.41:080][  0]LogConfig: Setting CVar [[r.DOF.Kernel.MaxForegroundRadius:0.025]]
-[2022.08.25-09.32.41:080][  0]LogConfig: Setting CVar [[r.DOF.Kernel.MaxBackgroundRadius:0.025]]
-[2022.08.25-09.32.41:081][  0]LogConfig: Applying CVar settings from Section [TextureQuality@3] File [../../../TwoDSSG/Saved/Config/WindowsServer/Scalability.ini]
-[2022.08.25-09.32.41:083][  0]LogConfig: Setting CVar [[r.Streaming.MipBias:0]]
-[2022.08.25-09.32.41:083][  0]LogConfig: Setting CVar [[r.Streaming.AmortizeCPUToGPUCopy:0]]
-[2022.08.25-09.32.41:084][  0]LogConfig: Setting CVar [[r.Streaming.MaxNumTexturesToStreamPerFrame:0]]
-[2022.08.25-09.32.41:084][  0]LogConfig: Setting CVar [[r.Streaming.Boost:1]]
-[2022.08.25-09.32.41:084][  0]LogConfig: Setting CVar [[r.MaxAnisotropy:8]]
-[2022.08.25-09.32.41:084][  0]LogConfig: Setting CVar [[r.VT.MaxAnisotropy:8]]
-[2022.08.25-09.32.41:085][  0]LogConfig: Setting CVar [[r.Streaming.LimitPoolSizeToVRAM:0]]
-[2022.08.25-09.32.41:085][  0]LogConfig: Setting CVar [[r.Streaming.PoolSize:1000]]
-[2022.08.25-09.32.41:085][  0]LogConfig: Setting CVar [[r.Streaming.MaxEffectiveScreenSize:0]]
-[2022.08.25-09.32.41:085][  0]LogConfig: Applying CVar settings from Section [EffectsQuality@3] File [../../../TwoDSSG/Saved/Config/WindowsServer/Scalability.ini]
-[2022.08.25-09.32.41:086][  0]LogConfig: Setting CVar [[r.TranslucencyLightingVolumeDim:64]]
-[2022.08.25-09.32.41:086][  0]LogConfig: Setting CVar [[r.RefractionQuality:2]]
-[2022.08.25-09.32.41:086][  0]LogConfig: Setting CVar [[r.SSR.Quality:3]]
-[2022.08.25-09.32.41:086][  0]LogConfig: Setting CVar [[r.SSR.HalfResSceneColor:0]]
-[2022.08.25-09.32.41:087][  0]LogConfig: Setting CVar [[r.SceneColorFormat:4]]
-[2022.08.25-09.32.41:087][  0]LogConfig: Setting CVar [[r.DetailMode:2]]
-[2022.08.25-09.32.41:087][  0]LogConfig: Setting CVar [[r.TranslucencyVolumeBlur:1]]
-[2022.08.25-09.32.41:087][  0]LogConfig: Setting CVar [[r.MaterialQualityLevel:1 ; High quality]]
-[2022.08.25-09.32.41:088][  0]LogConfig: Setting CVar [[r.AnisotropicMaterials:1]]
-[2022.08.25-09.32.41:088][  0]LogConfig: Setting CVar [[r.SSS.Scale:1]]
-[2022.08.25-09.32.41:088][  0]LogConfig: Setting CVar [[r.SSS.SampleSet:2]]
-[2022.08.25-09.32.41:088][  0]LogConfig: Setting CVar [[r.SSS.Quality:1]]
-[2022.08.25-09.32.41:089][  0]LogConfig: Setting CVar [[r.SSS.HalfRes:0]]
-[2022.08.25-09.32.41:089][  0]LogConfig: Setting CVar [[r.SSGI.Quality:3]]
-[2022.08.25-09.32.41:089][  0]LogConfig: Setting CVar [[r.EmitterSpawnRateScale:1.0]]
-[2022.08.25-09.32.41:089][  0]LogConfig: Setting CVar [[r.ParticleLightQuality:2]]
-[2022.08.25-09.32.41:089][  0]LogConfig: Setting CVar [[r.SkyAtmosphere.AerialPerspectiveLUT.FastApplyOnOpaque:1 ; Always have FastSkyLUT 1 in this case to avoid wrong sky]]
-[2022.08.25-09.32.41:090][  0]LogConfig: Setting CVar [[r.SkyAtmosphere.AerialPerspectiveLUT.SampleCountMaxPerSlice:4]]
-[2022.08.25-09.32.41:090][  0]LogConfig: Setting CVar [[r.SkyAtmosphere.AerialPerspectiveLUT.DepthResolution:16.0]]
-[2022.08.25-09.32.41:090][  0]LogConfig: Setting CVar [[r.SkyAtmosphere.FastSkyLUT:1]]
-[2022.08.25-09.32.41:090][  0]LogConfig: Setting CVar [[r.SkyAtmosphere.FastSkyLUT.SampleCountMin:4.0]]
-[2022.08.25-09.32.41:091][  0]LogConfig: Setting CVar [[r.SkyAtmosphere.FastSkyLUT.SampleCountMax:128.0]]
-[2022.08.25-09.32.41:091][  0]LogConfig: Setting CVar [[r.SkyAtmosphere.SampleCountMin:4.0]]
-[2022.08.25-09.32.41:091][  0]LogConfig: Setting CVar [[r.SkyAtmosphere.SampleCountMax:128.0]]
-[2022.08.25-09.32.41:092][  0]LogConfig: Setting CVar [[r.SkyAtmosphere.TransmittanceLUT.UseSmallFormat:0]]
-[2022.08.25-09.32.41:092][  0]LogConfig: Setting CVar [[r.SkyAtmosphere.TransmittanceLUT.SampleCount:10.0]]
-[2022.08.25-09.32.41:092][  0]LogConfig: Setting CVar [[r.SkyAtmosphere.MultiScatteringLUT.SampleCount:15.0]]
-[2022.08.25-09.32.41:092][  0]LogConfig: Setting CVar [[r.SkyLight.RealTimeReflectionCapture:1]]
-[2022.08.25-09.32.41:092][  0]LogConfig: Setting CVar [[fx.Niagara.QualityLevel:3]]
-[2022.08.25-09.32.41:093][  0]LogConfig: Applying CVar settings from Section [FoliageQuality@3] File [../../../TwoDSSG/Saved/Config/WindowsServer/Scalability.ini]
-[2022.08.25-09.32.41:093][  0]LogConfig: Setting CVar [[foliage.DensityScale:1.0]]
-[2022.08.25-09.32.41:093][  0]LogConfig: Setting CVar [[grass.DensityScale:1.0]]
-[2022.08.25-09.32.41:093][  0]LogConfig: Applying CVar settings from Section [ShadingQuality@3] File [../../../TwoDSSG/Saved/Config/WindowsServer/Scalability.ini]
-[2022.08.25-09.32.41:094][  0]LogConfig: Setting CVar [[r.HairStrands.SkyLighting.IntegrationType:2]]
-[2022.08.25-09.32.41:094][  0]LogConfig: Setting CVar [[r.HairStrands.SkyAO.SampleCount:4]]
-[2022.08.25-09.32.41:094][  0]LogConfig: Setting CVar [[r.HairStrands.Visibility.MSAA.SamplePerPixel:4]]
-[2022.08.25-09.32.41:095][  0]LogInit: Selected Device Profile: [WindowsServer]
-[2022.08.25-09.32.41:095][  0]LogInit: Applying CVar settings loaded from the selected device profile: [WindowsServer]
-[2022.08.25-09.32.41:095][  0]LogHAL: Display: Platform has ~ 16 GB [17112363008 / 17179869184 / 16], which maps to Larger [LargestMinGB=32, LargerMinGB=12, DefaultMinGB=8, SmallerMinGB=6, SmallestMinGB=0)
-[2022.08.25-09.32.41:095][  0]LogInit: Going up to parent DeviceProfile [Windows]
-[2022.08.25-09.32.41:096][  0]LogInit: Going up to parent DeviceProfile []
-[2022.08.25-09.32.41:096][  0]LogConfig: Applying CVar settings from Section [ViewDistanceQuality@3] File [../../../TwoDSSG/Saved/Config/WindowsServer/Scalability.ini]
-[2022.08.25-09.32.41:096][  0]LogConfig: Setting CVar [[r.SkeletalMeshLODBias:0]]
-[2022.08.25-09.32.41:096][  0]LogConfig: Setting CVar [[r.ViewDistanceScale:1.0]]
-[2022.08.25-09.32.41:097][  0]LogConfig: Applying CVar settings from Section [AntiAliasingQuality@3] File [../../../TwoDSSG/Saved/Config/WindowsServer/Scalability.ini]
-[2022.08.25-09.32.41:099][  0]LogConfig: Setting CVar [[r.PostProcessAAQuality:4]]
-[2022.08.25-09.32.41:099][  0]LogConfig: Applying CVar settings from Section [ShadowQuality@3] File [../../../TwoDSSG/Saved/Config/WindowsServer/Scalability.ini]
-[2022.08.25-09.32.41:100][  0]LogConfig: Setting CVar [[r.LightFunctionQuality:1]]
-[2022.08.25-09.32.41:100][  0]LogConfig: Setting CVar [[r.ShadowQuality:5]]
-[2022.08.25-09.32.41:100][  0]LogConfig: Setting CVar [[r.Shadow.CSM.MaxCascades:10]]
-[2022.08.25-09.32.41:100][  0]LogConfig: Setting CVar [[r.Shadow.MaxResolution:2048]]
-[2022.08.25-09.32.41:101][  0]LogConfig: Setting CVar [[r.Shadow.MaxCSMResolution:2048]]
-[2022.08.25-09.32.41:101][  0]LogConfig: Setting CVar [[r.Shadow.RadiusThreshold:0.01]]
-[2022.08.25-09.32.41:101][  0]LogConfig: Setting CVar [[r.Shadow.DistanceScale:1.0]]
-[2022.08.25-09.32.41:101][  0]LogConfig: Setting CVar [[r.Shadow.CSM.TransitionScale:1.0]]
-[2022.08.25-09.32.41:102][  0]LogConfig: Setting CVar [[r.Shadow.PreShadowResolutionFactor:1.0]]
-[2022.08.25-09.32.41:102][  0]LogConfig: Setting CVar [[r.DistanceFieldShadowing:1]]
-[2022.08.25-09.32.41:102][  0]LogConfig: Setting CVar [[r.DistanceFieldAO:1]]
-[2022.08.25-09.32.41:102][  0]LogConfig: Setting CVar [[r.AOQuality:2]]
-[2022.08.25-09.32.41:102][  0]LogConfig: Setting CVar [[r.VolumetricFog:1]]
-[2022.08.25-09.32.41:103][  0]LogConfig: Setting CVar [[r.VolumetricFog.GridPixelSize:8]]
-[2022.08.25-09.32.41:103][  0]LogConfig: Setting CVar [[r.VolumetricFog.GridSizeZ:128]]
-[2022.08.25-09.32.41:103][  0]LogConfig: Setting CVar [[r.VolumetricFog.HistoryMissSupersampleCount:4]]
-[2022.08.25-09.32.41:103][  0]LogConfig: Setting CVar [[r.LightMaxDrawDistanceScale:1]]
-[2022.08.25-09.32.41:104][  0]LogConfig: Setting CVar [[r.CapsuleShadows:1]]
-[2022.08.25-09.32.41:104][  0]LogConfig: Applying CVar settings from Section [PostProcessQuality@3] File [../../../TwoDSSG/Saved/Config/WindowsServer/Scalability.ini]
-[2022.08.25-09.32.41:104][  0]LogConfig: Setting CVar [[r.MotionBlurQuality:4]]
-[2022.08.25-09.32.41:104][  0]LogConfig: Setting CVar [[r.AmbientOcclusionMipLevelFactor:0.4]]
-[2022.08.25-09.32.41:105][  0]LogConfig: Setting CVar [[r.AmbientOcclusionMaxQuality:100]]
-[2022.08.25-09.32.41:105][  0]LogConfig: Setting CVar [[r.AmbientOcclusionLevels:-1]]
-[2022.08.25-09.32.41:105][  0]LogConfig: Setting CVar [[r.AmbientOcclusionRadiusScale:1.0]]
-[2022.08.25-09.32.41:105][  0]LogConfig: Setting CVar [[r.DepthOfFieldQuality:2]]
-[2022.08.25-09.32.41:106][  0]LogConfig: Setting CVar [[r.RenderTargetPoolMin:400]]
-[2022.08.25-09.32.41:106][  0]LogConfig: Setting CVar [[r.LensFlareQuality:2]]
-[2022.08.25-09.32.41:106][  0]LogConfig: Setting CVar [[r.SceneColorFringeQuality:1]]
-[2022.08.25-09.32.41:106][  0]LogConfig: Setting CVar [[r.EyeAdaptationQuality:2]]
-[2022.08.25-09.32.41:107][  0]LogConfig: Setting CVar [[r.BloomQuality:5]]
-[2022.08.25-09.32.41:107][  0]LogConfig: Setting CVar [[r.FastBlurThreshold:100]]
-[2022.08.25-09.32.41:107][  0]LogConfig: Setting CVar [[r.Upscale.Quality:3]]
-[2022.08.25-09.32.41:107][  0]LogConfig: Setting CVar [[r.Tonemapper.GrainQuantization:1]]
-[2022.08.25-09.32.41:107][  0]LogConfig: Setting CVar [[r.LightShaftQuality:1]]
-[2022.08.25-09.32.41:108][  0]LogConfig: Setting CVar [[r.Filter.SizeScale:1]]
-[2022.08.25-09.32.41:108][  0]LogConfig: Setting CVar [[r.Tonemapper.Quality:5]]
-[2022.08.25-09.32.41:108][  0]LogConfig: Setting CVar [[r.DOF.Gather.AccumulatorQuality:1        ; higher gathering accumulator quality]]
-[2022.08.25-09.32.41:108][  0]LogConfig: Setting CVar [[r.DOF.Gather.PostfilterMethod:1          ; Median3x3 postfilering method]]
-[2022.08.25-09.32.41:109][  0]LogConfig: Setting CVar [[r.DOF.Gather.EnableBokehSettings:0       ; no bokeh simulation when gathering]]
-[2022.08.25-09.32.41:109][  0]LogConfig: Setting CVar [[r.DOF.Gather.RingCount:4                 ; medium number of samples when gathering]]
-[2022.08.25-09.32.41:109][  0]LogConfig: Setting CVar [[r.DOF.Scatter.ForegroundCompositing:1    ; additive foreground scattering]]
-[2022.08.25-09.32.41:109][  0]LogConfig: Setting CVar [[r.DOF.Scatter.BackgroundCompositing:2    ; additive background scattering]]
-[2022.08.25-09.32.41:110][  0]LogConfig: Setting CVar [[r.DOF.Scatter.EnableBokehSettings:1      ; bokeh simulation when scattering]]
-[2022.08.25-09.32.41:110][  0]LogConfig: Setting CVar [[r.DOF.Scatter.MaxSpriteRatio:0.1         ; only a maximum of 10% of scattered bokeh]]
-[2022.08.25-09.32.41:110][  0]LogConfig: Setting CVar [[r.DOF.Recombine.Quality:1                ; cheap slight out of focus]]
-[2022.08.25-09.32.41:110][  0]LogConfig: Setting CVar [[r.DOF.Recombine.EnableBokehSettings:0    ; no bokeh simulation on slight out of focus]]
-[2022.08.25-09.32.41:111][  0]LogConfig: Setting CVar [[r.DOF.TemporalAAQuality:1                ; more stable temporal accumulation]]
-[2022.08.25-09.32.41:111][  0]LogConfig: Setting CVar [[r.DOF.Kernel.MaxForegroundRadius:0.025]]
-[2022.08.25-09.32.41:111][  0]LogConfig: Setting CVar [[r.DOF.Kernel.MaxBackgroundRadius:0.025]]
-[2022.08.25-09.32.41:112][  0]LogConfig: Applying CVar settings from Section [TextureQuality@3] File [../../../TwoDSSG/Saved/Config/WindowsServer/Scalability.ini]
-[2022.08.25-09.32.41:112][  0]LogConfig: Setting CVar [[r.Streaming.MipBias:0]]
-[2022.08.25-09.32.41:112][  0]LogConfig: Setting CVar [[r.Streaming.AmortizeCPUToGPUCopy:0]]
-[2022.08.25-09.32.41:112][  0]LogConfig: Setting CVar [[r.Streaming.MaxNumTexturesToStreamPerFrame:0]]
-[2022.08.25-09.32.41:113][  0]LogConfig: Setting CVar [[r.Streaming.Boost:1]]
-[2022.08.25-09.32.41:115][  0]LogConfig: Setting CVar [[r.MaxAnisotropy:8]]
-[2022.08.25-09.32.41:115][  0]LogConfig: Setting CVar [[r.VT.MaxAnisotropy:8]]
-[2022.08.25-09.32.41:116][  0]LogConfig: Setting CVar [[r.Streaming.LimitPoolSizeToVRAM:0]]
-[2022.08.25-09.32.41:116][  0]LogConfig: Setting CVar [[r.Streaming.PoolSize:1000]]
-[2022.08.25-09.32.41:117][  0]LogConfig: Setting CVar [[r.Streaming.MaxEffectiveScreenSize:0]]
-[2022.08.25-09.32.41:117][  0]LogConfig: Applying CVar settings from Section [EffectsQuality@3] File [../../../TwoDSSG/Saved/Config/WindowsServer/Scalability.ini]
-[2022.08.25-09.32.41:117][  0]LogConfig: Setting CVar [[r.TranslucencyLightingVolumeDim:64]]
-[2022.08.25-09.32.41:117][  0]LogConfig: Setting CVar [[r.RefractionQuality:2]]
-[2022.08.25-09.32.41:118][  0]LogConfig: Setting CVar [[r.SSR.Quality:3]]
-[2022.08.25-09.32.41:118][  0]LogConfig: Setting CVar [[r.SSR.HalfResSceneColor:0]]
-[2022.08.25-09.32.41:118][  0]LogConfig: Setting CVar [[r.SceneColorFormat:4]]
-[2022.08.25-09.32.41:118][  0]LogConfig: Setting CVar [[r.DetailMode:2]]
-[2022.08.25-09.32.41:119][  0]LogConfig: Setting CVar [[r.TranslucencyVolumeBlur:1]]
-[2022.08.25-09.32.41:119][  0]LogConfig: Setting CVar [[r.MaterialQualityLevel:1 ; High quality]]
-[2022.08.25-09.32.41:119][  0]LogConfig: Setting CVar [[r.AnisotropicMaterials:1]]
-[2022.08.25-09.32.41:119][  0]LogConfig: Setting CVar [[r.SSS.Scale:1]]
-[2022.08.25-09.32.41:119][  0]LogConfig: Setting CVar [[r.SSS.SampleSet:2]]
-[2022.08.25-09.32.41:120][  0]LogConfig: Setting CVar [[r.SSS.Quality:1]]
-[2022.08.25-09.32.41:120][  0]LogConfig: Setting CVar [[r.SSS.HalfRes:0]]
-[2022.08.25-09.32.41:120][  0]LogConfig: Setting CVar [[r.SSGI.Quality:3]]
-[2022.08.25-09.32.41:120][  0]LogConfig: Setting CVar [[r.EmitterSpawnRateScale:1.0]]
-[2022.08.25-09.32.41:121][  0]LogConfig: Setting CVar [[r.ParticleLightQuality:2]]
-[2022.08.25-09.32.41:121][  0]LogConfig: Setting CVar [[r.SkyAtmosphere.AerialPerspectiveLUT.FastApplyOnOpaque:1 ; Always have FastSkyLUT 1 in this case to avoid wrong sky]]
-[2022.08.25-09.32.41:121][  0]LogConfig: Setting CVar [[r.SkyAtmosphere.AerialPerspectiveLUT.SampleCountMaxPerSlice:4]]
-[2022.08.25-09.32.41:121][  0]LogConfig: Setting CVar [[r.SkyAtmosphere.AerialPerspectiveLUT.DepthResolution:16.0]]
-[2022.08.25-09.32.41:122][  0]LogConfig: Setting CVar [[r.SkyAtmosphere.FastSkyLUT:1]]
-[2022.08.25-09.32.41:122][  0]LogConfig: Setting CVar [[r.SkyAtmosphere.FastSkyLUT.SampleCountMin:4.0]]
-[2022.08.25-09.32.41:122][  0]LogConfig: Setting CVar [[r.SkyAtmosphere.FastSkyLUT.SampleCountMax:128.0]]
-[2022.08.25-09.32.41:122][  0]LogConfig: Setting CVar [[r.SkyAtmosphere.SampleCountMin:4.0]]
-[2022.08.25-09.32.41:123][  0]LogConfig: Setting CVar [[r.SkyAtmosphere.SampleCountMax:128.0]]
-[2022.08.25-09.32.41:123][  0]LogConfig: Setting CVar [[r.SkyAtmosphere.TransmittanceLUT.UseSmallFormat:0]]
-[2022.08.25-09.32.41:123][  0]LogConfig: Setting CVar [[r.SkyAtmosphere.TransmittanceLUT.SampleCount:10.0]]
-[2022.08.25-09.32.41:123][  0]LogConfig: Setting CVar [[r.SkyAtmosphere.MultiScatteringLUT.SampleCount:15.0]]
-[2022.08.25-09.32.41:124][  0]LogConfig: Setting CVar [[r.SkyLight.RealTimeReflectionCapture:1]]
-[2022.08.25-09.32.41:124][  0]LogConfig: Setting CVar [[fx.Niagara.QualityLevel:3]]
-[2022.08.25-09.32.41:124][  0]LogConfig: Applying CVar settings from Section [FoliageQuality@3] File [../../../TwoDSSG/Saved/Config/WindowsServer/Scalability.ini]
-[2022.08.25-09.32.41:124][  0]LogConfig: Setting CVar [[foliage.DensityScale:1.0]]
-[2022.08.25-09.32.41:124][  0]LogConfig: Setting CVar [[grass.DensityScale:1.0]]
-[2022.08.25-09.32.41:125][  0]LogConfig: Applying CVar settings from Section [ShadingQuality@3] File [../../../TwoDSSG/Saved/Config/WindowsServer/Scalability.ini]
-[2022.08.25-09.32.41:125][  0]LogConfig: Setting CVar [[r.HairStrands.SkyLighting.IntegrationType:2]]
-[2022.08.25-09.32.41:125][  0]LogConfig: Setting CVar [[r.HairStrands.SkyAO.SampleCount:4]]
-[2022.08.25-09.32.41:126][  0]LogConfig: Setting CVar [[r.HairStrands.Visibility.MSAA.SamplePerPixel:4]]
-[2022.08.25-09.32.41:126][  0]LogConfig: Applying CVar settings from Section [Startup] File [../../../Engine/Config/ConsoleVariables.ini]
-[2022.08.25-09.32.41:126][  0]LogConfig: Setting CVar [[net.UseAdaptiveNetUpdateFrequency:0]]
-[2022.08.25-09.32.41:126][  0]LogConfig: Setting CVar [[p.chaos.AllowCreatePhysxBodies:1]]
-[2022.08.25-09.32.41:127][  0]LogConfig: Setting CVar [[fx.SkipVectorVMBackendOptimizations:1]]
-[2022.08.25-09.32.41:127][  0]LogConfig: Applying CVar settings from Section [ConsoleVariables] File [../../../TwoDSSG/Saved/Config/WindowsServer/Engine.ini]
-[2022.08.25-09.32.41:127][  0]LogInit: Computer: DESKTOP-B63J4BI
-[2022.08.25-09.32.41:127][  0]LogInit: User: Sagi
-[2022.08.25-09.32.41:128][  0]LogInit: CPU Page size=4096, Cores=6
-[2022.08.25-09.32.41:128][  0]LogInit: High frequency timer resolution =10.000000 MHz
-[2022.08.25-09.32.41:128][  0]LogMemory: Memory total: Physical=15.9GB (16GB approx)
-[2022.08.25-09.32.41:129][  0]LogMemory: Platform Memory Stats for WindowsServer
-[2022.08.25-09.32.41:131][  0]LogMemory: Process Physical Memory: 78.63 MB used, 78.63 MB peak
-[2022.08.25-09.32.41:131][  0]LogMemory: Process Virtual Memory: 78.74 MB used, 78.74 MB peak
-[2022.08.25-09.32.41:131][  0]LogMemory: Physical Memory: 11162.65 MB used,  5156.97 MB free, 16319.62 MB total
-[2022.08.25-09.32.41:132][  0]LogMemory: Virtual Memory: 134212384.00 MB used,  5345.53 MB free, 134217728.00 MB total
-[2022.08.25-09.32.41:137][  0]LogWindows: WindowsPlatformFeatures disabled or dedicated server build
-[2022.08.25-09.32.41:300][  0]LogInit: Physics initialised using underlying interface: PhysX
-[2022.08.25-09.32.41:301][  0]LogInit: Using OS detected language (en-US).
-[2022.08.25-09.32.41:301][  0]LogInit: Using OS detected locale (en-US).
-[2022.08.25-09.32.41:302][  0]LogTextLocalizationManager: No specific localization for 'en-US' exists, so the 'en' localization will be used.
-[2022.08.25-09.32.41:346][  0]LogRendererCore: Ray tracing is disabled. Reason: r.RayTracing=0.
-[2022.08.25-09.32.41:346][  0]LogODSC: ODSC Thread active.
-[2022.08.25-09.32.41:361][  0]LogInit: Using OS detected language (en-US).
-[2022.08.25-09.32.41:361][  0]LogInit: Using OS detected locale (en-US).
-[2022.08.25-09.32.41:362][  0]LogTextLocalizationManager: No localization for 'en-US' exists, so 'en' will be used for the language.
-[2022.08.25-09.32.41:362][  0]LogTextLocalizationManager: No localization for 'en-US' exists, so 'en' will be used for the locale.
-[2022.08.25-09.32.41:365][  0]LogTextLocalizationManager: Compacting localization data took   1.20ms
-[2022.08.25-09.32.41:365][  0]LogAssetRegistry: FAssetRegistry took 0.0017 seconds to start up
-[2022.08.25-09.32.41:473][  0]LogStreaming: Display: FlushAsyncLoading: 1 QueuedPackages, 0 AsyncPackages
-[2022.08.25-09.32.41:477][  0]LogPackageLocalizationCache: Processed 26 localized package path(s) for 1 prioritized culture(s) in 0.000490 seconds
-[2022.08.25-09.32.41:477][  0]LogPakFile: New pak file ../../../TwoDSSG/Content/Paks/TwoDSSG-WindowsServer.pak added to pak precacher.
-[2022.08.25-09.32.41:482][  0]LogInit: Selected Device Profile: [WindowsServer]
-[2022.08.25-09.32.41:483][  0]LogInit: Active device profile: [000001DECE3B2EC0][000001DECA120010 49] WindowsServer
-[2022.08.25-09.32.41:483][  0]LogInit: Profiles: [000001DECE3B3040][000001DECCC09250 49] Windows, [000001DECE3B2EC0][000001DECA120010 49] WindowsServer, 
-[2022.08.25-09.32.41:499][  0]LogSerialization: Display: AllowBulkDataInIoStore: 'true'
-[2022.08.25-09.32.41:513][  0]LogNetVersion: TwoDSSG 1.0.0, NetCL: 0, EngineNetVer: 17, GameNetVer: 0 (Checksum: 2164445238)
-[2022.08.25-09.32.41:577][  0]LogAudioCaptureCore: Display: No Audio Capture implementations found. Audio input will be silent.
-[2022.08.25-09.32.41:577][  0]LogAudioCaptureCore: Display: No Audio Capture implementations found. Audio input will be silent.
-[2022.08.25-09.32.41:580][  0]LogHMD: PokeAHoleMaterial loaded successfully
-[2022.08.25-09.32.41:632][  0]LogUObjectArray: 15728 objects as part of root set at end of initial load.
-[2022.08.25-09.32.41:632][  0]LogUObjectAllocator: 3190440 out of 0 bytes used by permanent object pool.
-[2022.08.25-09.32.41:635][  0]LogUObjectArray: CloseDisregardForGC: 15728/0 objects in disregard for GC pool
-[2022.08.25-09.32.41:658][  0]LogNiagaraDebuggerClient: Niagara Debugger Client Initialized | Session: CF2E42E14C790F64B982438B3276086C | Instance: 754FA50C443F9AD540A12CA47ED5968A (DESKTOP-B63J4BI-10200).
-[2022.08.25-09.32.41:665][  0]LogAndroidPermission: UAndroidPermissionCallbackProxy::GetInstance
-[2022.08.25-09.32.41:666][  0]LogOcInput: OculusInput pre-init called
-[2022.08.25-09.32.41:670][  0]LogEngine: Initializing Engine...
-[2022.08.25-09.32.41:672][  0]LogStats: UGameplayTagsManager::InitializeManager -  0.001 s
-[2022.08.25-09.32.41:679][  0]LogInit: Initializing FReadOnlyCVARCache
-[2022.08.25-09.32.41:679][  0]LogNetVersion: Set ProjectVersion to 1.0.0.0. Version Checksum will be recalculated on next use.
-[2022.08.25-09.32.41:680][  0]LogInit: Texture streaming: Disabled
-[2022.08.25-09.32.41:719][  0]LogInit: Display: Game Engine Initialized.
-[2022.08.25-09.32.41:721][  0]LogInit: Display: Starting Game.
-[2022.08.25-09.32.41:723][  0]LogNet: Browse: /Game/GameSystem/Maps/WhereTheJourneyBegins?Name=Player
-[2022.08.25-09.32.41:723][  0]LogLoad: LoadMap: /Game/GameSystem/Maps/WhereTheJourneyBegins?Name=Player
-[2022.08.25-09.32.41:723][  0]LogWorld: BeginTearingDown for /Temp/Untitled_0
-[2022.08.25-09.32.41:732][  0]LogWorld: UWorld::CleanupWorld for Untitled, bSessionEnded=true, bCleanupResources=true
-[2022.08.25-09.32.41:744][  0]LogUObjectHash: Compacting FUObjectHashTables data took   0.67ms
-[2022.08.25-09.32.41:831][  0]LogClass: Warning: Failed to bind native function MasterPortal_BP_C.return portal\'s map name
-[2022.08.25-09.32.41:835][  0]LogClass: Warning: Failed to bind native function MasterMonster_C.Monster\'s Death - multicast
-[2022.08.25-09.32.41:849][  0]LogClass: Warning: Failed to bind native function 2DSideScrollerCharacter_C.OnRep_player\'s Style_to Others
-[2022.08.25-09.32.41:880][  0]LogAIModule: Creating AISystem for world WhereTheJourneyBegins
-[2022.08.25-09.32.41:881][  0]LogLoad: Game class is '2DSideScrollerGameMode_C'
-[2022.08.25-09.32.41:892][  0]LogNet: ReplicationDriverClass is null! Not using ReplicationDriver.
-[2022.08.25-09.32.41:896][  0]LogNetCore: DDoS detection status: detection enabled: 0 analytics enabled: 0
-[2022.08.25-09.32.41:904][  0]LogInit: WinSock: Socket queue. Rx: 131072 (config 131072) Tx: 131072 (config 131072)
-[2022.08.25-09.32.41:910][  0]LogNet: Created socket for bind address: 0.0.0.0 on port 7777
-[2022.08.25-09.32.41:918][  0]PacketHandlerLog: Loaded PacketHandler component: Engine.EngineHandlerComponentFactory (StatelessConnectHandlerComponent)
-[2022.08.25-09.32.41:919][  0]LogNet: GameNetDriver IpNetDriver_2147482567 IpNetDriver listening on port 7777
-[2022.08.25-09.32.41:933][  0]LogWorld: Bringing World /Game/GameSystem/Maps/WhereTheJourneyBegins.WhereTheJourneyBegins up for play (max tick rate 30) at 2022.08.25-12.32.41
-[2022.08.25-09.32.41:936][  0]LogWorld: Bringing up level for play took: 0.011247
-[2022.08.25-09.32.41:945][  0]LogLoad: Took 0.221649 seconds to LoadMap(/Game/GameSystem/Maps/WhereTheJourneyBegins)
-[2022.08.25-09.32.41:948][  0]LogPakFile: AllPaks IndexSizes: DirectoryHashSize=411132, PathHashSize=16, EntriesSize=61440, TotalSize=472588
-[2022.08.25-09.32.41:948][  0]LogInit: Display: Engine is initialized. Leaving FEngineLoop::Init()
-[2022.08.25-09.32.41:948][  0]LogLoad: (Engine Initialization) Total time: 3.99 seconds
+[2022.08.26-10.13.54:442][  0]LogConfig: Setting CVar [[con.DebugEarlyDefault:1]]
+[2022.08.26-10.13.54:442][  0]LogConfig: Setting CVar [[r.setres:1280x720]]
+[2022.08.26-10.13.54:442][  0]LogConfig: Setting CVar [[fx.NiagaraAllowRuntimeScalabilityChanges:1]]
+[2022.08.26-10.13.54:442][  0]LogConfig: Applying CVar settings from Section [/Script/Engine.RendererSettings] File [../../../TwoDSSG/Saved/Config/WindowsServer/Engine.ini]
+[2022.08.26-10.13.54:442][  0]LogConfig: Setting CVar [[r.GPUCrashDebugging:0]]
+[2022.08.26-10.13.54:442][  0]LogConfig: Setting CVar [[r.MobileHDR:0]]
+[2022.08.26-10.13.54:442][  0]LogConfig: Setting CVar [[r.DefaultFeature.AntiAliasing:0]]
+[2022.08.26-10.13.54:442][  0]LogConfig: Setting CVar [[r.TranslucentSortPolicy:2]]
+[2022.08.26-10.13.54:442][  0]LogConfig: Setting CVar [[r.DefaultFeature.AutoExposure:1]]
+[2022.08.26-10.13.54:442][  0]LogConfig: Applying CVar settings from Section [/Script/Engine.RendererOverrideSettings] File [../../../TwoDSSG/Saved/Config/WindowsServer/Engine.ini]
+[2022.08.26-10.13.54:442][  0]LogConfig: Applying CVar settings from Section [/Script/Engine.StreamingSettings] File [../../../TwoDSSG/Saved/Config/WindowsServer/Engine.ini]
+[2022.08.26-10.13.54:442][  0]LogConfig: Setting CVar [[s.MinBulkDataSizeForAsyncLoading:131072]]
+[2022.08.26-10.13.54:442][  0]LogConfig: Setting CVar [[s.AsyncLoadingThreadEnabled:0]]
+[2022.08.26-10.13.54:442][  0]LogConfig: Setting CVar [[s.EventDrivenLoaderEnabled:1]]
+[2022.08.26-10.13.54:442][  0]LogConfig: Setting CVar [[s.WarnIfTimeLimitExceeded:0]]
+[2022.08.26-10.13.54:442][  0]LogConfig: Setting CVar [[s.TimeLimitExceededMultiplier:1.5]]
+[2022.08.26-10.13.54:442][  0]LogConfig: Setting CVar [[s.TimeLimitExceededMinTime:0.005]]
+[2022.08.26-10.13.54:442][  0]LogConfig: Setting CVar [[s.UseBackgroundLevelStreaming:1]]
+[2022.08.26-10.13.54:442][  0]LogConfig: Setting CVar [[s.PriorityAsyncLoadingExtraTime:15.0]]
+[2022.08.26-10.13.54:442][  0]LogConfig: Setting CVar [[s.LevelStreamingActorsUpdateTimeLimit:5.0]]
+[2022.08.26-10.13.54:442][  0]LogConfig: Setting CVar [[s.PriorityLevelStreamingActorsUpdateExtraTime:5.0]]
+[2022.08.26-10.13.54:442][  0]LogConfig: Setting CVar [[s.LevelStreamingComponentsRegistrationGranularity:10]]
+[2022.08.26-10.13.54:442][  0]LogConfig: Setting CVar [[s.UnregisterComponentsTimeLimit:1.0]]
+[2022.08.26-10.13.54:442][  0]LogConfig: Setting CVar [[s.LevelStreamingComponentsUnregistrationGranularity:5]]
+[2022.08.26-10.13.54:442][  0]LogConfig: Setting CVar [[s.FlushStreamingOnExit:1]]
+[2022.08.26-10.13.54:442][  0]LogConfig: Applying CVar settings from Section [/Script/Engine.GarbageCollectionSettings] File [../../../TwoDSSG/Saved/Config/WindowsServer/Engine.ini]
+[2022.08.26-10.13.54:442][  0]LogConfig: Setting CVar [[gc.MaxObjectsNotConsideredByGC:1]]
+[2022.08.26-10.13.54:442][  0]LogConfig: Setting CVar [[gc.SizeOfPermanentObjectPool:0]]
+[2022.08.26-10.13.54:442][  0]LogConfig: Setting CVar [[gc.FlushStreamingOnGC:0]]
+[2022.08.26-10.13.54:442][  0]LogConfig: Setting CVar [[gc.NumRetriesBeforeForcingGC:10]]
+[2022.08.26-10.13.54:442][  0]LogConfig: Setting CVar [[gc.AllowParallelGC:1]]
+[2022.08.26-10.13.54:442][  0]LogConfig: Setting CVar [[gc.TimeBetweenPurgingPendingKillObjects:61.1]]
+[2022.08.26-10.13.54:442][  0]LogConfig: Setting CVar [[gc.MaxObjectsInEditor:25165824]]
+[2022.08.26-10.13.54:442][  0]LogConfig: Setting CVar [[gc.IncrementalBeginDestroyEnabled:1]]
+[2022.08.26-10.13.54:442][  0]LogConfig: Setting CVar [[gc.CreateGCClusters:1]]
+[2022.08.26-10.13.54:442][  0]LogConfig: Setting CVar [[gc.MinGCClusterSize:5]]
+[2022.08.26-10.13.54:442][  0]LogConfig: Setting CVar [[gc.ActorClusteringEnabled:0]]
+[2022.08.26-10.13.54:442][  0]LogConfig: Setting CVar [[gc.BlueprintClusteringEnabled:0]]
+[2022.08.26-10.13.54:443][  0]LogConfig: Setting CVar [[gc.UseDisregardForGCOnDedicatedServers:0]]
+[2022.08.26-10.13.54:443][  0]LogConfig: Setting CVar [[gc.MultithreadedDestructionEnabled:1]]
+[2022.08.26-10.13.54:443][  0]LogConfig: Applying CVar settings from Section [/Script/Engine.NetworkSettings] File [../../../TwoDSSG/Saved/Config/WindowsServer/Engine.ini]
+[2022.08.26-10.13.54:443][  0]LogConfig: Applying CVar settings from Section [ViewDistanceQuality@3] File [../../../TwoDSSG/Saved/Config/WindowsServer/Scalability.ini]
+[2022.08.26-10.13.54:443][  0]LogConfig: Setting CVar [[r.SkeletalMeshLODBias:0]]
+[2022.08.26-10.13.54:443][  0]LogConfig: Setting CVar [[r.ViewDistanceScale:1.0]]
+[2022.08.26-10.13.54:443][  0]LogConfig: Applying CVar settings from Section [AntiAliasingQuality@3] File [../../../TwoDSSG/Saved/Config/WindowsServer/Scalability.ini]
+[2022.08.26-10.13.54:443][  0]LogConfig: Setting CVar [[r.PostProcessAAQuality:4]]
+[2022.08.26-10.13.54:443][  0]LogConfig: Applying CVar settings from Section [ShadowQuality@3] File [../../../TwoDSSG/Saved/Config/WindowsServer/Scalability.ini]
+[2022.08.26-10.13.54:443][  0]LogConfig: Setting CVar [[r.LightFunctionQuality:1]]
+[2022.08.26-10.13.54:443][  0]LogConfig: Setting CVar [[r.ShadowQuality:5]]
+[2022.08.26-10.13.54:443][  0]LogConfig: Setting CVar [[r.Shadow.CSM.MaxCascades:10]]
+[2022.08.26-10.13.54:443][  0]LogConfig: Setting CVar [[r.Shadow.MaxResolution:2048]]
+[2022.08.26-10.13.54:443][  0]LogConfig: Setting CVar [[r.Shadow.MaxCSMResolution:2048]]
+[2022.08.26-10.13.54:443][  0]LogConfig: Setting CVar [[r.Shadow.RadiusThreshold:0.01]]
+[2022.08.26-10.13.54:443][  0]LogConfig: Setting CVar [[r.Shadow.DistanceScale:1.0]]
+[2022.08.26-10.13.54:443][  0]LogConfig: Setting CVar [[r.Shadow.CSM.TransitionScale:1.0]]
+[2022.08.26-10.13.54:443][  0]LogConfig: Setting CVar [[r.Shadow.PreShadowResolutionFactor:1.0]]
+[2022.08.26-10.13.54:443][  0]LogConfig: Setting CVar [[r.DistanceFieldShadowing:1]]
+[2022.08.26-10.13.54:443][  0]LogConfig: Setting CVar [[r.DistanceFieldAO:1]]
+[2022.08.26-10.13.54:443][  0]LogConfig: Setting CVar [[r.AOQuality:2]]
+[2022.08.26-10.13.54:443][  0]LogConfig: Setting CVar [[r.VolumetricFog:1]]
+[2022.08.26-10.13.54:443][  0]LogConfig: Setting CVar [[r.VolumetricFog.GridPixelSize:8]]
+[2022.08.26-10.13.54:443][  0]LogConfig: Setting CVar [[r.VolumetricFog.GridSizeZ:128]]
+[2022.08.26-10.13.54:443][  0]LogConfig: Setting CVar [[r.VolumetricFog.HistoryMissSupersampleCount:4]]
+[2022.08.26-10.13.54:443][  0]LogConfig: Setting CVar [[r.LightMaxDrawDistanceScale:1]]
+[2022.08.26-10.13.54:443][  0]LogConfig: Setting CVar [[r.CapsuleShadows:1]]
+[2022.08.26-10.13.54:443][  0]LogConfig: Applying CVar settings from Section [PostProcessQuality@3] File [../../../TwoDSSG/Saved/Config/WindowsServer/Scalability.ini]
+[2022.08.26-10.13.54:443][  0]LogConfig: Setting CVar [[r.MotionBlurQuality:4]]
+[2022.08.26-10.13.54:443][  0]LogConfig: Setting CVar [[r.AmbientOcclusionMipLevelFactor:0.4]]
+[2022.08.26-10.13.54:443][  0]LogConfig: Setting CVar [[r.AmbientOcclusionMaxQuality:100]]
+[2022.08.26-10.13.54:443][  0]LogConfig: Setting CVar [[r.AmbientOcclusionLevels:-1]]
+[2022.08.26-10.13.54:443][  0]LogConfig: Setting CVar [[r.AmbientOcclusionRadiusScale:1.0]]
+[2022.08.26-10.13.54:443][  0]LogConfig: Setting CVar [[r.DepthOfFieldQuality:2]]
+[2022.08.26-10.13.54:443][  0]LogConfig: Setting CVar [[r.RenderTargetPoolMin:400]]
+[2022.08.26-10.13.54:443][  0]LogConfig: Setting CVar [[r.LensFlareQuality:2]]
+[2022.08.26-10.13.54:443][  0]LogConfig: Setting CVar [[r.SceneColorFringeQuality:1]]
+[2022.08.26-10.13.54:443][  0]LogConfig: Setting CVar [[r.EyeAdaptationQuality:2]]
+[2022.08.26-10.13.54:443][  0]LogConfig: Setting CVar [[r.BloomQuality:5]]
+[2022.08.26-10.13.54:443][  0]LogConfig: Setting CVar [[r.FastBlurThreshold:100]]
+[2022.08.26-10.13.54:443][  0]LogConfig: Setting CVar [[r.Upscale.Quality:3]]
+[2022.08.26-10.13.54:443][  0]LogConfig: Setting CVar [[r.Tonemapper.GrainQuantization:1]]
+[2022.08.26-10.13.54:443][  0]LogConfig: Setting CVar [[r.LightShaftQuality:1]]
+[2022.08.26-10.13.54:443][  0]LogConfig: Setting CVar [[r.Filter.SizeScale:1]]
+[2022.08.26-10.13.54:443][  0]LogConfig: Setting CVar [[r.Tonemapper.Quality:5]]
+[2022.08.26-10.13.54:443][  0]LogConfig: Setting CVar [[r.DOF.Gather.AccumulatorQuality:1        ; higher gathering accumulator quality]]
+[2022.08.26-10.13.54:443][  0]LogConfig: Setting CVar [[r.DOF.Gather.PostfilterMethod:1          ; Median3x3 postfilering method]]
+[2022.08.26-10.13.54:443][  0]LogConfig: Setting CVar [[r.DOF.Gather.EnableBokehSettings:0       ; no bokeh simulation when gathering]]
+[2022.08.26-10.13.54:443][  0]LogConfig: Setting CVar [[r.DOF.Gather.RingCount:4                 ; medium number of samples when gathering]]
+[2022.08.26-10.13.54:443][  0]LogConfig: Setting CVar [[r.DOF.Scatter.ForegroundCompositing:1    ; additive foreground scattering]]
+[2022.08.26-10.13.54:443][  0]LogConfig: Setting CVar [[r.DOF.Scatter.BackgroundCompositing:2    ; additive background scattering]]
+[2022.08.26-10.13.54:443][  0]LogConfig: Setting CVar [[r.DOF.Scatter.EnableBokehSettings:1      ; bokeh simulation when scattering]]
+[2022.08.26-10.13.54:443][  0]LogConfig: Setting CVar [[r.DOF.Scatter.MaxSpriteRatio:0.1         ; only a maximum of 10% of scattered bokeh]]
+[2022.08.26-10.13.54:443][  0]LogConfig: Setting CVar [[r.DOF.Recombine.Quality:1                ; cheap slight out of focus]]
+[2022.08.26-10.13.54:443][  0]LogConfig: Setting CVar [[r.DOF.Recombine.EnableBokehSettings:0    ; no bokeh simulation on slight out of focus]]
+[2022.08.26-10.13.54:443][  0]LogConfig: Setting CVar [[r.DOF.TemporalAAQuality:1                ; more stable temporal accumulation]]
+[2022.08.26-10.13.54:443][  0]LogConfig: Setting CVar [[r.DOF.Kernel.MaxForegroundRadius:0.025]]
+[2022.08.26-10.13.54:443][  0]LogConfig: Setting CVar [[r.DOF.Kernel.MaxBackgroundRadius:0.025]]
+[2022.08.26-10.13.54:443][  0]LogConfig: Applying CVar settings from Section [TextureQuality@3] File [../../../TwoDSSG/Saved/Config/WindowsServer/Scalability.ini]
+[2022.08.26-10.13.54:443][  0]LogConfig: Setting CVar [[r.Streaming.MipBias:0]]
+[2022.08.26-10.13.54:443][  0]LogConfig: Setting CVar [[r.Streaming.AmortizeCPUToGPUCopy:0]]
+[2022.08.26-10.13.54:443][  0]LogConfig: Setting CVar [[r.Streaming.MaxNumTexturesToStreamPerFrame:0]]
+[2022.08.26-10.13.54:443][  0]LogConfig: Setting CVar [[r.Streaming.Boost:1]]
+[2022.08.26-10.13.54:443][  0]LogConfig: Setting CVar [[r.MaxAnisotropy:8]]
+[2022.08.26-10.13.54:443][  0]LogConfig: Setting CVar [[r.VT.MaxAnisotropy:8]]
+[2022.08.26-10.13.54:443][  0]LogConfig: Setting CVar [[r.Streaming.LimitPoolSizeToVRAM:0]]
+[2022.08.26-10.13.54:443][  0]LogConfig: Setting CVar [[r.Streaming.PoolSize:1000]]
+[2022.08.26-10.13.54:443][  0]LogConfig: Setting CVar [[r.Streaming.MaxEffectiveScreenSize:0]]
+[2022.08.26-10.13.54:443][  0]LogConfig: Applying CVar settings from Section [EffectsQuality@3] File [../../../TwoDSSG/Saved/Config/WindowsServer/Scalability.ini]
+[2022.08.26-10.13.54:443][  0]LogConfig: Setting CVar [[r.TranslucencyLightingVolumeDim:64]]
+[2022.08.26-10.13.54:443][  0]LogConfig: Setting CVar [[r.RefractionQuality:2]]
+[2022.08.26-10.13.54:443][  0]LogConfig: Setting CVar [[r.SSR.Quality:3]]
+[2022.08.26-10.13.54:443][  0]LogConfig: Setting CVar [[r.SSR.HalfResSceneColor:0]]
+[2022.08.26-10.13.54:443][  0]LogConfig: Setting CVar [[r.SceneColorFormat:4]]
+[2022.08.26-10.13.54:443][  0]LogConfig: Setting CVar [[r.DetailMode:2]]
+[2022.08.26-10.13.54:443][  0]LogConfig: Setting CVar [[r.TranslucencyVolumeBlur:1]]
+[2022.08.26-10.13.54:443][  0]LogConfig: Setting CVar [[r.MaterialQualityLevel:1 ; High quality]]
+[2022.08.26-10.13.54:443][  0]LogConfig: Setting CVar [[r.AnisotropicMaterials:1]]
+[2022.08.26-10.13.54:443][  0]LogConfig: Setting CVar [[r.SSS.Scale:1]]
+[2022.08.26-10.13.54:443][  0]LogConfig: Setting CVar [[r.SSS.SampleSet:2]]
+[2022.08.26-10.13.54:443][  0]LogConfig: Setting CVar [[r.SSS.Quality:1]]
+[2022.08.26-10.13.54:443][  0]LogConfig: Setting CVar [[r.SSS.HalfRes:0]]
+[2022.08.26-10.13.54:443][  0]LogConfig: Setting CVar [[r.SSGI.Quality:3]]
+[2022.08.26-10.13.54:443][  0]LogConfig: Setting CVar [[r.EmitterSpawnRateScale:1.0]]
+[2022.08.26-10.13.54:443][  0]LogConfig: Setting CVar [[r.ParticleLightQuality:2]]
+[2022.08.26-10.13.54:443][  0]LogConfig: Setting CVar [[r.SkyAtmosphere.AerialPerspectiveLUT.FastApplyOnOpaque:1 ; Always have FastSkyLUT 1 in this case to avoid wrong sky]]
+[2022.08.26-10.13.54:443][  0]LogConfig: Setting CVar [[r.SkyAtmosphere.AerialPerspectiveLUT.SampleCountMaxPerSlice:4]]
+[2022.08.26-10.13.54:443][  0]LogConfig: Setting CVar [[r.SkyAtmosphere.AerialPerspectiveLUT.DepthResolution:16.0]]
+[2022.08.26-10.13.54:443][  0]LogConfig: Setting CVar [[r.SkyAtmosphere.FastSkyLUT:1]]
+[2022.08.26-10.13.54:443][  0]LogConfig: Setting CVar [[r.SkyAtmosphere.FastSkyLUT.SampleCountMin:4.0]]
+[2022.08.26-10.13.54:443][  0]LogConfig: Setting CVar [[r.SkyAtmosphere.FastSkyLUT.SampleCountMax:128.0]]
+[2022.08.26-10.13.54:443][  0]LogConfig: Setting CVar [[r.SkyAtmosphere.SampleCountMin:4.0]]
+[2022.08.26-10.13.54:443][  0]LogConfig: Setting CVar [[r.SkyAtmosphere.SampleCountMax:128.0]]
+[2022.08.26-10.13.54:444][  0]LogConfig: Setting CVar [[r.SkyAtmosphere.TransmittanceLUT.UseSmallFormat:0]]
+[2022.08.26-10.13.54:444][  0]LogConfig: Setting CVar [[r.SkyAtmosphere.TransmittanceLUT.SampleCount:10.0]]
+[2022.08.26-10.13.54:444][  0]LogConfig: Setting CVar [[r.SkyAtmosphere.MultiScatteringLUT.SampleCount:15.0]]
+[2022.08.26-10.13.54:444][  0]LogConfig: Setting CVar [[r.SkyLight.RealTimeReflectionCapture:1]]
+[2022.08.26-10.13.54:444][  0]LogConfig: Setting CVar [[fx.Niagara.QualityLevel:3]]
+[2022.08.26-10.13.54:444][  0]LogConfig: Applying CVar settings from Section [FoliageQuality@3] File [../../../TwoDSSG/Saved/Config/WindowsServer/Scalability.ini]
+[2022.08.26-10.13.54:444][  0]LogConfig: Setting CVar [[foliage.DensityScale:1.0]]
+[2022.08.26-10.13.54:444][  0]LogConfig: Setting CVar [[grass.DensityScale:1.0]]
+[2022.08.26-10.13.54:444][  0]LogConfig: Applying CVar settings from Section [ShadingQuality@3] File [../../../TwoDSSG/Saved/Config/WindowsServer/Scalability.ini]
+[2022.08.26-10.13.54:444][  0]LogConfig: Setting CVar [[r.HairStrands.SkyLighting.IntegrationType:2]]
+[2022.08.26-10.13.54:444][  0]LogConfig: Setting CVar [[r.HairStrands.SkyAO.SampleCount:4]]
+[2022.08.26-10.13.54:444][  0]LogConfig: Setting CVar [[r.HairStrands.Visibility.MSAA.SamplePerPixel:4]]
+[2022.08.26-10.13.54:444][  0]LogInit: Selected Device Profile: [WindowsServer]
+[2022.08.26-10.13.54:444][  0]LogInit: Applying CVar settings loaded from the selected device profile: [WindowsServer]
+[2022.08.26-10.13.54:444][  0]LogHAL: Display: Platform has ~ 16 GB [17112363008 / 17179869184 / 16], which maps to Larger [LargestMinGB=32, LargerMinGB=12, DefaultMinGB=8, SmallerMinGB=6, SmallestMinGB=0)
+[2022.08.26-10.13.54:444][  0]LogInit: Going up to parent DeviceProfile [Windows]
+[2022.08.26-10.13.54:444][  0]LogInit: Going up to parent DeviceProfile []
+[2022.08.26-10.13.54:444][  0]LogConfig: Applying CVar settings from Section [ViewDistanceQuality@3] File [../../../TwoDSSG/Saved/Config/WindowsServer/Scalability.ini]
+[2022.08.26-10.13.54:444][  0]LogConfig: Setting CVar [[r.SkeletalMeshLODBias:0]]
+[2022.08.26-10.13.54:444][  0]LogConfig: Setting CVar [[r.ViewDistanceScale:1.0]]
+[2022.08.26-10.13.54:444][  0]LogConfig: Applying CVar settings from Section [AntiAliasingQuality@3] File [../../../TwoDSSG/Saved/Config/WindowsServer/Scalability.ini]
+[2022.08.26-10.13.54:444][  0]LogConfig: Setting CVar [[r.PostProcessAAQuality:4]]
+[2022.08.26-10.13.54:444][  0]LogConfig: Applying CVar settings from Section [ShadowQuality@3] File [../../../TwoDSSG/Saved/Config/WindowsServer/Scalability.ini]
+[2022.08.26-10.13.54:444][  0]LogConfig: Setting CVar [[r.LightFunctionQuality:1]]
+[2022.08.26-10.13.54:444][  0]LogConfig: Setting CVar [[r.ShadowQuality:5]]
+[2022.08.26-10.13.54:444][  0]LogConfig: Setting CVar [[r.Shadow.CSM.MaxCascades:10]]
+[2022.08.26-10.13.54:444][  0]LogConfig: Setting CVar [[r.Shadow.MaxResolution:2048]]
+[2022.08.26-10.13.54:444][  0]LogConfig: Setting CVar [[r.Shadow.MaxCSMResolution:2048]]
+[2022.08.26-10.13.54:444][  0]LogConfig: Setting CVar [[r.Shadow.RadiusThreshold:0.01]]
+[2022.08.26-10.13.54:444][  0]LogConfig: Setting CVar [[r.Shadow.DistanceScale:1.0]]
+[2022.08.26-10.13.54:444][  0]LogConfig: Setting CVar [[r.Shadow.CSM.TransitionScale:1.0]]
+[2022.08.26-10.13.54:444][  0]LogConfig: Setting CVar [[r.Shadow.PreShadowResolutionFactor:1.0]]
+[2022.08.26-10.13.54:444][  0]LogConfig: Setting CVar [[r.DistanceFieldShadowing:1]]
+[2022.08.26-10.13.54:444][  0]LogConfig: Setting CVar [[r.DistanceFieldAO:1]]
+[2022.08.26-10.13.54:444][  0]LogConfig: Setting CVar [[r.AOQuality:2]]
+[2022.08.26-10.13.54:444][  0]LogConfig: Setting CVar [[r.VolumetricFog:1]]
+[2022.08.26-10.13.54:444][  0]LogConfig: Setting CVar [[r.VolumetricFog.GridPixelSize:8]]
+[2022.08.26-10.13.54:444][  0]LogConfig: Setting CVar [[r.VolumetricFog.GridSizeZ:128]]
+[2022.08.26-10.13.54:444][  0]LogConfig: Setting CVar [[r.VolumetricFog.HistoryMissSupersampleCount:4]]
+[2022.08.26-10.13.54:444][  0]LogConfig: Setting CVar [[r.LightMaxDrawDistanceScale:1]]
+[2022.08.26-10.13.54:444][  0]LogConfig: Setting CVar [[r.CapsuleShadows:1]]
+[2022.08.26-10.13.54:444][  0]LogConfig: Applying CVar settings from Section [PostProcessQuality@3] File [../../../TwoDSSG/Saved/Config/WindowsServer/Scalability.ini]
+[2022.08.26-10.13.54:444][  0]LogConfig: Setting CVar [[r.MotionBlurQuality:4]]
+[2022.08.26-10.13.54:444][  0]LogConfig: Setting CVar [[r.AmbientOcclusionMipLevelFactor:0.4]]
+[2022.08.26-10.13.54:444][  0]LogConfig: Setting CVar [[r.AmbientOcclusionMaxQuality:100]]
+[2022.08.26-10.13.54:444][  0]LogConfig: Setting CVar [[r.AmbientOcclusionLevels:-1]]
+[2022.08.26-10.13.54:444][  0]LogConfig: Setting CVar [[r.AmbientOcclusionRadiusScale:1.0]]
+[2022.08.26-10.13.54:444][  0]LogConfig: Setting CVar [[r.DepthOfFieldQuality:2]]
+[2022.08.26-10.13.54:444][  0]LogConfig: Setting CVar [[r.RenderTargetPoolMin:400]]
+[2022.08.26-10.13.54:444][  0]LogConfig: Setting CVar [[r.LensFlareQuality:2]]
+[2022.08.26-10.13.54:444][  0]LogConfig: Setting CVar [[r.SceneColorFringeQuality:1]]
+[2022.08.26-10.13.54:444][  0]LogConfig: Setting CVar [[r.EyeAdaptationQuality:2]]
+[2022.08.26-10.13.54:444][  0]LogConfig: Setting CVar [[r.BloomQuality:5]]
+[2022.08.26-10.13.54:444][  0]LogConfig: Setting CVar [[r.FastBlurThreshold:100]]
+[2022.08.26-10.13.54:444][  0]LogConfig: Setting CVar [[r.Upscale.Quality:3]]
+[2022.08.26-10.13.54:444][  0]LogConfig: Setting CVar [[r.Tonemapper.GrainQuantization:1]]
+[2022.08.26-10.13.54:444][  0]LogConfig: Setting CVar [[r.LightShaftQuality:1]]
+[2022.08.26-10.13.54:444][  0]LogConfig: Setting CVar [[r.Filter.SizeScale:1]]
+[2022.08.26-10.13.54:444][  0]LogConfig: Setting CVar [[r.Tonemapper.Quality:5]]
+[2022.08.26-10.13.54:444][  0]LogConfig: Setting CVar [[r.DOF.Gather.AccumulatorQuality:1        ; higher gathering accumulator quality]]
+[2022.08.26-10.13.54:444][  0]LogConfig: Setting CVar [[r.DOF.Gather.PostfilterMethod:1          ; Median3x3 postfilering method]]
+[2022.08.26-10.13.54:444][  0]LogConfig: Setting CVar [[r.DOF.Gather.EnableBokehSettings:0       ; no bokeh simulation when gathering]]
+[2022.08.26-10.13.54:444][  0]LogConfig: Setting CVar [[r.DOF.Gather.RingCount:4                 ; medium number of samples when gathering]]
+[2022.08.26-10.13.54:444][  0]LogConfig: Setting CVar [[r.DOF.Scatter.ForegroundCompositing:1    ; additive foreground scattering]]
+[2022.08.26-10.13.54:444][  0]LogConfig: Setting CVar [[r.DOF.Scatter.BackgroundCompositing:2    ; additive background scattering]]
+[2022.08.26-10.13.54:444][  0]LogConfig: Setting CVar [[r.DOF.Scatter.EnableBokehSettings:1      ; bokeh simulation when scattering]]
+[2022.08.26-10.13.54:444][  0]LogConfig: Setting CVar [[r.DOF.Scatter.MaxSpriteRatio:0.1         ; only a maximum of 10% of scattered bokeh]]
+[2022.08.26-10.13.54:444][  0]LogConfig: Setting CVar [[r.DOF.Recombine.Quality:1                ; cheap slight out of focus]]
+[2022.08.26-10.13.54:444][  0]LogConfig: Setting CVar [[r.DOF.Recombine.EnableBokehSettings:0    ; no bokeh simulation on slight out of focus]]
+[2022.08.26-10.13.54:444][  0]LogConfig: Setting CVar [[r.DOF.TemporalAAQuality:1                ; more stable temporal accumulation]]
+[2022.08.26-10.13.54:444][  0]LogConfig: Setting CVar [[r.DOF.Kernel.MaxForegroundRadius:0.025]]
+[2022.08.26-10.13.54:444][  0]LogConfig: Setting CVar [[r.DOF.Kernel.MaxBackgroundRadius:0.025]]
+[2022.08.26-10.13.54:444][  0]LogConfig: Applying CVar settings from Section [TextureQuality@3] File [../../../TwoDSSG/Saved/Config/WindowsServer/Scalability.ini]
+[2022.08.26-10.13.54:444][  0]LogConfig: Setting CVar [[r.Streaming.MipBias:0]]
+[2022.08.26-10.13.54:444][  0]LogConfig: Setting CVar [[r.Streaming.AmortizeCPUToGPUCopy:0]]
+[2022.08.26-10.13.54:444][  0]LogConfig: Setting CVar [[r.Streaming.MaxNumTexturesToStreamPerFrame:0]]
+[2022.08.26-10.13.54:444][  0]LogConfig: Setting CVar [[r.Streaming.Boost:1]]
+[2022.08.26-10.13.54:444][  0]LogConfig: Setting CVar [[r.MaxAnisotropy:8]]
+[2022.08.26-10.13.54:444][  0]LogConfig: Setting CVar [[r.VT.MaxAnisotropy:8]]
+[2022.08.26-10.13.54:444][  0]LogConfig: Setting CVar [[r.Streaming.LimitPoolSizeToVRAM:0]]
+[2022.08.26-10.13.54:444][  0]LogConfig: Setting CVar [[r.Streaming.PoolSize:1000]]
+[2022.08.26-10.13.54:444][  0]LogConfig: Setting CVar [[r.Streaming.MaxEffectiveScreenSize:0]]
+[2022.08.26-10.13.54:444][  0]LogConfig: Applying CVar settings from Section [EffectsQuality@3] File [../../../TwoDSSG/Saved/Config/WindowsServer/Scalability.ini]
+[2022.08.26-10.13.54:444][  0]LogConfig: Setting CVar [[r.TranslucencyLightingVolumeDim:64]]
+[2022.08.26-10.13.54:445][  0]LogConfig: Setting CVar [[r.RefractionQuality:2]]
+[2022.08.26-10.13.54:445][  0]LogConfig: Setting CVar [[r.SSR.Quality:3]]
+[2022.08.26-10.13.54:445][  0]LogConfig: Setting CVar [[r.SSR.HalfResSceneColor:0]]
+[2022.08.26-10.13.54:445][  0]LogConfig: Setting CVar [[r.SceneColorFormat:4]]
+[2022.08.26-10.13.54:445][  0]LogConfig: Setting CVar [[r.DetailMode:2]]
+[2022.08.26-10.13.54:445][  0]LogConfig: Setting CVar [[r.TranslucencyVolumeBlur:1]]
+[2022.08.26-10.13.54:445][  0]LogConfig: Setting CVar [[r.MaterialQualityLevel:1 ; High quality]]
+[2022.08.26-10.13.54:445][  0]LogConfig: Setting CVar [[r.AnisotropicMaterials:1]]
+[2022.08.26-10.13.54:445][  0]LogConfig: Setting CVar [[r.SSS.Scale:1]]
+[2022.08.26-10.13.54:445][  0]LogConfig: Setting CVar [[r.SSS.SampleSet:2]]
+[2022.08.26-10.13.54:445][  0]LogConfig: Setting CVar [[r.SSS.Quality:1]]
+[2022.08.26-10.13.54:445][  0]LogConfig: Setting CVar [[r.SSS.HalfRes:0]]
+[2022.08.26-10.13.54:445][  0]LogConfig: Setting CVar [[r.SSGI.Quality:3]]
+[2022.08.26-10.13.54:445][  0]LogConfig: Setting CVar [[r.EmitterSpawnRateScale:1.0]]
+[2022.08.26-10.13.54:445][  0]LogConfig: Setting CVar [[r.ParticleLightQuality:2]]
+[2022.08.26-10.13.54:445][  0]LogConfig: Setting CVar [[r.SkyAtmosphere.AerialPerspectiveLUT.FastApplyOnOpaque:1 ; Always have FastSkyLUT 1 in this case to avoid wrong sky]]
+[2022.08.26-10.13.54:445][  0]LogConfig: Setting CVar [[r.SkyAtmosphere.AerialPerspectiveLUT.SampleCountMaxPerSlice:4]]
+[2022.08.26-10.13.54:445][  0]LogConfig: Setting CVar [[r.SkyAtmosphere.AerialPerspectiveLUT.DepthResolution:16.0]]
+[2022.08.26-10.13.54:445][  0]LogConfig: Setting CVar [[r.SkyAtmosphere.FastSkyLUT:1]]
+[2022.08.26-10.13.54:445][  0]LogConfig: Setting CVar [[r.SkyAtmosphere.FastSkyLUT.SampleCountMin:4.0]]
+[2022.08.26-10.13.54:445][  0]LogConfig: Setting CVar [[r.SkyAtmosphere.FastSkyLUT.SampleCountMax:128.0]]
+[2022.08.26-10.13.54:445][  0]LogConfig: Setting CVar [[r.SkyAtmosphere.SampleCountMin:4.0]]
+[2022.08.26-10.13.54:445][  0]LogConfig: Setting CVar [[r.SkyAtmosphere.SampleCountMax:128.0]]
+[2022.08.26-10.13.54:445][  0]LogConfig: Setting CVar [[r.SkyAtmosphere.TransmittanceLUT.UseSmallFormat:0]]
+[2022.08.26-10.13.54:445][  0]LogConfig: Setting CVar [[r.SkyAtmosphere.TransmittanceLUT.SampleCount:10.0]]
+[2022.08.26-10.13.54:445][  0]LogConfig: Setting CVar [[r.SkyAtmosphere.MultiScatteringLUT.SampleCount:15.0]]
+[2022.08.26-10.13.54:445][  0]LogConfig: Setting CVar [[r.SkyLight.RealTimeReflectionCapture:1]]
+[2022.08.26-10.13.54:445][  0]LogConfig: Setting CVar [[fx.Niagara.QualityLevel:3]]
+[2022.08.26-10.13.54:445][  0]LogConfig: Applying CVar settings from Section [FoliageQuality@3] File [../../../TwoDSSG/Saved/Config/WindowsServer/Scalability.ini]
+[2022.08.26-10.13.54:445][  0]LogConfig: Setting CVar [[foliage.DensityScale:1.0]]
+[2022.08.26-10.13.54:445][  0]LogConfig: Setting CVar [[grass.DensityScale:1.0]]
+[2022.08.26-10.13.54:445][  0]LogConfig: Applying CVar settings from Section [ShadingQuality@3] File [../../../TwoDSSG/Saved/Config/WindowsServer/Scalability.ini]
+[2022.08.26-10.13.54:445][  0]LogConfig: Setting CVar [[r.HairStrands.SkyLighting.IntegrationType:2]]
+[2022.08.26-10.13.54:445][  0]LogConfig: Setting CVar [[r.HairStrands.SkyAO.SampleCount:4]]
+[2022.08.26-10.13.54:445][  0]LogConfig: Setting CVar [[r.HairStrands.Visibility.MSAA.SamplePerPixel:4]]
+[2022.08.26-10.13.54:445][  0]LogConfig: Applying CVar settings from Section [Startup] File [../../../Engine/Config/ConsoleVariables.ini]
+[2022.08.26-10.13.54:445][  0]LogConfig: Setting CVar [[net.UseAdaptiveNetUpdateFrequency:0]]
+[2022.08.26-10.13.54:445][  0]LogConfig: Setting CVar [[p.chaos.AllowCreatePhysxBodies:1]]
+[2022.08.26-10.13.54:445][  0]LogConfig: Setting CVar [[fx.SkipVectorVMBackendOptimizations:1]]
+[2022.08.26-10.13.54:445][  0]LogConfig: Applying CVar settings from Section [ConsoleVariables] File [../../../TwoDSSG/Saved/Config/WindowsServer/Engine.ini]
+[2022.08.26-10.13.54:445][  0]LogInit: Computer: DESKTOP-B63J4BI
+[2022.08.26-10.13.54:445][  0]LogInit: User: Sagi
+[2022.08.26-10.13.54:445][  0]LogInit: CPU Page size=4096, Cores=6
+[2022.08.26-10.13.54:445][  0]LogInit: High frequency timer resolution =10.000000 MHz
+[2022.08.26-10.13.54:445][  0]LogMemory: Memory total: Physical=15.9GB (16GB approx)
+[2022.08.26-10.13.54:445][  0]LogMemory: Platform Memory Stats for WindowsServer
+[2022.08.26-10.13.54:445][  0]LogMemory: Process Physical Memory: 79.46 MB used, 79.46 MB peak
+[2022.08.26-10.13.54:445][  0]LogMemory: Process Virtual Memory: 78.49 MB used, 78.49 MB peak
+[2022.08.26-10.13.54:445][  0]LogMemory: Physical Memory: 6113.36 MB used,  10206.27 MB free, 16319.62 MB total
+[2022.08.26-10.13.54:445][  0]LogMemory: Virtual Memory: 134203376.00 MB used,  14353.72 MB free, 134217728.00 MB total
+[2022.08.26-10.13.54:456][  0]LogWindows: WindowsPlatformFeatures disabled or dedicated server build
+[2022.08.26-10.13.54:567][  0]LogInit: Physics initialised using underlying interface: PhysX
+[2022.08.26-10.13.54:567][  0]LogInit: Using OS detected language (en-US).
+[2022.08.26-10.13.54:567][  0]LogInit: Using OS detected locale (en-US).
+[2022.08.26-10.13.54:568][  0]LogTextLocalizationManager: No specific localization for 'en-US' exists, so the 'en' localization will be used.
+[2022.08.26-10.13.54:590][  0]LogRendererCore: Ray tracing is disabled. Reason: r.RayTracing=0.
+[2022.08.26-10.13.54:590][  0]LogODSC: ODSC Thread active.
+[2022.08.26-10.13.54:595][  0]LogInit: Using OS detected language (en-US).
+[2022.08.26-10.13.54:595][  0]LogInit: Using OS detected locale (en-US).
+[2022.08.26-10.13.54:595][  0]LogTextLocalizationManager: No localization for 'en-US' exists, so 'en' will be used for the language.
+[2022.08.26-10.13.54:596][  0]LogTextLocalizationManager: No localization for 'en-US' exists, so 'en' will be used for the locale.
+[2022.08.26-10.13.54:597][  0]LogTextLocalizationManager: Compacting localization data took   0.81ms
+[2022.08.26-10.13.54:597][  0]LogAssetRegistry: FAssetRegistry took 0.0009 seconds to start up
+[2022.08.26-10.13.54:664][  0]LogStreaming: Display: FlushAsyncLoading: 1 QueuedPackages, 0 AsyncPackages
+[2022.08.26-10.13.54:665][  0]LogPackageLocalizationCache: Processed 26 localized package path(s) for 1 prioritized culture(s) in 0.000091 seconds
+[2022.08.26-10.13.54:665][  0]LogPakFile: New pak file ../../../TwoDSSG/Content/Paks/TwoDSSG-WindowsServer.pak added to pak precacher.
+[2022.08.26-10.13.54:666][  0]LogInit: Selected Device Profile: [WindowsServer]
+[2022.08.26-10.13.54:666][  0]LogInit: Active device profile: [0000017EFF022EC0][0000017EFAF10010 49] WindowsServer
+[2022.08.26-10.13.54:666][  0]LogInit: Profiles: [0000017EFF023040][0000017EFD699250 49] Windows, [0000017EFF022EC0][0000017EFAF10010 49] WindowsServer, 
+[2022.08.26-10.13.54:675][  0]LogSerialization: Display: AllowBulkDataInIoStore: 'true'
+[2022.08.26-10.13.54:681][  0]LogNetVersion: TwoDSSG 1.0.0, NetCL: 0, EngineNetVer: 17, GameNetVer: 0 (Checksum: 2164445238)
+[2022.08.26-10.13.54:703][  0]LogAudioCaptureCore: Display: No Audio Capture implementations found. Audio input will be silent.
+[2022.08.26-10.13.54:703][  0]LogAudioCaptureCore: Display: No Audio Capture implementations found. Audio input will be silent.
+[2022.08.26-10.13.54:704][  0]LogHMD: PokeAHoleMaterial loaded successfully
+[2022.08.26-10.13.54:723][  0]LogUObjectArray: 15728 objects as part of root set at end of initial load.
+[2022.08.26-10.13.54:723][  0]LogUObjectAllocator: 3190440 out of 0 bytes used by permanent object pool.
+[2022.08.26-10.13.54:723][  0]LogUObjectArray: CloseDisregardForGC: 15728/0 objects in disregard for GC pool
+[2022.08.26-10.13.54:745][  0]LogNiagaraDebuggerClient: Niagara Debugger Client Initialized | Session: 1FC7A12141F5A6BECA4838BFFD9936F1 | Instance: D78622D24754306FE513739055D9830C (DESKTOP-B63J4BI-9124).
+[2022.08.26-10.13.54:747][  0]LogAndroidPermission: UAndroidPermissionCallbackProxy::GetInstance
+[2022.08.26-10.13.54:747][  0]LogOcInput: OculusInput pre-init called
+[2022.08.26-10.13.54:748][  0]LogEngine: Initializing Engine...
+[2022.08.26-10.13.54:749][  0]LogStats: UGameplayTagsManager::InitializeManager -  0.000 s
+[2022.08.26-10.13.54:753][  0]LogInit: Initializing FReadOnlyCVARCache
+[2022.08.26-10.13.54:753][  0]LogNetVersion: Set ProjectVersion to 1.0.0.0. Version Checksum will be recalculated on next use.
+[2022.08.26-10.13.54:753][  0]LogInit: Texture streaming: Disabled
+[2022.08.26-10.13.54:761][  0]LogInit: Display: Game Engine Initialized.
+[2022.08.26-10.13.54:761][  0]LogInit: Display: Starting Game.
+[2022.08.26-10.13.54:761][  0]LogNet: Browse: /Game/GameSystem/Maps/WhereTheJourneyBegins?Name=Player
+[2022.08.26-10.13.54:761][  0]LogLoad: LoadMap: /Game/GameSystem/Maps/WhereTheJourneyBegins?Name=Player
+[2022.08.26-10.13.54:761][  0]LogWorld: BeginTearingDown for /Temp/Untitled_0
+[2022.08.26-10.13.54:764][  0]LogWorld: UWorld::CleanupWorld for Untitled, bSessionEnded=true, bCleanupResources=true
+[2022.08.26-10.13.54:766][  0]LogUObjectHash: Compacting FUObjectHashTables data took   0.60ms
+[2022.08.26-10.13.54:825][  0]LogClass: Warning: Failed to bind native function MasterPortal_BP_C.return portal\'s map name
+[2022.08.26-10.13.54:825][  0]LogClass: Warning: Failed to bind native function MasterMonster_C.Monster\'s Death - multicast
+[2022.08.26-10.13.54:834][  0]LogClass: Warning: Failed to bind native function 2DSideScrollerCharacter_C.OnRep_player\'s Style_to Others
+[2022.08.26-10.13.54:851][  0]LogAIModule: Creating AISystem for world WhereTheJourneyBegins
+[2022.08.26-10.13.54:851][  0]LogLoad: Game class is '2DSideScrollerGameMode_C'
+[2022.08.26-10.13.54:852][  0]LogNet: ReplicationDriverClass is null! Not using ReplicationDriver.
+[2022.08.26-10.13.54:852][  0]LogNetCore: DDoS detection status: detection enabled: 0 analytics enabled: 0
+[2022.08.26-10.13.54:852][  0]LogInit: WinSock: Socket queue. Rx: 131072 (config 131072) Tx: 131072 (config 131072)
+[2022.08.26-10.13.54:852][  0]LogNet: Created socket for bind address: 0.0.0.0 on port 7777
+[2022.08.26-10.13.54:852][  0]PacketHandlerLog: Loaded PacketHandler component: Engine.EngineHandlerComponentFactory (StatelessConnectHandlerComponent)
+[2022.08.26-10.13.54:852][  0]LogNet: GameNetDriver IpNetDriver_2147482567 IpNetDriver listening on port 7777
+[2022.08.26-10.13.54:854][  0]LogWorld: Bringing World /Game/GameSystem/Maps/WhereTheJourneyBegins.WhereTheJourneyBegins up for play (max tick rate 30) at 2022.08.26-13.13.54
+[2022.08.26-10.13.54:854][  0]LogWorld: Bringing up level for play took: 0.001622
+[2022.08.26-10.13.54:856][  0]LogLoad: Took 0.094052 seconds to LoadMap(/Game/GameSystem/Maps/WhereTheJourneyBegins)
+[2022.08.26-10.13.54:856][  0]LogPakFile: AllPaks IndexSizes: DirectoryHashSize=411132, PathHashSize=16, EntriesSize=61440, TotalSize=472588
+[2022.08.26-10.13.54:856][  0]LogInit: Display: Engine is initialized. Leaving FEngineLoop::Init()
+[2022.08.26-10.13.54:856][  0]LogLoad: (Engine Initialization) Total time: 0.81 seconds
+[2022.08.26-10.14.08:977][426]LogNet: NotifyAcceptingConnection accepted from: 127.0.0.1:59496
+[2022.08.26-10.14.08:977][426]LogHandshake: SendConnectChallenge. Timestamp: 14.121034, Cookie: 238061215054009055024094247104237011216190067199092173120056
+[2022.08.26-10.14.09:010][427]LogNet: NotifyAcceptingConnection accepted from: 127.0.0.1:59496
+[2022.08.26-10.14.09:010][427]LogHandshake: SendChallengeAck. InCookie: 238061215054009055024094247104237011216190067199092173120056
+[2022.08.26-10.14.09:010][427]LogNet: Server accepting post-challenge connection from: 127.0.0.1:59496
+[2022.08.26-10.14.09:010][427]PacketHandlerLog: Loaded PacketHandler component: Engine.EngineHandlerComponentFactory (StatelessConnectHandlerComponent)
+[2022.08.26-10.14.09:010][427]LogNet: NotifyAcceptedConnection: Name: WhereTheJourneyBegins, TimeStamp: 08/26/22 13:14:09, [UNetConnection] RemoteAddr: 127.0.0.1:59496, Name: IpConnection_2147482549, Driver: GameNetDriver IpNetDriver_2147482567, IsServer: YES, PC: NULL, Owner: NULL, UniqueId: INVALID
+[2022.08.26-10.14.09:010][427]LogNet: AddClientConnection: Added client connection: [UNetConnection] RemoteAddr: 127.0.0.1:59496, Name: IpConnection_2147482549, Driver: GameNetDriver IpNetDriver_2147482567, IsServer: YES, PC: NULL, Owner: NULL, UniqueId: INVALID
+[2022.08.26-10.14.09:043][428]LogNet: NotifyAcceptingChannel Control 0 server World /Game/GameSystem/Maps/WhereTheJourneyBegins.WhereTheJourneyBegins: Accepted
+[2022.08.26-10.14.09:043][428]LogNet: Remote platform little endian=1
+[2022.08.26-10.14.09:043][428]LogNet: This platform little endian=1
+[2022.08.26-10.14.09:043][428]LogNetVersion: TwoDSSG 1.0.0.0, NetCL: 0, EngineNetVer: 17, GameNetVer: 0 (Checksum: 2372109795)
+[2022.08.26-10.14.09:076][429]LogNet: Login request: ?Name=DESKTOP-B63J4BI-8BB590E74BF337866A7359B3CAFFF150 userId: NULL:DESKTOP-B63J4BI-8BB590E74BF337866A7359B3CAFFF150 platform: NULL
+[2022.08.26-10.14.09:110][430]LogNet: Client netspeed is 100000
+[2022.08.26-10.14.09:508][442]LogNet: Join request: /Game/GameSystem/Maps/WhereTheJourneyBegins?Name=DESKTOP-B63J4BI-8BB590E74BF337866A7359B3CAFFF150?SplitscreenCount=1
+[2022.08.26-10.14.09:510][442]LogOnlineSession: Warning: OSS: No game present to join for session (GameSession)
+[2022.08.26-10.14.09:527][442]LogOutputDevice: Warning: 
+
+Script Stack (2 frames):
+2DSideScrollerCharacter_C.ReceiveBeginPlay
+2DSideScrollerGameMode_C.K2_PostLogin
+
+[2022.08.26-10.14.09:528][442]LogWindows: Windows GetLastError: The operation completed successfully. (0)
+[2022.08.26-10.14.09:725][442]LogWindows: Error: === Critical error: ===
+[2022.08.26-10.14.09:726][442]LogWindows: Error: 
+[2022.08.26-10.14.09:726][442]LogWindows: Error: Assertion failed: IsValid() [File:C:\Program Files\Epic Games\UE_4.27.2_source\Engine\Source\Runtime\Core\Public\Templates/SharedPointer.h] [Line: 879] 
+[2022.08.26-10.14.09:726][442]LogWindows: Error: 
+[2022.08.26-10.14.09:726][442]LogWindows: Error: 
+[2022.08.26-10.14.09:726][442]LogWindows: Error: 
+[2022.08.26-10.14.09:726][442]LogWindows: Error: [Callstack] 0x00007fffbd5f474c KERNELBASE.dll!UnknownFunction []
+[2022.08.26-10.14.09:726][442]LogWindows: Error: [Callstack] 0x00007ff624a89d46 TwoDSSGServer.exe!UnknownFunction []
+[2022.08.26-10.14.09:726][442]LogWindows: Error: [Callstack] 0x00007ff624a8da98 TwoDSSGServer.exe!UnknownFunction []
+[2022.08.26-10.14.09:726][442]LogWindows: Error: [Callstack] 0x00007ff6247cbcfd TwoDSSGServer.exe!UnknownFunction []
+[2022.08.26-10.14.09:727][442]LogWindows: Error: [Callstack] 0x00007ff624754e8b TwoDSSGServer.exe!UnknownFunction []
+[2022.08.26-10.14.09:727][442]LogWindows: Error: [Callstack] 0x00007ff624757090 TwoDSSGServer.exe!UnknownFunction []
+[2022.08.26-10.14.09:727][442]LogWindows: Error: [Callstack] 0x00007ff6272bbb3b TwoDSSGServer.exe!UnknownFunction []
+[2022.08.26-10.14.09:727][442]LogWindows: Error: [Callstack] 0x00007ff6232812ca TwoDSSGServer.exe!UnknownFunction []
+[2022.08.26-10.14.09:727][442]LogWindows: Error: [Callstack] 0x00007ff62325b891 TwoDSSGServer.exe!UnknownFunction []
+[2022.08.26-10.14.09:727][442]LogWindows: Error: [Callstack] 0x00007ff624c0b129 TwoDSSGServer.exe!UnknownFunction []
+[2022.08.26-10.14.09:727][442]LogWindows: Error: [Callstack] 0x00007ff624e9d3a7 TwoDSSGServer.exe!UnknownFunction []
+[2022.08.26-10.14.09:727][442]LogWindows: Error: [Callstack] 0x00007ff627732c1e TwoDSSGServer.exe!UnknownFunction []
+[2022.08.26-10.14.09:727][442]LogWindows: Error: [Callstack] 0x00007ff62770db44 TwoDSSGServer.exe!UnknownFunction []
+[2022.08.26-10.14.09:727][442]LogWindows: Error: [Callstack] 0x00007ff627713d47 TwoDSSGServer.exe!UnknownFunction []
+[2022.08.26-10.14.09:727][442]LogWindows: Error: [Callstack] 0x00007ff6277300be TwoDSSGServer.exe!UnknownFunction []
+[2022.08.26-10.14.09:727][442]LogWindows: Error: [Callstack] 0x00007ff62771ba5b TwoDSSGServer.exe!UnknownFunction []
+[2022.08.26-10.14.09:728][442]LogWindows: Error: [Callstack] 0x00007ff627c622d0 TwoDSSGServer.exe!UnknownFunction []
+[2022.08.26-10.14.09:728][442]LogWindows: Error: [Callstack] 0x00007ff6232b5fc6 TwoDSSGServer.exe!UnknownFunction []
+[2022.08.26-10.14.09:728][442]LogWindows: Error: [Callstack] 0x00007ff623529f99 TwoDSSGServer.exe!UnknownFunction []
+[2022.08.26-10.14.09:728][442]LogWindows: Error: [Callstack] 0x00007ff624c0b129 TwoDSSGServer.exe!UnknownFunction []
+[2022.08.26-10.14.09:728][442]LogWindows: Error: [Callstack] 0x00007ff624e9d3a7 TwoDSSGServer.exe!UnknownFunction []
+[2022.08.26-10.14.09:728][442]LogWindows: Error: [Callstack] 0x00007ff627732c1e TwoDSSGServer.exe!UnknownFunction []
+[2022.08.26-10.14.09:728][442]LogWindows: Error: [Callstack] 0x00007ff628745a02 TwoDSSGServer.exe!UnknownFunction []
+[2022.08.26-10.14.09:728][442]LogWindows: Error: [Callstack] 0x00007ff627c7a4e7 TwoDSSGServer.exe!UnknownFunction []
+[2022.08.26-10.14.09:728][442]LogWindows: Error: [Callstack] 0x00007ff627dd8028 TwoDSSGServer.exe!UnknownFunction []
+[2022.08.26-10.14.09:728][442]LogWindows: Error: [Callstack] 0x00007ff628630c0b TwoDSSGServer.exe!UnknownFunction []
+[2022.08.26-10.14.09:728][442]LogWindows: Error: [Callstack] 0x00007ff627b27fb3 TwoDSSGServer.exe!UnknownFunction []
+[2022.08.26-10.14.09:728][442]LogWindows: Error: [Callstack] 0x00007ff627b2ae9b TwoDSSGServer.exe!UnknownFunction []
+[2022.08.26-10.14.09:729][442]LogWindows: Error: [Callstack] 0x00007ff627b2a3b8 TwoDSSGServer.exe!UnknownFunction []
+[2022.08.26-10.14.09:729][442]LogWindows: Error: [Callstack] 0x00007ff627b2aa0a TwoDSSGServer.exe!UnknownFunction []
+[2022.08.26-10.14.09:729][442]LogWindows: Error: [Callstack] 0x00007ff627edf700 TwoDSSGServer.exe!UnknownFunction []
+[2022.08.26-10.14.09:729][442]LogWindows: Error: [Callstack] 0x00007ff627ee11b5 TwoDSSGServer.exe!UnknownFunction []
+[2022.08.26-10.14.09:729][442]LogWindows: Error: [Callstack] 0x00007ff6242478e0 TwoDSSGServer.exe!UnknownFunction []
+[2022.08.26-10.14.09:729][442]LogWindows: Error: [Callstack] 0x00007ff627f1a310 TwoDSSGServer.exe!UnknownFunction []
+[2022.08.26-10.14.09:729][442]LogWindows: Error: [Callstack] 0x00007ff625124ae0 TwoDSSGServer.exe!UnknownFunction []
+[2022.08.26-10.14.09:729][442]LogWindows: Error: [Callstack] 0x00007ff627dd88c5 TwoDSSGServer.exe!UnknownFunction []
+[2022.08.26-10.14.09:729][442]LogWindows: Error: [Callstack] 0x00007ff627c37555 TwoDSSGServer.exe!UnknownFunction []
+[2022.08.26-10.14.09:729][442]LogWindows: Error: [Callstack] 0x00007ff6231a87dc TwoDSSGServer.exe!UnknownFunction []
+[2022.08.26-10.14.09:730][442]LogWindows: Error: [Callstack] 0x00007ff6231bccec TwoDSSGServer.exe!UnknownFunction []
+[2022.08.26-10.14.09:730][442]LogWindows: Error: [Callstack] 0x00007ff6231bcdba TwoDSSGServer.exe!UnknownFunction []
+[2022.08.26-10.14.09:730][442]LogWindows: Error: [Callstack] 0x00007ff6231bee2c TwoDSSGServer.exe!UnknownFunction []
+[2022.08.26-10.14.09:730][442]LogWindows: Error: [Callstack] 0x00007ff6231cd5b4 TwoDSSGServer.exe!UnknownFunction []
+[2022.08.26-10.14.09:730][442]LogWindows: Error: [Callstack] 0x00007ff6299c9e8e TwoDSSGServer.exe!UnknownFunction []
+[2022.08.26-10.14.09:730][442]LogWindows: Error: [Callstack] 0x00007fffbf7f54e0 KERNEL32.DLL!UnknownFunction []
+[2022.08.26-10.14.09:730][442]LogWindows: Error: [Callstack] 0x00007fffbfee485b ntdll.dll!UnknownFunction []
+[2022.08.26-10.14.09:730][442]LogWindows: Error: 
+[2022.08.26-10.14.09:735][442]LogExit: Executing StaticShutdownAfterError
+[2022.08.26-10.14.09:743][442]LogWindows: FPlatformMisc::RequestExit(1)
+[2022.08.26-10.14.09:743][442]LogWindows: FPlatformMisc::RequestExitWithStatus(1, 3)
+[2022.08.26-10.14.09:743][442]LogCore: Engine exit requested (reason: Win RequestExit)
+[2022.08.26-10.14.09:746][442]Log file closed, 08/26/22 13:14:09
