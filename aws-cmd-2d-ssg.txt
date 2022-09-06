@@ -1,0 +1,28 @@
+#AWS CONFIGURE
+-access key and secret key
+
+#LOCAL - to start game session, --game-properties Key=Game_Map,Value=BeginnersTrainingGround this will define which map to load
+-AWS gamelift create-game-session --endpoint-url http://localhost:9080 --maximum-player-session-count 2 --game-properties Key=Game_Map,Value=BeginnersTrainingGround --fleet-id fleet-1a2b3c4d-5e6f-7a8b-9c0d-1e2f3a4b5c6d
+-AWS gamelift create-game-session --endpoint-url http://localhost:9080 --maximum-player-session-count 2 --game-properties Key=Game_Map,Value=WhereTheJourneyBegins --fleet-id fleet-1a2b3c4d-5e6f-7a8b-9c0d-1e2f3a4b5c6d
+
+#UPLOAD BUILD - region eu-central-1                                                                         
+-AWS gamelift upload-build --operating-system WINDOWS_2012 --build-root "THE WINDOWS SERVER FOLDER LOCATION" --name "ANY NAME" --build-version "VERSION 0.0.0.0" --region REGION
+-AWS gamelift upload-build --operating-system WINDOWS_2012 --build-root "C:\.UE4_Fiverr\2D-SSG-MMORPG2\WindowsServer" --name "2D-SSG-MMORPG2" --build-version "1.0.0.0" --region eu-central-1
+
+TwoDSSG\Binaries\Win64\TwoDSSGServer.exe
+
+#CREATE FLEET
+-Enter Name* 2D-SSG-MMORPG2 v1000
+-Select Build*
+-Launch path* TwoDSSG\Binaries\Win64\TwoDSSGServer.exe
+-Port range* 7777-7799 Protocol* UDP IP Adress range* 0.0.0.0/0
+
+UDP
+
+# gamelift - to start game session on gamelift
+-AWS gamelift create-game-session --endpoint-url https://gamelift.eu-central-1.amazonaws.com --maximum-player-session-count 64 --game-properties Key=Game_Map,Value=BeginnersTrainingGround --alias-id alias-025abfe6-bb84-446d-9c72-302aa13bd320
+-AWS gamelift create-game-session --endpoint-url https://gamelift.eu-central-1.amazonaws.com --maximum-player-session-count 64 --game-properties Key=Game_Map,Value=WhereTheJourneyBegins --alias-id alias-025abfe6-bb84-446d-9c72-302aa13bd320
+
+
+# MISC
+-open 127.0.0.1:7777
