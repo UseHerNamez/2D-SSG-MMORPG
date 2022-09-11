@@ -23,6 +23,11 @@ UDP
 -AWS gamelift create-game-session --endpoint-url https://gamelift.eu-central-1.amazonaws.com --maximum-player-session-count 64 --game-properties Key=Game_Map,Value=BeginnersTrainingGround --alias-id alias-025abfe6-bb84-446d-9c72-302aa13bd320
 -AWS gamelift create-game-session --endpoint-url https://gamelift.eu-central-1.amazonaws.com --maximum-player-session-count 64 --game-properties Key=Game_Map,Value=WhereTheJourneyBegins --alias-id alias-025abfe6-bb84-446d-9c72-302aa13bd320
 
+# Search game session by map name
+-aws gamelift search-game-sessions --endpoint-url https://gamelift.eu-central-1.amazonaws.com --alias-id alias-025abfe6-bb84-446d-9c72-302aa13bd320 --filter-express "maximumSessions > 4 AND gameSessionProperties.Game_Map = 'TestLevel'"
 
 # MISC
 -open 127.0.0.1:7777
+-open 35.156.156.15:7785
+-open 35.156.156.15:7784
+
