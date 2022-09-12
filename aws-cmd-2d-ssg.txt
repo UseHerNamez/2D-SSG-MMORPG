@@ -7,7 +7,7 @@
 
 #UPLOAD BUILD - region eu-central-1                                                                         
 -AWS gamelift upload-build --operating-system WINDOWS_2012 --build-root "THE WINDOWS SERVER FOLDER LOCATION" --name "ANY NAME" --build-version "VERSION 0.0.0.0" --region REGION
--AWS gamelift upload-build --operating-system WINDOWS_2012 --build-root "C:\.UE4_Fiverr\2D-SSG-MMORPG2\WindowsServer" --name "2D-SSG-MMORPG2" --build-version "1.0.0.0" --region eu-central-1
+-AWS gamelift upload-build --operating-system WINDOWS_2012 --build-root "C:\.UE4_Fiverr\2D-SSG-MMORPG2\WindowsServer" --name "2D-SSG-MMORPG2" --build-version "1.0.0.1" --region eu-central-1
 
 TwoDSSG\Binaries\Win64\TwoDSSGServer.exe
 
@@ -24,7 +24,7 @@ UDP
 -AWS gamelift create-game-session --endpoint-url https://gamelift.eu-central-1.amazonaws.com --maximum-player-session-count 64 --game-properties Key=Game_Map,Value=WhereTheJourneyBegins --alias-id alias-025abfe6-bb84-446d-9c72-302aa13bd320
 
 # Search game session by map name
--aws gamelift search-game-sessions --endpoint-url https://gamelift.eu-central-1.amazonaws.com --alias-id alias-025abfe6-bb84-446d-9c72-302aa13bd320 --filter-express "maximumSessions > 4 AND gameSessionProperties.Game_Map = 'TestLevel'"
+-aws gamelift search-game-sessions --endpoint-url https://gamelift.eu-central-1.amazonaws.com --alias-id alias-025abfe6-bb84-446d-9c72-302aa13bd320 --filter-express "maximumSessions > 4 AND gameSessionProperties.Game_Map = 'WhereTheJourneyBegins'"
 
 # MISC
 -open 127.0.0.1:7777
