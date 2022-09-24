@@ -6,8 +6,9 @@
 -AWS gamelift create-game-session --endpoint-url http://localhost:9080 --maximum-player-session-count 2 --game-properties Key=Game_Map,Value=WhereTheJourneyBegins --fleet-id fleet-1a2b3c4d-5e6f-7a8b-9c0d-1e2f3a4b5c6d
 
 #UPLOAD BUILD - region eu-central-1                                                                         
--AWS gamelift upload-build --operating-system WINDOWS_2012 --build-root "THE WINDOWS SERVER FOLDER LOCATION" --name "ANY NAME" --build-version "VERSION 0.0.0.0" --region REGION
--AWS gamelift upload-build --operating-system WINDOWS_2012 --build-root "C:\.UE4_Fiverr\2D-SSG-MMORPG2\WindowsServer" --name "2D-SSG-MMORPG2" --build-version "1.0.0.1" --region eu-central-1
+example: -AWS gamelift upload-build --operating-system WINDOWS_2012 --build-root "THE WINDOWS SERVER FOLDER LOCATION" --name "ANY NAME" --build-version "VERSION 0.0.0.0" --region REGION
+copy-paste: -AWS gamelift upload-build --operating-system WINDOWS_2012 --build-root "C:\.UE4_Fiverr\2D-SSG-MMORPG2\WindowsServer" --name "2D-SSG-MMORPG2" --build-version "1.0.0.3" --region eu-central-1
+-AWS gamelift upload-build --operating-system WINDOWS_2012 --build-root "C:\Users\Sagi\Documents\Unreal Projects\TwoDSSG 4.27\Packaged\WindowsServer" --name "2D-SSG-MMORPG2" --build-version "1.0.0.3" --region eu-central-1
 
 TwoDSSG\Binaries\Win64\TwoDSSGServer.exe
 

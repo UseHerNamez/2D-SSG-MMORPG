@@ -1,4 +1,4 @@
-TwoDSSG/Binaries/Win64/TwoDSSG.exe	2022-09-19T11:35:17.212Z
+TwoDSSG/Binaries/Win64/TwoDSSG.exe	2022-09-24T16:35:32.358Z
 TwoDSSG/Binaries/Win64/aws-c-auth.dll	2022-02-09T10:47:25.793Z
 TwoDSSG/Binaries/Win64/aws-c-cal.dll	2022-02-09T10:47:25.863Z
 TwoDSSG/Binaries/Win64/aws-c-compression.dll	2022-02-09T10:47:25.865Z
@@ -40,4 +40,4 @@ Engine/Binaries/ThirdParty/OpenVR/OpenVRv1_5_17/Win64/openvr_api.dll	2022-09-19T
 Engine/Binaries/ThirdParty/NVIDIA/GeForceNOW/Win64/GfnRuntimeSdk.dll	2022-09-19T08:01:58.815Z
 Engine/Binaries/ThirdParty/Windows/WinPixEventRuntime/x64/WinPixEventRuntime.dll	2022-09-19T07:43:25.959Z
 Engine/Binaries/ThirdParty/Windows/XAudio2_9/x64/xaudio2_9redist.dll	2022-09-19T08:01:42.445Z
-TwoDSSG.exe	2022-09-19T11:53:15.672Z
+TwoDSSG.exe	2022-09-24T16:36:08.548Z
