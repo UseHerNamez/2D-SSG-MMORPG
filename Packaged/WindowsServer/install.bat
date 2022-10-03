@@ -1,0 +1,1 @@
+Engine\Extras\Redist\en-us\UE4PrereqSetup_x64.exe /install /quiet /norestart /log c:\game\UE4PrereqSetup_x64.log
