@@ -1,13 +1,16 @@
 {
 	"FileVersion": 3,
-	"EngineAssociation": "{C6816094-4906-8C01-B623-5CBFCDF08921}",
+	"EngineAssociation": "{8284F7D4-40E2-8B65-4174-B0A19A1485D1}",
 	"Category": "",
 	"Description": "",
 	"Modules": [
 		{
 			"Name": "TwoDSSG",
 			"Type": "Runtime",
-			"LoadingPhase": "Default"
+			"LoadingPhase": "Default",
+			"AdditionalDependencies": [
+				"UMG"
+			]
 		}
 	],
 	"Plugins": [
@@ -24,6 +27,14 @@
 			"Name": "awsSDK",
 			"Enabled": true,
 			"MarketplaceURL": "com.epicgames.launcher://ue/marketplace/content/eee4bef24c9d429887ddcc107a5a9b4d"
+		},
+		{
+			"Name": "SQLiteCore",
+			"Enabled": true
+		},
+		{
+			"Name": "SQLiteSupport",
+			"Enabled": true
 		}
 	],
 	"TargetPlatforms": [

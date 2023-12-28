@@ -2,17 +2,17 @@
 	"Targets": [
 		{
 			"Name": "TwoDSSG",
-			"Path": "C:\\Users\\Sagi\\Documents\\Unreal Projects\\TwoDSSG 4.27\\Source\\TwoDSSG.Target.cs",
+			"Path": "C:\\Users\\Sagi\\Documents\\GitHub\\TwoDSSG\\Source\\TwoDSSG.Target.cs",
 			"Type": "Game"
 		},
 		{
 			"Name": "TwoDSSGEditor",
-			"Path": "C:\\Users\\Sagi\\Documents\\Unreal Projects\\TwoDSSG 4.27\\Source\\TwoDSSGEditor.Target.cs",
+			"Path": "C:\\Users\\Sagi\\Documents\\GitHub\\TwoDSSG\\Source\\TwoDSSGEditor.Target.cs",
 			"Type": "Editor"
 		},
 		{
 			"Name": "TwoDSSGServer",
-			"Path": "C:\\Users\\Sagi\\Documents\\Unreal Projects\\TwoDSSG 4.27\\Source\\TwoDSSGServer.Target.cs",
+			"Path": "C:\\Users\\Sagi\\Documents\\GitHub\\TwoDSSG\\Source\\TwoDSSGServer.Target.cs",
 			"Type": "Server"
 		}
 	]
