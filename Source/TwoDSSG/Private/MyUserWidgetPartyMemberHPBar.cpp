@@ -1,0 +1,2 @@
+#include "MyUserWidgetPartyMemberHPBar.h"
+
