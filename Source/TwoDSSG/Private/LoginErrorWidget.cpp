@@ -1,7 +1,6 @@
 #include "LoginErrorWidget.h"
 #include "Components/TextBlock.h"
 
-
 // Constructor with FObjectInitializer
 ULoginErrorWidget::ULoginErrorWidget(const FObjectInitializer& ObjectInitializer)
     : Super(ObjectInitializer)

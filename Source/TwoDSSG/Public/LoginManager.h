@@ -25,14 +25,28 @@ public:
 
     UFUNCTION(BlueprintCallable, Category = "Login")
     void Login(const FString& Username, const FString& Password);
+    void Register(const FString& Username, const FString& Password);
 
     UFUNCTION(BlueprintCallable, Category = "Login")
-    void Register(const FString& Username, const FString& Password);
+    void ShowErrorWidget(const FString& ErrorMessage);
+
+    UFUNCTION(BlueprintCallable)
+    void SetErrorWidget(ULoginErrorWidget * i_ErrorWidget);
+
+protected:
+    // Reference to the login error widget instance
+    class ULoginErrorWidget* ErrorWidget;
 
 private:
     void HandleLoginResponse(const FString& Response);
     void HandleRegisterResponse(const FString& Response);
-    void SendLoginRequest(const FString& RequestData);
+    void SendLoginRequest(const FString& RequestData, bool retry);
     void LoadGameLevelMap();
-    void ShowErrorWidget(const FString& ErrorMessage);
+    bool RetryLogin(float DeltaTime);
+    FTimerHandle TimerHandle;
+    int maxAttemptsToConnect;
+    float timeoutBetweenRequests;
+    FString LastLoginRequestData;
+    int32 NumAttempts;
+    bool bSuccessfulRequest;
 };
