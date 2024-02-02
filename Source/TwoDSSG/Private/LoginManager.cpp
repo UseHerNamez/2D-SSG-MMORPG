@@ -2,7 +2,7 @@
 
 #include "LoginManager.h"
 
-ALoginManager::ALoginManager() : maxAttemptsToConnect(2), timeoutBetweenRequests(3.0f), NumAttempts(0)
+ALoginManager::ALoginManager() : maxAttemptsToConnect(1), timeoutBetweenRequests(5.0f), NumAttempts(0)
 {
     // Set this actor to call Tick() every frame
     PrimaryActorTick.bCanEverTick = false;
@@ -42,7 +42,7 @@ void ALoginManager::Register(const FString& Username, const FString& Password)
     SendLoginRequest(RegisterRequest, false);
 }
 
-void ALoginManager::HandleLoginResponse(const FString& Response)
+void ALoginManager::HandleResponse(const FString& Response)
 {
     // Example response format: "LOGIN_SUCCESS Token12345"
 
@@ -53,23 +53,27 @@ void ALoginManager::HandleLoginResponse(const FString& Response)
     if (ResponseParts.Num() >= 2)
     {
         FString ResponseType = ResponseParts[0];
+        FString MessagePart = Response.Mid(ResponseType.Len() + 1);
 
-        if (ResponseType == TEXT("LOGIN_SUCCESS"))
+        if (ResponseType == TEXT("LOGIN_SUCCESS") || ResponseType == TEXT("REGISTER_SUCCESS"))
         {
             // Extract token from the response
-            FString Token = ResponseParts[1];
+            FString Token = MessagePart;
 
             // Store the token in the environment variable or a secure storage
             FPlatformMisc::SetEnvironmentVar(TEXT("GAME_TOKEN"), *Token);
 
             // TODO: Transition to the main game level!!
+            if (ResponseType == TEXT("REGISTER_SUCCESS"))
+                ShowErrorWidget("REGISTER_SUCCESS");
+            else ShowErrorWidget("LOGIN_SUCCESS");
         }
-        else if (ResponseType == TEXT("LOGIN_FAILURE") || ResponseType == TEXT("LOGIN_FAILURE_REGISTER_FAILURE"))
+        else if (ResponseType == TEXT("LOGIN_FAILURE") || ResponseType == TEXT("REGISTER_FAILURE")
+            || ResponseType == TEXT("LOGIN_FAILURE_REGISTER_FAILURE"))
         {
-            // Handle login failure
+            // Handle failure
             // Display an error message to the user
-            FString errorMessage = ResponseParts[1];
-            ShowErrorWidget(errorMessage);
+            ShowErrorWidget(MessagePart);
         }
         else { //other error
             ShowErrorWidget(Response);
@@ -80,46 +84,6 @@ void ALoginManager::HandleLoginResponse(const FString& Response)
     }
 }
 
-void ALoginManager::HandleRegisterResponse(const FString& Response)
-{
-    // Example response format: "REGISTER_SUCCESS Token12345"
-
-    // Split the response into parts
-    TArray<FString> ResponseParts;
-    Response.ParseIntoArray(ResponseParts, TEXT(" "), true);
-
-    if (ResponseParts.Num() >= 2)
-    {
-        FString ResponseType = ResponseParts[0];
-
-        if (ResponseType == TEXT("REGISTER_SUCCESS"))
-        {
-            // Extract token from the response
-            FString Token = ResponseParts[1];
-
-            // Store the token in the environment variable or a secure storage
-            FPlatformMisc::SetEnvironmentVar(TEXT("GAME_TOKEN"), *Token);
-
-            // TODO: Transition to the main game level!!
-
-            // Uncomment the following line when ready to transition
-            // LoadGameLevelMap();
-        }
-        else if (ResponseType == TEXT("REGISTER_FAILURE") || ResponseType == TEXT("LOGIN_FAILURE_REGISTER_FAILURE"))
-        {
-            // Handle registration failure
-            // Display an error message to the user
-            FString errorMessage = ResponseParts[1];
-            ShowErrorWidget(errorMessage);
-        }
-        else { //ther error
-            ShowErrorWidget(Response);
-        }
-    }
-    else {
-        ShowErrorWidget(Response);
-    }
-}
 
 void ALoginManager::ShowErrorWidget(const FString& ErrorMessage)
 {
@@ -133,8 +97,9 @@ void ALoginManager::ShowErrorWidget(const FString& ErrorMessage)
     }
 }
 
-void ALoginManager::SendLoginRequest(const FString& RequestData, bool retry)
+void ALoginManager::SendLoginRequest(const FString& RequestData, bool retry) // retry - is it the first time we call the function or is it a call to retry? to prevent a loop
 {
+    bSuccessfulRequest = false;
     // Construct the full URL for your login server
     FString ServerURL = TEXT("http://localhost:12345");
 
@@ -142,7 +107,7 @@ void ALoginManager::SendLoginRequest(const FString& RequestData, bool retry)
     TSharedPtr<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = FHttpModule::Get().CreateRequest();
     HttpRequest->SetVerb(TEXT("POST"));
     HttpRequest->SetURL(ServerURL);
-    HttpRequest->SetHeader(TEXT("Content-Type"), TEXT("application/x-www-form-urlencoded"));
+    HttpRequest->SetHeader(TEXT("Content-Type"), TEXT("text/plain"));
     HttpRequest->SetContentAsString(RequestData);
 
     // Use a shared pointer to capture by value
@@ -155,8 +120,10 @@ void ALoginManager::SendLoginRequest(const FString& RequestData, bool retry)
             {
                 // Process the server response
                 ServerResponse = Response->GetContentAsString();
-                HandleLoginResponse(ServerResponse);
+                HandleResponse(ServerResponse);
                 bSuccessfulRequest = true;
+                if (TickerDelegateHandle.IsValid())
+                    FTicker::GetCoreTicker().RemoveTicker(TickerDelegateHandle);
             }   
     };
 
@@ -165,7 +132,7 @@ void ALoginManager::SendLoginRequest(const FString& RequestData, bool retry)
     HttpRequest->ProcessRequest();
 
     if(!retry && ! bSuccessfulRequest)
-        FTicker::GetCoreTicker().AddTicker(FTickerDelegate::CreateUObject(this, &ALoginManager::RetryLogin), timeoutBetweenRequests);
+        TickerDelegateHandle = FTicker::GetCoreTicker().AddTicker(FTickerDelegate::CreateUObject(this, &ALoginManager::RetryLogin), timeoutBetweenRequests);
 }
 
 bool ALoginManager::RetryLogin(float DeltaTime)
@@ -179,7 +146,7 @@ bool ALoginManager::RetryLogin(float DeltaTime)
         SendLoginRequest(LastLoginRequestData, true);
         NumAttempts++;
         return true; // Continue ticking
-    }
+    } 
     else
     {
         // Maximum attempts reached, handle accordingly

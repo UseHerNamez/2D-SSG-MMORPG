@@ -38,8 +38,7 @@ protected:
     class ULoginErrorWidget* ErrorWidget;
 
 private:
-    void HandleLoginResponse(const FString& Response);
-    void HandleRegisterResponse(const FString& Response);
+    void HandleResponse(const FString& Response);
     void SendLoginRequest(const FString& RequestData, bool retry);
     void LoadGameLevelMap();
     bool RetryLogin(float DeltaTime);
@@ -49,4 +48,5 @@ private:
     FString LastLoginRequestData;
     int32 NumAttempts;
     bool bSuccessfulRequest;
+    FDelegateHandle TickerDelegateHandle;
 };
