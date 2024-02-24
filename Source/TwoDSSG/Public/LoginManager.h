@@ -11,7 +11,7 @@
 //#include <Networking/Public/Interfaces/IPv4/IPv4Address.h>
 //#include <SocketSubsystem.h>
 #include "LoginErrorWidget.h"
-
+#include "ComputerSaviourGameInstance.h"
 #include "LoginManager.generated.h"
 
 UCLASS()

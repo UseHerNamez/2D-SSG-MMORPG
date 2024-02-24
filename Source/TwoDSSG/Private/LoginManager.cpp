@@ -44,7 +44,7 @@ void ALoginManager::Register(const FString& Username, const FString& Password)
 
 void ALoginManager::HandleResponse(const FString& Response)
 {
-    // Example response format: "LOGIN_SUCCESS Token12345"
+    // Example response format: LOGIN_SUCCESS charinfo: charactersInfo + token: token"
 
     // Split the response into parts
     TArray<FString> ResponseParts;
@@ -53,27 +53,50 @@ void ALoginManager::HandleResponse(const FString& Response)
     if (ResponseParts.Num() >= 2)
     {
         FString ResponseType = ResponseParts[0];
-        FString MessagePart = Response.Mid(ResponseType.Len() + 1);
+        FString messagePart = Response.Mid(ResponseParts[0].Len() + 1);
 
         if (ResponseType == TEXT("LOGIN_SUCCESS") || ResponseType == TEXT("REGISTER_SUCCESS"))
         {
-            // Extract token from the response
-            FString Token = MessagePart;
+            int32 CharInfoIndex = ResponseParts.Find(TEXT("charinfo:"));
+            if (CharInfoIndex != INDEX_NONE)
+            {
+                FString CharInfoPart = ResponseParts[CharInfoIndex + 1];
+                // Now CharInfoPart contains "character1|level1|appearance1|character2|level2|appearance2"
+     
+                // Extract token from the response:
+                FString Token = ResponseParts[ResponseParts.Num() - 1];
 
-            // Store the token in the environment variable or a secure storage
-            FPlatformMisc::SetEnvironmentVar(TEXT("GAME_TOKEN"), *Token);
+                // Store the token in the environment variable or a secure storage
+                FPlatformMisc::SetEnvironmentVar(TEXT("GAME_TOKEN"), *Token);
 
-            // TODO: Transition to the main game level!!
-            if (ResponseType == TEXT("REGISTER_SUCCESS"))
-                ShowErrorWidget("REGISTER_SUCCESS");
-            else ShowErrorWidget("LOGIN_SUCCESS");
+                // Access the game instance and set characters info
+                UGameInstance* GameInstance = GetGameInstance();
+                UComputerSaviourGameInstance* ComputerSaviourGameInstance = Cast<UComputerSaviourGameInstance>(GameInstance);
+
+                if (ComputerSaviourGameInstance)
+                {
+                    ComputerSaviourGameInstance->setCharInfo(CharInfoPart);
+                    // Transition to the "CharacterSelection" map
+                    UGameplayStatics::OpenLevel(GetWorld(), TEXT("CharacterSelection"));
+                }
+                else {
+                    ShowErrorWidget("error: Can't get game instance object.");
+                }
+
+                /*if (ResponseType == TEXT("REGISTER_SUCCESS"))
+                    ShowErrorWidget("REGISTER_SUCCESS");
+                else ShowErrorWidget("LOGIN_SUCCESS");*/
+            }
+            else { // no charinfo? then it must be an error - though this part should never hit because the type should be failure.
+                ShowErrorWidget("No charInfo received.");
+            }
         }
         else if (ResponseType == TEXT("LOGIN_FAILURE") || ResponseType == TEXT("REGISTER_FAILURE")
             || ResponseType == TEXT("LOGIN_FAILURE_REGISTER_FAILURE"))
         {
             // Handle failure
             // Display an error message to the user
-            ShowErrorWidget(MessagePart);
+            ShowErrorWidget(messagePart);
         }
         else { //other error
             ShowErrorWidget(Response);
