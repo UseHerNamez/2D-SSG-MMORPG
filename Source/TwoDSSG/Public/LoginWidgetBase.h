@@ -31,5 +31,5 @@ protected:
     void ShowErrorWidget(const FString& errorMessage);
 
     UFUNCTION(BlueprintCallable, Category = "Login")
-    ALoginManager* InitializeLoginManager();
+    ALoginManager* InitializeLoginManager(APlayerController* i_playerController);
 };

@@ -24,6 +24,16 @@ void ALoginManager::SetErrorWidget(ULoginErrorWidget * i_ErrorWidget)
     }
 }
 
+void ALoginManager::SetPlayerController(APlayerController* i_PlayerController)
+{
+    playerController = i_PlayerController;
+}
+
+void ALoginManager::SetWorld()
+{
+    World = playerController->GetWorld();
+}
+
 void ALoginManager::Login(const FString& Username, const FString& Password)
 {
     // Construct the login request data
@@ -62,7 +72,7 @@ void ALoginManager::HandleResponse(const FString& Response)
             {
                 FString CharInfoPart = ResponseParts[CharInfoIndex + 1];
                 // Now CharInfoPart contains "character1|level1|appearance1|character2|level2|appearance2"
-     
+
                 // Extract token from the response:
                 FString Token = ResponseParts[ResponseParts.Num() - 1];
 
@@ -70,40 +80,48 @@ void ALoginManager::HandleResponse(const FString& Response)
                 FPlatformMisc::SetEnvironmentVar(TEXT("GAME_TOKEN"), *Token);
 
                 // Access the game instance and set characters info
-                UGameInstance* GameInstance = GetGameInstance();
-                UComputerSaviourGameInstance* ComputerSaviourGameInstance = Cast<UComputerSaviourGameInstance>(GameInstance);
-
-                if (ComputerSaviourGameInstance)
+                if (playerController != nullptr)
                 {
-                    ComputerSaviourGameInstance->setCharInfo(CharInfoPart);
-                    // Transition to the "CharacterSelection" map
-                    UGameplayStatics::OpenLevel(GetWorld(), TEXT("CharacterSelection"));
-                }
-                else {
-                    ShowErrorWidget("error: Can't get game instance object.");
-                }
+                    UGameInstance* GameInstance = playerController->GetGameInstance();
+                    if (GameInstance != nullptr)
+                    {
+                        UComputerSaviourGameInstance* ComputerSaviourGameInstance = Cast<UComputerSaviourGameInstance>(GameInstance);
+                        if (ComputerSaviourGameInstance != nullptr)
+                        {
+                            ComputerSaviourGameInstance->setCharInfo(CharInfoPart);
+                            // Transition to the "CharacterSelection" map
+                            if(World)
+                                UGameplayStatics::OpenLevel(World, TEXT("CharacterSelection"));
+                            else ShowErrorWidget("error: World nullptr - cant open new map");
+                        }
+                        else {
+                            ShowErrorWidget("error: Can't get game instance object.");
+                        }
+                    }
+                    else ShowErrorWidget("error: World nullptr.");
 
-                /*if (ResponseType == TEXT("REGISTER_SUCCESS"))
-                    ShowErrorWidget("REGISTER_SUCCESS");
-                else ShowErrorWidget("LOGIN_SUCCESS");*/
+                    /*if (ResponseType == TEXT("REGISTER_SUCCESS"))
+                        ShowErrorWidget("REGISTER_SUCCESS");
+                    else ShowErrorWidget("LOGIN_SUCCESS");*/
+                }
+                else { // no charinfo? then it must be an error - though this part should never hit because the type should be failure.
+                    ShowErrorWidget("No charInfo received.");
+                }
             }
-            else { // no charinfo? then it must be an error - though this part should never hit because the type should be failure.
-                ShowErrorWidget("No charInfo received.");
+            else if (ResponseType == TEXT("LOGIN_FAILURE") || ResponseType == TEXT("REGISTER_FAILURE")
+                || ResponseType == TEXT("LOGIN_FAILURE_REGISTER_FAILURE"))
+            {
+                // Handle failure
+                // Display an error message to the user
+                ShowErrorWidget(messagePart);
+            }
+            else { //other error
+                ShowErrorWidget(Response);
             }
         }
-        else if (ResponseType == TEXT("LOGIN_FAILURE") || ResponseType == TEXT("REGISTER_FAILURE")
-            || ResponseType == TEXT("LOGIN_FAILURE_REGISTER_FAILURE"))
-        {
-            // Handle failure
-            // Display an error message to the user
-            ShowErrorWidget(messagePart);
-        }
-        else { //other error
+        else {
             ShowErrorWidget(Response);
         }
-    }
-    else {
-        ShowErrorWidget(Response);
     }
 }
 

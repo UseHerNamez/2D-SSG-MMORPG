@@ -4,8 +4,10 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
+#include "Engine/World.h"
 //#include "Net/UnrealNetwork.h"
 #include "HttpModule.h"
+#include "GameFramework/PlayerController.h"
 #include "Interfaces/IHttpResponse.h"
 #include <Kismet/GameplayStatics.h>
 //#include <Networking/Public/Interfaces/IPv4/IPv4Address.h>
@@ -33,11 +35,16 @@ public:
     UFUNCTION(BlueprintCallable)
     void SetErrorWidget(ULoginErrorWidget * i_ErrorWidget);
 
+    void SetPlayerController(APlayerController* i_PlayerController);
+    void SetWorld();
+
 protected:
     // Reference to the login error widget instance
     class ULoginErrorWidget* ErrorWidget;
 
 private:
+    APlayerController* playerController;
+    UWorld* World;
     void HandleResponse(const FString& Response);
     void SendLoginRequest(const FString& RequestData, bool retry);
     void LoadGameLevelMap();

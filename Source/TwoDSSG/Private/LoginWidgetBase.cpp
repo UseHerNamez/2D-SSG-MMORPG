@@ -9,9 +9,11 @@ ULoginWidgetBase::ULoginWidgetBase(const FObjectInitializer& ObjectInitializer)
     
 }
 
-ALoginManager * ULoginWidgetBase::InitializeLoginManager()
+ALoginManager* ULoginWidgetBase::InitializeLoginManager(APlayerController* i_playerController)
 {
     LoginManager = NewObject<ALoginManager>(this);
+    LoginManager->SetPlayerController(i_playerController);
+    LoginManager->SetWorld();
     return LoginManager;
 }
 
