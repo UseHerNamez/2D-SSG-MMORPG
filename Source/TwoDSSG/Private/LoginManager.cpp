@@ -6,6 +6,7 @@ ALoginManager::ALoginManager() : maxAttemptsToConnect(1), timeoutBetweenRequests
 {
     // Set this actor to call Tick() every frame
     PrimaryActorTick.bCanEverTick = false;
+    bCharacterNameAvailable = false;
     bSuccessfulRequest = false;
 }
 
@@ -71,7 +72,7 @@ void ALoginManager::HandleResponse(const FString& Response)
             if (CharInfoIndex != INDEX_NONE)
             {
                 FString CharInfoPart = ResponseParts[CharInfoIndex + 1];
-                // Now CharInfoPart contains "character1|level1|appearance1|character2|level2|appearance2"
+                // Now CharInfoPart contains "character1|level1|gender1|appearance1|character2|level2|gender2|appearance2"
 
                 // Extract token from the response:
                 FString Token = ResponseParts[ResponseParts.Num() - 1];
@@ -89,6 +90,7 @@ void ALoginManager::HandleResponse(const FString& Response)
                         if (ComputerSaviourGameInstance != nullptr)
                         {
                             ComputerSaviourGameInstance->setCharInfo(CharInfoPart);
+                            ComputerSaviourGameInstance->SetLoginManager(this);
                             // Transition to the "CharacterSelection" map
                             if(World)
                                 UGameplayStatics::OpenLevel(World, TEXT("CharacterSelection"));
@@ -138,6 +140,14 @@ void ALoginManager::ShowErrorWidget(const FString& ErrorMessage)
     }
 }
 
+void ALoginManager::CheckName(const FString& CharName)
+{
+    FString CheckNameRequest = FString::Printf(TEXT("CHECKNAME %s"), *CharName);
+
+    // Send the check name request to the server
+    SendCheckNameRequest(CheckNameRequest);
+}
+
 void ALoginManager::SendLoginRequest(const FString& RequestData, bool retry) // retry - is it the first time we call the function or is it a call to retry? to prevent a loop
 {
     bSuccessfulRequest = false;
@@ -174,6 +184,52 @@ void ALoginManager::SendLoginRequest(const FString& RequestData, bool retry) // 
 
     if(!retry && ! bSuccessfulRequest)
         TickerDelegateHandle = FTicker::GetCoreTicker().AddTicker(FTickerDelegate::CreateUObject(this, &ALoginManager::RetryLogin), timeoutBetweenRequests);
+}
+
+void ALoginManager::SendCheckNameRequest(const FString& RequestData)
+{
+    bSuccessfulRequest = false;
+    // Construct the full URL for your login server
+    FString ServerURL = TEXT("http://localhost:12345");
+
+    TSharedPtr<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = FHttpModule::Get().CreateRequest();
+    HttpRequest->SetVerb(TEXT("POST"));
+    HttpRequest->SetURL(ServerURL);
+    HttpRequest->SetHeader(TEXT("Content-Type"), TEXT("text/plain"));
+    HttpRequest->SetContentAsString(RequestData);
+
+    // Use a shared pointer to capture by value
+    TFunction<void(FHttpRequestPtr, FHttpResponsePtr, bool)> ProcessRequestLambda =
+        [this](FHttpRequestPtr Request, FHttpResponsePtr Response, bool bWasSuccessful)
+        {
+            FString ServerResponse;
+
+            if (bWasSuccessful && Response.IsValid())
+            {
+                // Process the server response
+                ServerResponse = Response->GetContentAsString();
+                HandleCheckNameResponse(ServerResponse); // Call new function to handle response
+                bSuccessfulRequest = true;
+            }
+        };
+
+    HttpRequest->OnProcessRequestComplete().BindLambda(ProcessRequestLambda);
+    HttpRequest->ProcessRequest();
+}
+
+void ALoginManager::HandleCheckNameResponse(const FString& Response)
+{
+    if (Response == TEXT("exists"))
+    {
+        bCharacterNameAvailable = false;
+    }
+    else if (Response == TEXT("available"))
+    {
+        bCharacterNameAvailable = true;
+    }
+
+    // Notify Blueprint about the response
+    OnCheckNameResponseReceived.Broadcast(bCharacterNameAvailable);
 }
 
 bool ALoginManager::RetryLogin(float DeltaTime)

@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Engine/GameInstance.h"
+#include "LoginManager.h"
 #include "ComputerSaviourGameInstance.generated.h"
 
 /**
@@ -17,6 +18,9 @@ class TWODSSG_API UComputerSaviourGameInstance : public UGameInstance
 public:
     UComputerSaviourGameInstance();
 
+    void SetLoginManager(ALoginManager* const i_loginManager);
+    ALoginManager* GetLoginManager() const;
+
     UFUNCTION(BlueprintCallable, Category = "Character Info")
     bool isCharInfoEmpty();
 
@@ -27,6 +31,7 @@ public:
     void setCharInfo(const FString& charInfo);
 private:
     FString CharactersInfo;
+    ALoginManager* loginManagerREF;
 
     // Add any functions or additional data you need here
 };

@@ -24,3 +24,13 @@ FString UComputerSaviourGameInstance::getCharInfo()
 {
     return CharactersInfo;
 }
+
+void UComputerSaviourGameInstance::SetLoginManager(ALoginManager* const i_loginManager)
+{
+    loginManagerREF = i_loginManager;
+}
+
+ALoginManager* UComputerSaviourGameInstance::GetLoginManager() const
+{
+    return loginManagerREF;
+}

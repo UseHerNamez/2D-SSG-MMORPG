@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
 #include "Engine/World.h"
+#include "Http.h"
 //#include "Net/UnrealNetwork.h"
 #include "HttpModule.h"
 #include "GameFramework/PlayerController.h"
@@ -15,6 +16,7 @@
 #include "LoginErrorWidget.h"
 #include "ComputerSaviourGameInstance.h"
 #include "LoginManager.generated.h"
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnCheckNameResponseReceived, bool, bNameAvailable);
 
 UCLASS()
 class TWODSSG_API ALoginManager : public AActor
@@ -38,6 +40,13 @@ public:
     void SetPlayerController(APlayerController* i_PlayerController);
     void SetWorld();
 
+    UFUNCTION(BlueprintCallable, Category = "Login")
+    void CheckName(const FString& CharName);
+
+    // Declare the delegate as a BlueprintAssignable property
+    UPROPERTY(BlueprintAssignable, Category = "Login")
+    FOnCheckNameResponseReceived OnCheckNameResponseReceived;
+
 protected:
     // Reference to the login error widget instance
     class ULoginErrorWidget* ErrorWidget;
@@ -47,6 +56,8 @@ private:
     UWorld* World;
     void HandleResponse(const FString& Response);
     void SendLoginRequest(const FString& RequestData, bool retry);
+    void SendCheckNameRequest(const FString& RequestData);
+    void HandleCheckNameResponse(const FString& Response);
     void LoadGameLevelMap();
     bool RetryLogin(float DeltaTime);
     FTimerHandle TimerHandle;
@@ -54,6 +65,6 @@ private:
     float timeoutBetweenRequests;
     FString LastLoginRequestData;
     int32 NumAttempts;
-    bool bSuccessfulRequest;
+    bool bSuccessfulRequest, bCharacterNameAvailable;
     FDelegateHandle TickerDelegateHandle;
 };
