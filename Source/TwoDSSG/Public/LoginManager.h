@@ -55,11 +55,12 @@ private:
     APlayerController* playerController;
     UWorld* World;
     void HandleResponse(const FString& Response);
-    void SendLoginRequest(const FString& RequestData, bool retry);
-    void SendCheckNameRequest(const FString& RequestData, const bool isCreation, bool retry);
+    void SendLoginRequest(const FString& RequestData, bool isRetry);
+    void SendCheckNameRequest(const FString& RequestData, const bool isCreation, bool isRetry);
     void HandleCheckNameResponse(const FString& Response, const bool isCreation);
     void LoadGameLevelMap();
     bool RetryLogin(float DeltaTime);
+    void RetryNameCheck(const FString& RequestData, const bool isCreation);
     FTimerHandle TimerHandle;
     int maxAttemptsToConnect;
     float timeoutBetweenRequests;

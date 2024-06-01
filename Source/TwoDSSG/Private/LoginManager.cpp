@@ -143,12 +143,12 @@ void ALoginManager::ShowErrorWidget(const FString& ErrorMessage)
 void ALoginManager::CheckName(const FString& CharName, const bool isCreation)
 {
     FString CheckNameRequest = FString::Printf(TEXT("CHECKNAME %s"), *CharName);
-
+    NumAttempts = 0;
     // Send the check name request to the server
     SendCheckNameRequest(CheckNameRequest, isCreation, false); //Last bool is retry indicator - which is false when first trying to reach the server.
 }
 
-void ALoginManager::SendLoginRequest(const FString& RequestData, bool retry) // retry - is it the first time we call the function or is it a call to retry? to prevent a loop
+void ALoginManager::SendLoginRequest(const FString& RequestData, bool isRetry) // retry - is it the first time we call the function or is it a call to retry? to prevent a loop
 {
     bSuccessfulRequest = false;
     // Construct the full URL for your login server
@@ -182,11 +182,11 @@ void ALoginManager::SendLoginRequest(const FString& RequestData, bool retry) // 
 
     HttpRequest->ProcessRequest();
 
-    if(!retry && ! bSuccessfulRequest)
+    if(!isRetry && ! bSuccessfulRequest)
         TickerDelegateHandle = FTicker::GetCoreTicker().AddTicker(FTickerDelegate::CreateUObject(this, &ALoginManager::RetryLogin), timeoutBetweenRequests);
 }
 
-void ALoginManager::SendCheckNameRequest(const FString& RequestData, const bool isCreation, bool retry)
+void ALoginManager::SendCheckNameRequest(const FString& RequestData, const bool isCreation, bool isRetry)
 {
     bSuccessfulRequest = false;
     // Construct the full URL for your login server
@@ -215,6 +215,18 @@ void ALoginManager::SendCheckNameRequest(const FString& RequestData, const bool 
 
     HttpRequest->OnProcessRequestComplete().BindLambda(ProcessRequestLambda);
     HttpRequest->ProcessRequest();
+
+    if (!isRetry && !bSuccessfulRequest)
+    {
+        auto RetryLambda = [this, RequestData, isCreation]()
+            {
+                RetryNameCheck(RequestData, isCreation);
+                return false; // Stop the ticker after retrying once
+            };
+
+        TickerDelegateHandle = FTicker::GetCoreTicker().AddTicker(
+            FTickerDelegate::CreateLambda(RetryLambda), timeoutBetweenRequests);
+    }
 }
 
 void ALoginManager::HandleCheckNameResponse(const FString& Response, const bool isCreation)
@@ -234,6 +246,11 @@ void ALoginManager::HandleCheckNameResponse(const FString& Response, const bool 
         if (!isCreation)
             o_message = "Name is available.";
     }
+    else // some error from the login server or the DB.
+    {
+        bCharacterNameAvailable = false;
+        o_message = Response;
+    }
 
     // Notify Blueprint about the response
     OnCheckNameResponseReceived.Broadcast(bCharacterNameAvailable, o_message, isCreation);
@@ -241,9 +258,6 @@ void ALoginManager::HandleCheckNameResponse(const FString& Response, const bool 
 
 bool ALoginManager::RetryLogin(float DeltaTime)
 {
-    // Implement your retry logic here
-    // You might want to check the number of attempts and decide whether to retry or show an error
-
     if (NumAttempts < maxAttemptsToConnect)
     {
         // Retry the login
@@ -257,6 +271,23 @@ bool ALoginManager::RetryLogin(float DeltaTime)
         ShowErrorWidget(TEXT("Error: Maximum attempts reached. Unable to connect to the server."));
         NumAttempts = 0;
         return false; // Stop ticking
+    }
+}
+
+void ALoginManager::RetryNameCheck(const FString& RequestData, const bool isCreation)
+{
+    if (NumAttempts < maxAttemptsToConnect)
+    {
+        // Retry the login
+        SendCheckNameRequest(RequestData, isCreation, true);
+        NumAttempts++;
+    }
+    else
+    {
+        FString o_message = "Login server is currently unreachable...";
+        bCharacterNameAvailable = false;
+        OnCheckNameResponseReceived.Broadcast(bCharacterNameAvailable, o_message, isCreation);
+        NumAttempts = 0;
     }
 }
 
