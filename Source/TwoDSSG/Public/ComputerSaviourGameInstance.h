@@ -19,6 +19,8 @@ public:
     UComputerSaviourGameInstance();
 
     void SetLoginManager(ALoginManager* const i_loginManager);
+
+    UFUNCTION(BlueprintCallable)
     ALoginManager* GetLoginManager() const;
 
     UFUNCTION(BlueprintCallable, Category = "Character Info")

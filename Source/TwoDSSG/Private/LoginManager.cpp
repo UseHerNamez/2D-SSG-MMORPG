@@ -140,12 +140,12 @@ void ALoginManager::ShowErrorWidget(const FString& ErrorMessage)
     }
 }
 
-void ALoginManager::CheckName(const FString& CharName)
+void ALoginManager::CheckName(const FString& CharName, const bool isCreation)
 {
     FString CheckNameRequest = FString::Printf(TEXT("CHECKNAME %s"), *CharName);
 
     // Send the check name request to the server
-    SendCheckNameRequest(CheckNameRequest);
+    SendCheckNameRequest(CheckNameRequest, isCreation, false); //Last bool is retry indicator - which is false when first trying to reach the server.
 }
 
 void ALoginManager::SendLoginRequest(const FString& RequestData, bool retry) // retry - is it the first time we call the function or is it a call to retry? to prevent a loop
@@ -186,7 +186,7 @@ void ALoginManager::SendLoginRequest(const FString& RequestData, bool retry) // 
         TickerDelegateHandle = FTicker::GetCoreTicker().AddTicker(FTickerDelegate::CreateUObject(this, &ALoginManager::RetryLogin), timeoutBetweenRequests);
 }
 
-void ALoginManager::SendCheckNameRequest(const FString& RequestData)
+void ALoginManager::SendCheckNameRequest(const FString& RequestData, const bool isCreation, bool retry)
 {
     bSuccessfulRequest = false;
     // Construct the full URL for your login server
@@ -200,7 +200,7 @@ void ALoginManager::SendCheckNameRequest(const FString& RequestData)
 
     // Use a shared pointer to capture by value
     TFunction<void(FHttpRequestPtr, FHttpResponsePtr, bool)> ProcessRequestLambda =
-        [this](FHttpRequestPtr Request, FHttpResponsePtr Response, bool bWasSuccessful)
+        [this, isCreation](FHttpRequestPtr Request, FHttpResponsePtr Response, bool bWasSuccessful)
         {
             FString ServerResponse;
 
@@ -208,7 +208,7 @@ void ALoginManager::SendCheckNameRequest(const FString& RequestData)
             {
                 // Process the server response
                 ServerResponse = Response->GetContentAsString();
-                HandleCheckNameResponse(ServerResponse); // Call new function to handle response
+                HandleCheckNameResponse(ServerResponse, isCreation); // Call new function to handle response
                 bSuccessfulRequest = true;
             }
         };
@@ -217,19 +217,26 @@ void ALoginManager::SendCheckNameRequest(const FString& RequestData)
     HttpRequest->ProcessRequest();
 }
 
-void ALoginManager::HandleCheckNameResponse(const FString& Response)
+void ALoginManager::HandleCheckNameResponse(const FString& Response, const bool isCreation)
 {
+    FString o_message = "";
     if (Response == TEXT("exists"))
     {
         bCharacterNameAvailable = false;
+        if (isCreation)
+            o_message = "Looks like someone just captured your character's name before you created it! Try to find a different one.";
+        else
+            o_message = "Character's name is already in use. Please find a different one.";
     }
     else if (Response == TEXT("available"))
     {
         bCharacterNameAvailable = true;
+        if (!isCreation)
+            o_message = "Name is available.";
     }
 
     // Notify Blueprint about the response
-    OnCheckNameResponseReceived.Broadcast(bCharacterNameAvailable);
+    OnCheckNameResponseReceived.Broadcast(bCharacterNameAvailable, o_message, isCreation);
 }
 
 bool ALoginManager::RetryLogin(float DeltaTime)

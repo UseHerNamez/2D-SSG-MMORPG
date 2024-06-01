@@ -16,7 +16,7 @@
 #include "LoginErrorWidget.h"
 #include "ComputerSaviourGameInstance.h"
 #include "LoginManager.generated.h"
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnCheckNameResponseReceived, bool, bNameAvailable);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_ThreeParams(FOnCheckNameResponseReceived, bool, bNameAvailable, FString, message, bool, bIsCreation);
 
 UCLASS()
 class TWODSSG_API ALoginManager : public AActor
@@ -41,7 +41,7 @@ public:
     void SetWorld();
 
     UFUNCTION(BlueprintCallable, Category = "Login")
-    void CheckName(const FString& CharName);
+    void CheckName(const FString& CharName, const bool isCreation);
 
     // Declare the delegate as a BlueprintAssignable property
     UPROPERTY(BlueprintAssignable, Category = "Login")
@@ -56,8 +56,8 @@ private:
     UWorld* World;
     void HandleResponse(const FString& Response);
     void SendLoginRequest(const FString& RequestData, bool retry);
-    void SendCheckNameRequest(const FString& RequestData);
-    void HandleCheckNameResponse(const FString& Response);
+    void SendCheckNameRequest(const FString& RequestData, const bool isCreation, bool retry);
+    void HandleCheckNameResponse(const FString& Response, const bool isCreation);
     void LoadGameLevelMap();
     bool RetryLogin(float DeltaTime);
     FTimerHandle TimerHandle;
