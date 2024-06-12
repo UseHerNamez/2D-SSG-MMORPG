@@ -14,8 +14,8 @@
 //#include <Networking/Public/Interfaces/IPv4/IPv4Address.h>
 //#include <SocketSubsystem.h>
 #include "LoginErrorWidget.h"
-#include "ComputerSaviourGameInstance.h"
 #include "LoginManager.generated.h"
+
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_ThreeParams(FOnCheckNameResponseReceived, bool, bNameAvailable, FString, message, bool, bIsCreation);
 
 UCLASS()
@@ -41,7 +41,7 @@ public:
     void SetWorld();
 
     UFUNCTION(BlueprintCallable, Category = "Login")
-    void CheckName(const FString& CharName, const bool isCreation);
+    void CheckName(const FString& charName, const bool isCreation, const FString& charData);
 
     // Declare the delegate as a BlueprintAssignable property
     UPROPERTY(BlueprintAssignable, Category = "Login")
@@ -59,8 +59,6 @@ private:
     void SendCheckNameRequest(const FString& RequestData, const bool isCreation, bool isRetry);
     void HandleCheckNameResponse(const FString& Response, const bool isCreation);
     void LoadGameLevelMap();
-    bool RetryLogin(float DeltaTime);
-    void RetryNameCheck(const FString& RequestData, const bool isCreation);
     FTimerHandle TimerHandle;
     int maxAttemptsToConnect;
     float timeoutBetweenRequests;

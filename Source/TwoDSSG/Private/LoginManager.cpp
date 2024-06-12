@@ -1,6 +1,6 @@
 // LoginManager.cpp
-
 #include "LoginManager.h"
+#include "ComputerSaviourGameInstance.h" // This includes the .h file of the loginManager too
 
 ALoginManager::ALoginManager() : maxAttemptsToConnect(1), timeoutBetweenRequests(5.0f), NumAttempts(0)
 {
@@ -140,9 +140,9 @@ void ALoginManager::ShowErrorWidget(const FString& ErrorMessage)
     }
 }
 
-void ALoginManager::CheckName(const FString& CharName, const bool isCreation)
+void ALoginManager::CheckName(const FString& charName, const bool isCreation, const FString& charData)
 {
-    FString CheckNameRequest = FString::Printf(TEXT("CHECKNAME %s"), *CharName);
+    FString CheckNameRequest = FString::Printf(TEXT("CHECKNAME %s %s %d"), *charName, *charData, isCreation ? 1 : 0);
     NumAttempts = 0;
     // Send the check name request to the server
     SendCheckNameRequest(CheckNameRequest, isCreation, false); //Last bool is retry indicator - which is false when first trying to reach the server.
@@ -164,27 +164,39 @@ void ALoginManager::SendLoginRequest(const FString& RequestData, bool isRetry) /
     // Use a shared pointer to capture by value
     TFunction<void(FHttpRequestPtr, FHttpResponsePtr, bool)> ProcessRequestLambda =
         [this](FHttpRequestPtr Request, FHttpResponsePtr Response, bool bWasSuccessful)
-        {
-            FString ServerResponse;
+    {
+        FString ServerResponse;
 
-            if (bWasSuccessful && Response.IsValid())
+        if (bWasSuccessful && Response.IsValid())
+        {
+            // Process the server response
+            ServerResponse = Response->GetContentAsString();
+            bSuccessfulRequest = true;
+            HandleResponse(ServerResponse);
+            LastLoginRequestData = "";
+        }
+        else
+        {
+            // If not successful, retry
+            if (!bSuccessfulRequest && NumAttempts < maxAttemptsToConnect)
             {
-                // Process the server response
-                ServerResponse = Response->GetContentAsString();
-                HandleResponse(ServerResponse);
-                bSuccessfulRequest = true;
-                if (TickerDelegateHandle.IsValid())
-                    FTicker::GetCoreTicker().RemoveTicker(TickerDelegateHandle);
-            }   
+                NumAttempts++;
+                SendLoginRequest(LastLoginRequestData, true);
+            }
+            else if (!bSuccessfulRequest)
+            {
+                // Maximum attempts reached, handle accordingly
+                ShowErrorWidget(TEXT("Error: Maximum attempts reached. Unable to connect to the server."));
+                NumAttempts = 0;
+                LastLoginRequestData = "";
+            }
+        }
     };
 
     HttpRequest->OnProcessRequestComplete().BindLambda(ProcessRequestLambda);
-
     HttpRequest->ProcessRequest();
-
-    if(!isRetry && ! bSuccessfulRequest)
-        TickerDelegateHandle = FTicker::GetCoreTicker().AddTicker(FTickerDelegate::CreateUObject(this, &ALoginManager::RetryLogin), timeoutBetweenRequests);
 }
+
 
 void ALoginManager::SendCheckNameRequest(const FString& RequestData, const bool isCreation, bool isRetry)
 {
@@ -200,33 +212,35 @@ void ALoginManager::SendCheckNameRequest(const FString& RequestData, const bool 
 
     // Use a shared pointer to capture by value
     TFunction<void(FHttpRequestPtr, FHttpResponsePtr, bool)> ProcessRequestLambda =
-        [this, isCreation](FHttpRequestPtr Request, FHttpResponsePtr Response, bool bWasSuccessful)
-        {
-            FString ServerResponse;
+        [this, RequestData, isCreation](FHttpRequestPtr Request, FHttpResponsePtr Response, bool bWasSuccessful)
+    {
+        FString ServerResponse;
 
-            if (bWasSuccessful && Response.IsValid())
-            {
-                // Process the server response
-                ServerResponse = Response->GetContentAsString();
-                HandleCheckNameResponse(ServerResponse, isCreation); // Call new function to handle response
-                bSuccessfulRequest = true;
-            }
-        };
+        if (bWasSuccessful && Response.IsValid())
+        {
+            // Process the server response
+            ServerResponse = Response->GetContentAsString();
+            HandleCheckNameResponse(ServerResponse, isCreation); // Call new function to handle response
+            bSuccessfulRequest = true;
+        }
+
+        if (!bSuccessfulRequest && NumAttempts < maxAttemptsToConnect)
+        {
+            NumAttempts++;
+            SendCheckNameRequest(RequestData, isCreation, true); // Retry directly
+        }
+        else if (!bSuccessfulRequest)
+        {
+            // Maximum attempts reached, handle accordingly
+            FString o_message = "Login server is currently unreachable...";
+            bCharacterNameAvailable = false;
+            OnCheckNameResponseReceived.Broadcast(bCharacterNameAvailable, o_message, isCreation);
+            NumAttempts = 0;
+        }
+    };
 
     HttpRequest->OnProcessRequestComplete().BindLambda(ProcessRequestLambda);
     HttpRequest->ProcessRequest();
-
-    if (!isRetry && !bSuccessfulRequest)
-    {
-        auto RetryLambda = [this, RequestData, isCreation]()
-            {
-                RetryNameCheck(RequestData, isCreation);
-                return false; // Stop the ticker after retrying once
-            };
-
-        TickerDelegateHandle = FTicker::GetCoreTicker().AddTicker(
-            FTickerDelegate::CreateLambda(RetryLambda), timeoutBetweenRequests);
-    }
 }
 
 void ALoginManager::HandleCheckNameResponse(const FString& Response, const bool isCreation)
@@ -255,42 +269,6 @@ void ALoginManager::HandleCheckNameResponse(const FString& Response, const bool 
     // Notify Blueprint about the response
     OnCheckNameResponseReceived.Broadcast(bCharacterNameAvailable, o_message, isCreation);
 }
-
-bool ALoginManager::RetryLogin(float DeltaTime)
-{
-    if (NumAttempts < maxAttemptsToConnect)
-    {
-        // Retry the login
-        SendLoginRequest(LastLoginRequestData, true);
-        NumAttempts++;
-        return true; // Continue ticking
-    } 
-    else
-    {
-        // Maximum attempts reached, handle accordingly
-        ShowErrorWidget(TEXT("Error: Maximum attempts reached. Unable to connect to the server."));
-        NumAttempts = 0;
-        return false; // Stop ticking
-    }
-}
-
-void ALoginManager::RetryNameCheck(const FString& RequestData, const bool isCreation)
-{
-    if (NumAttempts < maxAttemptsToConnect)
-    {
-        // Retry the login
-        SendCheckNameRequest(RequestData, isCreation, true);
-        NumAttempts++;
-    }
-    else
-    {
-        FString o_message = "Login server is currently unreachable...";
-        bCharacterNameAvailable = false;
-        OnCheckNameResponseReceived.Broadcast(bCharacterNameAvailable, o_message, isCreation);
-        NumAttempts = 0;
-    }
-}
-
 
 void ALoginManager::LoadGameLevelMap()
 {
