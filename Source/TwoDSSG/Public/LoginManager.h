@@ -17,6 +17,7 @@
 #include "LoginManager.generated.h"
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_ThreeParams(FOnCheckNameResponseReceived, bool, bNameAvailable, FString, message, bool, bIsCreation);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnsomething);
 
 UCLASS()
 class TWODSSG_API ALoginManager : public AActor
@@ -43,9 +44,15 @@ public:
     UFUNCTION(BlueprintCallable, Category = "Login")
     void CheckName(const FString& charName, const bool isCreation, const FString& charData);
 
+    UFUNCTION(BlueprintCallable, Category = "Test")
+    void TestLogin();
+
     // Declare the delegate as a BlueprintAssignable property
     UPROPERTY(BlueprintAssignable, Category = "Login")
     FOnCheckNameResponseReceived OnCheckNameResponseReceived;
+
+    UPROPERTY(BlueprintAssignable, Category = "Login")
+    FOnsomething OnSomething;
 
 protected:
     // Reference to the login error widget instance
@@ -54,6 +61,7 @@ protected:
 private:
     APlayerController* playerController;
     UWorld* World;
+
     void HandleResponse(const FString& Response);
     void SendLoginRequest(const FString& RequestData, bool isRetry);
     void SendCheckNameRequest(const FString& RequestData, const bool isCreation, bool isRetry);

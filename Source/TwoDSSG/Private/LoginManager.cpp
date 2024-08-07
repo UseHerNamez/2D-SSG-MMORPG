@@ -1,6 +1,7 @@
 // LoginManager.cpp
 #include "LoginManager.h"
 #include "ComputerSaviourGameInstance.h" // This includes the .h file of the loginManager too
+#include <iostream>
 
 ALoginManager::ALoginManager() : maxAttemptsToConnect(1), timeoutBetweenRequests(5.0f), NumAttempts(0)
 {
@@ -53,7 +54,7 @@ void ALoginManager::Register(const FString& Username, const FString& Password)
     SendLoginRequest(RegisterRequest, false);
 }
 
-void ALoginManager::HandleResponse(const FString& Response)
+void ALoginManager::HandleResponse(const FString& Response) // response is made of "status_message+' '+charInfo+' '+token:+' '+token.
 {
     // Example response format: LOGIN_SUCCESS charinfo: charactersInfo + token: token"
 
@@ -90,7 +91,6 @@ void ALoginManager::HandleResponse(const FString& Response)
                         if (ComputerSaviourGameInstance != nullptr)
                         {
                             ComputerSaviourGameInstance->setCharInfo(CharInfoPart);
-                            ComputerSaviourGameInstance->SetLoginManager(this);
                             // Transition to the "CharacterSelection" map
                             if(World)
                                 UGameplayStatics::OpenLevel(World, TEXT("CharacterSelection"));
@@ -146,6 +146,31 @@ void ALoginManager::CheckName(const FString& charName, const bool isCreation, co
     NumAttempts = 0;
     // Send the check name request to the server
     SendCheckNameRequest(CheckNameRequest, isCreation, false); //Last bool is retry indicator - which is false when first trying to reach the server.
+}
+
+void ALoginManager::TestLogin() //creates the game instance and populates it  with info without the need to contact the server.
+{
+    FString CharInfoPart = "Exter|1|0|hair:0-0,face:0-0";
+    if (playerController != nullptr)
+    {
+            UGameInstance* GameInstance = playerController->GetGameInstance();
+            if (GameInstance != nullptr)
+            {
+                UComputerSaviourGameInstance* ComputerSaviourGameInstance = Cast<UComputerSaviourGameInstance>(GameInstance);
+            if (ComputerSaviourGameInstance != nullptr)
+            {
+                ComputerSaviourGameInstance->setCharInfo(CharInfoPart);
+                // Transition to the "CharacterSelection" map
+                if (World)
+                    UGameplayStatics::OpenLevel(World, TEXT("CharacterSelection"));
+                else ShowErrorWidget("error: World nullptr - cant open new map");
+            }
+            else {
+                ShowErrorWidget("error: Can't get game instance object.");
+            }
+        }
+        else ShowErrorWidget("error: World nullptr.");
+    }
 }
 
 void ALoginManager::SendLoginRequest(const FString& RequestData, bool isRetry) // retry - is it the first time we call the function or is it a call to retry? to prevent a loop
@@ -215,7 +240,15 @@ void ALoginManager::SendCheckNameRequest(const FString& RequestData, const bool 
         [this, RequestData, isCreation](FHttpRequestPtr Request, FHttpResponsePtr Response, bool bWasSuccessful)
     {
         FString ServerResponse;
-
+        std::cout << "bWasSuccessful value is:" << bWasSuccessful << "and server response is: " << Response.IsValid() << std::endl;
+        if (bWasSuccessful)
+        {
+            std::cout << "ok";
+        }
+        if (Response.IsValid())
+        {
+            std::cout << "ok";
+        }
         if (bWasSuccessful && Response.IsValid())
         {
             // Process the server response
@@ -234,7 +267,10 @@ void ALoginManager::SendCheckNameRequest(const FString& RequestData, const bool 
             // Maximum attempts reached, handle accordingly
             FString o_message = "Login server is currently unreachable...";
             bCharacterNameAvailable = false;
-            OnCheckNameResponseReceived.Broadcast(bCharacterNameAvailable, o_message, isCreation);
+            if (OnCheckNameResponseReceived.IsBound())
+            {
+                OnCheckNameResponseReceived.Broadcast(bCharacterNameAvailable, o_message, isCreation);
+            }
             NumAttempts = 0;
         }
     };
@@ -267,10 +303,13 @@ void ALoginManager::HandleCheckNameResponse(const FString& Response, const bool 
     }
 
     // Notify Blueprint about the response
-    OnCheckNameResponseReceived.Broadcast(bCharacterNameAvailable, o_message, isCreation);
+    if (OnCheckNameResponseReceived.IsBound())
+    {
+        OnCheckNameResponseReceived.Broadcast(bCharacterNameAvailable, o_message, isCreation);
+    }
 }
 
-void ALoginManager::LoadGameLevelMap()
+/*void ALoginManager::LoadGameLevelMap()
 {
     // Assuming ServerIP is the IP address of your game server
     FString ServerIP = TEXT("127.0.0.1");  // will need to put EC2's ip addr of the last map the player was on.
@@ -280,6 +319,4 @@ void ALoginManager::LoadGameLevelMap()
 
     // Load the game level - will need to check where was the player last logged in
     UGameplayStatics::OpenLevel(GetWorld(), TEXT("YourGameMapName"), true, URL);
-}
-
-
+}*/

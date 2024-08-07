@@ -18,7 +18,11 @@ class TWODSSG_API UComputerSaviourGameInstance : public UGameInstance
 public:
     UComputerSaviourGameInstance();
 
+    UFUNCTION(BlueprintCallable)
     void SetLoginManager(ALoginManager* const i_loginManager);
+
+    UFUNCTION(BlueprintCallable)
+    void CreateLoginManager(APlayerController* i_playerController);
 
     UFUNCTION(BlueprintCallable)
     ALoginManager* GetLoginManager() const;
@@ -31,7 +35,12 @@ public:
 
     UFUNCTION(BlueprintCallable, Category = "Character Info")
     void setCharInfo(const FString& charInfo);
+
+    UFUNCTION(BlueprintCallable)
+    FString getToekenFromSysEnvVar();
+
 private:
+
     FString CharactersInfo;
     ALoginManager* loginManagerREF;
 
