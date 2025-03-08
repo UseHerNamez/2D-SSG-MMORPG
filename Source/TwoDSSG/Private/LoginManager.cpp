@@ -142,7 +142,7 @@ void ALoginManager::ShowErrorWidget(const FString& ErrorMessage)
 
 void ALoginManager::CheckName(const FString& charName, const bool isCreation, const FString& charData)
 {
-    FString CheckNameRequest = FString::Printf(TEXT("CHECKNAME %s %s %d"), *charName, *charData, isCreation ? 1 : 0);
+    FString CheckNameRequest = FString::Printf(TEXT("CHECKNAME %s %s %s"), *charName, *charData, isCreation ? TEXT("1") : TEXT("0"));
     NumAttempts = 0;
     // Send the check name request to the server
     SendCheckNameRequest(CheckNameRequest, isCreation, false); //Last bool is retry indicator - which is false when first trying to reach the server.
@@ -227,7 +227,7 @@ void ALoginManager::SendCheckNameRequest(const FString& RequestData, const bool 
 {
     bSuccessfulRequest = false;
     // Construct the full URL for your login server
-    FString ServerURL = TEXT("http://localhost:12345");
+    FString ServerURL = TEXT("http://localhost:12345"); //login server's addrs
 
     TSharedPtr<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = FHttpModule::Get().CreateRequest();
     HttpRequest->SetVerb(TEXT("POST"));
@@ -295,6 +295,10 @@ void ALoginManager::HandleCheckNameResponse(const FString& Response, const bool 
         bCharacterNameAvailable = true;
         if (!isCreation)
             o_message = "Name is available.";
+    }else if (Response == TEXT("success"))
+    {
+        bCharacterNameAvailable = true;
+        o_message = "Created.";
     }
     else // some error from the login server or the DB.
     {
@@ -309,7 +313,7 @@ void ALoginManager::HandleCheckNameResponse(const FString& Response, const bool 
     }
 }
 
-/*void ALoginManager::LoadGameLevelMap()
+void ALoginManager::LoadGameLevelMap()
 {
     // Assuming ServerIP is the IP address of your game server
     FString ServerIP = TEXT("127.0.0.1");  // will need to put EC2's ip addr of the last map the player was on.
@@ -318,5 +322,5 @@ void ALoginManager::HandleCheckNameResponse(const FString& Response, const bool 
     FString URL = ServerIP + TEXT(":7777?name=") + FPlatformMisc::GetEnvironmentVariable(TEXT("GAME_TOKEN"));
 
     // Load the game level - will need to check where was the player last logged in
-    UGameplayStatics::OpenLevel(GetWorld(), TEXT("YourGameMapName"), true, URL);
-}*/
+    UGameplayStatics::OpenLevel(GetWorld(), TEXT("WhereTheJourneyBegins"), true, URL);
+}
