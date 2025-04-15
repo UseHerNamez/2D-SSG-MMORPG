@@ -182,13 +182,11 @@ void ALoginManager::HandleDeleteCharResponse(FHttpRequestPtr Request, FHttpRespo
     if (bWasSuccessful && Response.IsValid())
     {
         FString ServerResponse = Response->GetContentAsString();
-        if (ServerResponse.Contains(TEXT("SUCCESS")))
-        {
-            if (GEngine)
-                GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, FString::Printf(TEXT("Character '%s' deleted successfully."), *charName));
-            NumAttempts = 0;
-            return;
-        }
+        NumAttempts = 0;
+        OnDeleteCharResponse.Broadcast(charName, ServerResponse);
+        if (GEngine)
+            GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Cyan, FString::Printf(TEXT("DeleteChar Response: %s"), *ServerResponse));
+        return;
     }
 
     if (++NumAttempts < maxAttemptsToConnect)
@@ -388,10 +386,7 @@ void ALoginManager::HandleCheckNameResponse(const FString& Response, const bool 
     }
 
     // Notify Blueprint about the response
-    if (OnCheckNameResponseReceived.IsBound())
-    {
         OnCheckNameResponseReceived.Broadcast(bCharacterNameAvailable, o_message, isCreation);
-    }
 }
 
 void ALoginManager::LoadGameLevelMap()

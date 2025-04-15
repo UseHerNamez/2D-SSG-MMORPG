@@ -11,13 +11,14 @@
 #include "GameFramework/PlayerController.h"
 #include "Interfaces/IHttpResponse.h"
 #include <Kismet/GameplayStatics.h>
+#include "Delegates/DelegateCombinations.h"
 //#include <Networking/Public/Interfaces/IPv4/IPv4Address.h>
 //#include <SocketSubsystem.h>
 #include "LoginErrorWidget.h"
 #include "LoginManager.generated.h"
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_ThreeParams(FOnCheckNameResponseReceived, bool, bNameAvailable, FString, message, bool, bIsCreation);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnsomething);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnDeleteCharResponse, FString, CharName, FString, Response);
 
 UCLASS()
 class TWODSSG_API ALoginManager : public AActor
@@ -53,6 +54,9 @@ public:
     // Declare the delegate as a BlueprintAssignable property
     UPROPERTY(BlueprintAssignable, Category = "Login")
     FOnCheckNameResponseReceived OnCheckNameResponseReceived;
+
+    UPROPERTY(BlueprintAssignable, Category = "Login")
+    FOnDeleteCharResponse OnDeleteCharResponse;
 
 protected:
     // Reference to the login error widget instance
