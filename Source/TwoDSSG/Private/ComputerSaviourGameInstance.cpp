@@ -14,6 +14,10 @@ void UComputerSaviourGameInstance::setCharInfo(const FString& charInfo)
 FString UComputerSaviourGameInstance::getToekenFromSysEnvVar()
 {
     FString Token = FPlatformMisc::GetEnvironmentVariable(TEXT("GAME_TOKEN"));
+
+    // Trim leading and trailing spaces or newline characters
+    Token = Token.TrimStartAndEnd();
+
     if (Token.IsEmpty())
     {
         if (GEngine)

@@ -35,6 +35,9 @@ public:
     UFUNCTION(BlueprintCallable, Category = "Login")
     void ShowErrorWidget(const FString& ErrorMessage);
 
+    UFUNCTION(BlueprintCallable, Category = "Login")
+    void DeleteCharFromDb(const FString& charName);
+
     UFUNCTION(BlueprintCallable)
     void SetErrorWidget(ULoginErrorWidget * i_ErrorWidget);
 
@@ -51,9 +54,6 @@ public:
     UPROPERTY(BlueprintAssignable, Category = "Login")
     FOnCheckNameResponseReceived OnCheckNameResponseReceived;
 
-    UPROPERTY(BlueprintAssignable, Category = "Login")
-    FOnsomething OnSomething;
-
 protected:
     // Reference to the login error widget instance
     class ULoginErrorWidget* ErrorWidget;
@@ -62,6 +62,9 @@ private:
     APlayerController* playerController;
     UWorld* World;
 
+    FString CreateDeleteCharRequest(const FString& charName);
+    void SendDeleteCharHttpRequest(const FString& RequestData, const FString& charName);
+    void HandleDeleteCharResponse(FHttpRequestPtr Request, FHttpResponsePtr Response, bool bWasSuccessful, const FString& RequestData, const FString& charName);
     void HandleResponse(const FString& Response);
     void SendLoginRequest(const FString& RequestData, bool isRetry);
     void SendCheckNameRequest(const FString& RequestData, const bool isCreation, bool isRetry);

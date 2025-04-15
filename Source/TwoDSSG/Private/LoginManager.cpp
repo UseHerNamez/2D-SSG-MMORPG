@@ -77,10 +77,8 @@ void ALoginManager::HandleResponse(const FString& Response) // response is made 
 
                 // Extract token from the response:
                 FString Token = ResponseParts[ResponseParts.Num() - 1];
-
                 // Store the token in the environment variable or a secure storage
-                FPlatformMisc::SetEnvironmentVar(TEXT("GAME_TOKEN"), *Token);
-
+                FPlatformMisc::SetEnvironmentVar(TEXT("GAME_TOKEN"), *Token);                
                 // Access the game instance and set characters info
                 if (playerController != nullptr)
                 {
@@ -127,7 +125,6 @@ void ALoginManager::HandleResponse(const FString& Response) // response is made 
     }
 }
 
-
 void ALoginManager::ShowErrorWidget(const FString& ErrorMessage)
 {
     // Set the error message on the widget
@@ -140,12 +137,106 @@ void ALoginManager::ShowErrorWidget(const FString& ErrorMessage)
     }
 }
 
+void ALoginManager::DeleteCharFromDb(const FString& charName)
+{
+    if (!playerController) return;
+
+    UGameInstance* GameInstance = playerController->GetGameInstance();
+    if (!GameInstance) return;
+
+    UComputerSaviourGameInstance* ComputerSaviourGameInstance = Cast<UComputerSaviourGameInstance>(GameInstance);
+    if (!ComputerSaviourGameInstance) return;
+
+    FString RequestData = CreateDeleteCharRequest(charName);
+    SendDeleteCharHttpRequest(RequestData, charName);
+}
+
+FString ALoginManager::CreateDeleteCharRequest(const FString& charName)
+{
+    UComputerSaviourGameInstance* GameInstance = Cast<UComputerSaviourGameInstance>(playerController->GetGameInstance());
+    FString Token = GameInstance ? GameInstance->getToekenFromSysEnvVar() : TEXT("");
+    return FString::Printf(TEXT("DELETEREQUEST %s %s"), *charName, *Token);
+}
+
+void ALoginManager::SendDeleteCharHttpRequest(const FString& RequestData, const FString& charName)
+{
+    FString ServerURL = TEXT("http://localhost:12345");
+
+    TSharedPtr<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = FHttpModule::Get().CreateRequest();
+    HttpRequest->SetVerb(TEXT("POST"));
+    HttpRequest->SetURL(ServerURL);
+    HttpRequest->SetHeader(TEXT("Content-Type"), TEXT("text/plain"));
+    HttpRequest->SetContentAsString(RequestData);
+
+    HttpRequest->OnProcessRequestComplete().BindLambda(
+        [this, RequestData, charName](FHttpRequestPtr Request, FHttpResponsePtr Response, bool bWasSuccessful)
+        {
+            HandleDeleteCharResponse(Request, Response, bWasSuccessful, RequestData, charName);
+        });
+
+    HttpRequest->ProcessRequest();
+}
+
+void ALoginManager::HandleDeleteCharResponse(FHttpRequestPtr Request, FHttpResponsePtr Response, bool bWasSuccessful, const FString& RequestData, const FString& charName)
+{
+    if (bWasSuccessful && Response.IsValid())
+    {
+        FString ServerResponse = Response->GetContentAsString();
+        if (ServerResponse.Contains(TEXT("SUCCESS")))
+        {
+            if (GEngine)
+                GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, FString::Printf(TEXT("Character '%s' deleted successfully."), *charName));
+            NumAttempts = 0;
+            return;
+        }
+    }
+
+    if (++NumAttempts < maxAttemptsToConnect)
+    {
+        FTimerHandle RetryHandle;
+        GetWorld()->GetTimerManager().SetTimer(RetryHandle, FTimerDelegate::CreateLambda([this, RequestData, charName]()
+            {
+                SendDeleteCharHttpRequest(RequestData, charName);
+            }), timeoutBetweenRequests, false);
+    }
+    else
+    {
+        if (GEngine)
+            GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("Failed to delete character after multiple attempts."));
+        NumAttempts = 0;
+    }
+}
+
 void ALoginManager::CheckName(const FString& charName, const bool isCreation, const FString& charData)
 {
-    FString CheckNameRequest = FString::Printf(TEXT("CHECKNAME %s %s %s"), *charName, *charData, isCreation ? TEXT("1") : TEXT("0"));
-    NumAttempts = 0;
-    // Send the check name request to the server
-    SendCheckNameRequest(CheckNameRequest, isCreation, false); //Last bool is retry indicator - which is false when first trying to reach the server.
+    if (playerController != nullptr)
+    {
+        UGameInstance* GameInstance = playerController->GetGameInstance();
+        if (GameInstance != nullptr)
+        {
+            UComputerSaviourGameInstance* ComputerSaviourGameInstance = Cast<UComputerSaviourGameInstance>(GameInstance);
+            if (ComputerSaviourGameInstance != nullptr)
+            {
+                FString Token = ComputerSaviourGameInstance->getToekenFromSysEnvVar();
+
+                // "CHECKNAME <charName> <charData> <token> <isCreation>"
+                FString CheckNameRequest = FString::Printf(TEXT("CHECKNAME %s %s %s %s"), *charName, *charData, *Token, isCreation ? TEXT("1") : TEXT("0"));
+                NumAttempts = 0;
+                // Send the check name request to the server
+                SendCheckNameRequest(CheckNameRequest, isCreation, false); //Last bool is retry indicator - which is false when first trying to reach the server.
+            } else 
+            {
+                if (GEngine)
+                    GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("ComputerSaviourGameInstance is nullptr...(?)"));
+            }
+        } else {
+            if (GEngine)
+                GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("GameInstance is nullptr...(?)"));
+        }
+    } else {
+        if (GEngine)
+            GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("playerController is nullptr...(?)"));
+    }
 }
 
 void ALoginManager::TestLogin() //creates the game instance and populates it  with info without the need to contact the server.
@@ -222,7 +313,6 @@ void ALoginManager::SendLoginRequest(const FString& RequestData, bool isRetry) /
     HttpRequest->ProcessRequest();
 }
 
-
 void ALoginManager::SendCheckNameRequest(const FString& RequestData, const bool isCreation, bool isRetry)
 {
     bSuccessfulRequest = false;
@@ -240,15 +330,6 @@ void ALoginManager::SendCheckNameRequest(const FString& RequestData, const bool 
         [this, RequestData, isCreation](FHttpRequestPtr Request, FHttpResponsePtr Response, bool bWasSuccessful)
     {
         FString ServerResponse;
-        std::cout << "bWasSuccessful value is:" << bWasSuccessful << "and server response is: " << Response.IsValid() << std::endl;
-        if (bWasSuccessful)
-        {
-            std::cout << "ok";
-        }
-        if (Response.IsValid())
-        {
-            std::cout << "ok";
-        }
         if (bWasSuccessful && Response.IsValid())
         {
             // Process the server response
