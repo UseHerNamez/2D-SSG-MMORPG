@@ -15,19 +15,20 @@
 //#include <Networking/Public/Interfaces/IPv4/IPv4Address.h>
 //#include <SocketSubsystem.h>
 #include "LoginErrorWidget.h"
+class UComputerSaviourGameInstance;
 #include "LoginManager.generated.h"
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_ThreeParams(FOnCheckNameResponseReceived, bool, bNameAvailable, FString, message, bool, bIsCreation);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnDeleteCharResponse, FString, CharName, FString, Response);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnDeleteCharResponse, FString, Response);
 
 UCLASS()
-class TWODSSG_API ALoginManager : public AActor
+class TWODSSG_API ULoginManager : public UObject
 {
     GENERATED_BODY()
 
 public:
     // Sets default values for this actor's properties
-    ALoginManager();
+    ULoginManager();
 
     UFUNCTION(BlueprintCallable, Category = "Login")
     void Login(const FString& Username, const FString& Password);
@@ -42,14 +43,14 @@ public:
     UFUNCTION(BlueprintCallable)
     void SetErrorWidget(ULoginErrorWidget * i_ErrorWidget);
 
-    void SetPlayerController(APlayerController* i_PlayerController);
-    void SetWorld();
-
     UFUNCTION(BlueprintCallable, Category = "Login")
     void CheckName(const FString& charName, const bool isCreation, const FString& charData);
 
     UFUNCTION(BlueprintCallable, Category = "Test")
     void TestLogin();
+
+    void setCSGameInstance(UComputerSaviourGameInstance* gameInstance);
+    UComputerSaviourGameInstance* GetGameInstance();
 
     // Declare the delegate as a BlueprintAssignable property
     UPROPERTY(BlueprintAssignable, Category = "Login")
@@ -63,8 +64,7 @@ protected:
     class ULoginErrorWidget* ErrorWidget;
 
 private:
-    APlayerController* playerController;
-    UWorld* World;
+    UComputerSaviourGameInstance* ComputerSaviourGameInstance;
 
     FString CreateDeleteCharRequest(const FString& charName);
     void SendDeleteCharHttpRequest(const FString& RequestData, const FString& charName);

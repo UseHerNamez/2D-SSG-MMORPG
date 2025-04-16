@@ -19,7 +19,7 @@ public:
 
 protected:
     // Reference to the login manager instance
-    class ALoginManager* LoginManager;
+    class ULoginManager* LoginManager;
     // Bind these functions to the respective buttons in the widget
     UFUNCTION(BlueprintCallable, Category = "Login")
     void OnLoginButtonReleased(const FString& Username, const FString& Password);
@@ -31,5 +31,5 @@ protected:
     void ShowErrorWidget(const FString& errorMessage);
 
     UFUNCTION(BlueprintCallable, Category = "Login")
-    ALoginManager* InitializeLoginManager(APlayerController* i_playerController);
+    ULoginManager* InitializeLoginManager(APlayerController* i_playerController);
 };

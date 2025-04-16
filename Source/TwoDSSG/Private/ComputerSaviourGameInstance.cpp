@@ -1,4 +1,5 @@
 #include "ComputerSaviourGameInstance.h"
+#include "LoginManager.h"
 
 UComputerSaviourGameInstance::UComputerSaviourGameInstance()
 {
@@ -49,19 +50,26 @@ FString UComputerSaviourGameInstance::getCharInfo()
     return CharactersInfo;
 }
 
-void UComputerSaviourGameInstance::SetLoginManager(ALoginManager* const i_loginManager)
+void UComputerSaviourGameInstance::SetLoginManager(ULoginManager* const i_loginManager)
 {
     loginManagerREF = i_loginManager;
 }
 
-void UComputerSaviourGameInstance::CreateLoginManager(APlayerController* i_playerController)
-{
-    loginManagerREF = NewObject<ALoginManager>(this);
-    loginManagerREF->SetPlayerController(i_playerController);
-    loginManagerREF->SetWorld();
-}
-
-ALoginManager* UComputerSaviourGameInstance::GetLoginManager() const
+ULoginManager* UComputerSaviourGameInstance::GetLoginManager() const
 {
     return loginManagerREF;
+}
+
+APlayerController* UComputerSaviourGameInstance::GetPlayerController()
+{
+    UWorld* World = GetWorld();
+    if (!World) return nullptr;
+
+    return UGameplayStatics::GetPlayerController(World, 0); // 0 = first local player
+}
+
+UWorld * UComputerSaviourGameInstance::GetCurrWorld()
+{
+    UWorld* World = GetWorld();
+    return World;
 }

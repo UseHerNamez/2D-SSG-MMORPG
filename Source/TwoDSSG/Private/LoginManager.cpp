@@ -1,17 +1,16 @@
 // LoginManager.cpp
 #include "LoginManager.h"
-#include "ComputerSaviourGameInstance.h" // This includes the .h file of the loginManager too
+#include "ComputerSaviourGameInstance.h"
 #include <iostream>
 
-ALoginManager::ALoginManager() : maxAttemptsToConnect(1), timeoutBetweenRequests(5.0f), NumAttempts(0)
+ULoginManager::ULoginManager() : maxAttemptsToConnect(1), timeoutBetweenRequests(5.0f), NumAttempts(0)
 {
     // Set this actor to call Tick() every frame
-    PrimaryActorTick.bCanEverTick = false;
     bCharacterNameAvailable = false;
     bSuccessfulRequest = false;
 }
 
-void ALoginManager::SetErrorWidget(ULoginErrorWidget * i_ErrorWidget)
+void ULoginManager::SetErrorWidget(ULoginErrorWidget * i_ErrorWidget)
 {
     // Create an instance of the LoginErrorWidget
     if (i_ErrorWidget)
@@ -26,17 +25,7 @@ void ALoginManager::SetErrorWidget(ULoginErrorWidget * i_ErrorWidget)
     }
 }
 
-void ALoginManager::SetPlayerController(APlayerController* i_PlayerController)
-{
-    playerController = i_PlayerController;
-}
-
-void ALoginManager::SetWorld()
-{
-    World = playerController->GetWorld();
-}
-
-void ALoginManager::Login(const FString& Username, const FString& Password)
+void ULoginManager::Login(const FString& Username, const FString& Password)
 {
     // Construct the login request data
     FString LoginRequest = FString::Printf(TEXT("LOGIN %s %s"), *Username, *Password);
@@ -45,7 +34,7 @@ void ALoginManager::Login(const FString& Username, const FString& Password)
     SendLoginRequest(LoginRequest, false);
 }
 
-void ALoginManager::Register(const FString& Username, const FString& Password)
+void ULoginManager::Register(const FString& Username, const FString& Password)
 {
     // Construct the registration request data
     FString RegisterRequest = FString::Printf(TEXT("REGISTER %s %s"), *Username, *Password);
@@ -54,7 +43,7 @@ void ALoginManager::Register(const FString& Username, const FString& Password)
     SendLoginRequest(RegisterRequest, false);
 }
 
-void ALoginManager::HandleResponse(const FString& Response) // response is made of "status_message+' '+charInfo+' '+token:+' '+token.
+void ULoginManager::HandleResponse(const FString& Response) // response is made of "status_message+' '+charInfo+' '+token:+' '+token.
 {
     // Example response format: LOGIN_SUCCESS charinfo: charactersInfo + token: token"
 
@@ -78,34 +67,18 @@ void ALoginManager::HandleResponse(const FString& Response) // response is made 
                 // Extract token from the response:
                 FString Token = ResponseParts[ResponseParts.Num() - 1];
                 // Store the token in the environment variable or a secure storage
-                FPlatformMisc::SetEnvironmentVar(TEXT("GAME_TOKEN"), *Token);                
-                // Access the game instance and set characters info
-                if (playerController != nullptr)
-                {
-                    UGameInstance* GameInstance = playerController->GetGameInstance();
-                    if (GameInstance != nullptr)
-                    {
-                        UComputerSaviourGameInstance* ComputerSaviourGameInstance = Cast<UComputerSaviourGameInstance>(GameInstance);
-                        if (ComputerSaviourGameInstance != nullptr)
-                        {
-                            ComputerSaviourGameInstance->setCharInfo(CharInfoPart);
-                            // Transition to the "CharacterSelection" map
-                            if(World)
-                                UGameplayStatics::OpenLevel(World, TEXT("CharacterSelection"));
-                            else ShowErrorWidget("error: World nullptr - cant open new map");
-                        }
-                        else {
-                            ShowErrorWidget("error: Can't get game instance object.");
-                        }
-                    }
-                    else ShowErrorWidget("error: World nullptr.");
+                FPlatformMisc::SetEnvironmentVar(TEXT("GAME_TOKEN"), *Token);                      
 
-                    /*if (ResponseType == TEXT("REGISTER_SUCCESS"))
-                        ShowErrorWidget("REGISTER_SUCCESS");
-                    else ShowErrorWidget("LOGIN_SUCCESS");*/
+                if (ComputerSaviourGameInstance != nullptr)
+                {
+                    ComputerSaviourGameInstance->setCharInfo(CharInfoPart);
+                    // Transition to the "CharacterSelection" map
+                    if(ComputerSaviourGameInstance->GetCurrWorld())
+                        UGameplayStatics::OpenLevel(ComputerSaviourGameInstance->GetCurrWorld(), TEXT("CharacterSelection"));
+                    else ShowErrorWidget("error: World nullptr - cant open new map");
                 }
-                else { // no charinfo? then it must be an error - though this part should never hit because the type should be failure.
-                    ShowErrorWidget("No charInfo received.");
+                else {
+                    ShowErrorWidget("error: Can't get game instance object.");
                 }
             }
             else if (ResponseType == TEXT("LOGIN_FAILURE") || ResponseType == TEXT("REGISTER_FAILURE")
@@ -125,7 +98,7 @@ void ALoginManager::HandleResponse(const FString& Response) // response is made 
     }
 }
 
-void ALoginManager::ShowErrorWidget(const FString& ErrorMessage)
+void ULoginManager::ShowErrorWidget(const FString& ErrorMessage)
 {
     // Set the error message on the widget
     if (ErrorWidget)
@@ -137,28 +110,19 @@ void ALoginManager::ShowErrorWidget(const FString& ErrorMessage)
     }
 }
 
-void ALoginManager::DeleteCharFromDb(const FString& charName)
+void ULoginManager::DeleteCharFromDb(const FString& charName)
 {
-    if (!playerController) return;
-
-    UGameInstance* GameInstance = playerController->GetGameInstance();
-    if (!GameInstance) return;
-
-    UComputerSaviourGameInstance* ComputerSaviourGameInstance = Cast<UComputerSaviourGameInstance>(GameInstance);
-    if (!ComputerSaviourGameInstance) return;
-
     FString RequestData = CreateDeleteCharRequest(charName);
     SendDeleteCharHttpRequest(RequestData, charName);
 }
 
-FString ALoginManager::CreateDeleteCharRequest(const FString& charName)
+FString ULoginManager::CreateDeleteCharRequest(const FString& charName)
 {
-    UComputerSaviourGameInstance* GameInstance = Cast<UComputerSaviourGameInstance>(playerController->GetGameInstance());
-    FString Token = GameInstance ? GameInstance->getToekenFromSysEnvVar() : TEXT("");
+    FString Token = ComputerSaviourGameInstance ? ComputerSaviourGameInstance->getToekenFromSysEnvVar() : TEXT("");
     return FString::Printf(TEXT("DELETEREQUEST %s %s"), *charName, *Token);
 }
 
-void ALoginManager::SendDeleteCharHttpRequest(const FString& RequestData, const FString& charName)
+void ULoginManager::SendDeleteCharHttpRequest(const FString& RequestData, const FString& charName)
 {
     FString ServerURL = TEXT("http://localhost:12345");
 
@@ -177,92 +141,70 @@ void ALoginManager::SendDeleteCharHttpRequest(const FString& RequestData, const 
     HttpRequest->ProcessRequest();
 }
 
-void ALoginManager::HandleDeleteCharResponse(FHttpRequestPtr Request, FHttpResponsePtr Response, bool bWasSuccessful, const FString& RequestData, const FString& charName)
+void ULoginManager::HandleDeleteCharResponse(FHttpRequestPtr Request, FHttpResponsePtr Response, bool bWasSuccessful, const FString& RequestData, const FString& charName)
 {
     if (bWasSuccessful && Response.IsValid())
     {
         FString ServerResponse = Response->GetContentAsString();
         NumAttempts = 0;
-        OnDeleteCharResponse.Broadcast(charName, ServerResponse);
+        OnDeleteCharResponse.Broadcast(ServerResponse);
         if (GEngine)
             GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Cyan, FString::Printf(TEXT("DeleteChar Response: %s"), *ServerResponse));
         return;
     }
-
-    if (++NumAttempts < maxAttemptsToConnect)
+    else 
     {
-        FTimerHandle RetryHandle;
-        GetWorld()->GetTimerManager().SetTimer(RetryHandle, FTimerDelegate::CreateLambda([this, RequestData, charName]()
-            {
-                SendDeleteCharHttpRequest(RequestData, charName);
-            }), timeoutBetweenRequests, false);
-    }
-    else
-    {
-        if (GEngine)
-            GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("Failed to delete character after multiple attempts."));
-        NumAttempts = 0;
+        OnDeleteCharResponse.Broadcast("Response for character deletion not valid or operation was not successful.");
     }
 }
 
-void ALoginManager::CheckName(const FString& charName, const bool isCreation, const FString& charData)
+void ULoginManager::CheckName(const FString& charName, const bool isCreation, const FString& charData)
 {
-    if (playerController != nullptr)
+    if (ComputerSaviourGameInstance != nullptr)
     {
-        UGameInstance* GameInstance = playerController->GetGameInstance();
-        if (GameInstance != nullptr)
-        {
-            UComputerSaviourGameInstance* ComputerSaviourGameInstance = Cast<UComputerSaviourGameInstance>(GameInstance);
-            if (ComputerSaviourGameInstance != nullptr)
-            {
-                FString Token = ComputerSaviourGameInstance->getToekenFromSysEnvVar();
+        FString Token = ComputerSaviourGameInstance->getToekenFromSysEnvVar();
 
-                // "CHECKNAME <charName> <charData> <token> <isCreation>"
-                FString CheckNameRequest = FString::Printf(TEXT("CHECKNAME %s %s %s %s"), *charName, *charData, *Token, isCreation ? TEXT("1") : TEXT("0"));
-                NumAttempts = 0;
-                // Send the check name request to the server
-                SendCheckNameRequest(CheckNameRequest, isCreation, false); //Last bool is retry indicator - which is false when first trying to reach the server.
-            } else 
-            {
-                if (GEngine)
-                    GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("ComputerSaviourGameInstance is nullptr...(?)"));
-            }
-        } else {
-            if (GEngine)
-                GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("GameInstance is nullptr...(?)"));
-        }
-    } else {
+        // "CHECKNAME <charName> <charData> <token> <isCreation>"
+        FString CheckNameRequest = FString::Printf(TEXT("CHECKNAME %s %s %s %s"), *charName, *charData, *Token, isCreation ? TEXT("1") : TEXT("0"));
+        NumAttempts = 0;
+        // Send the check name request to the server
+        SendCheckNameRequest(CheckNameRequest, isCreation, false); //Last bool is retry indicator - which is false when first trying to reach the server.
+    } else 
+    {
         if (GEngine)
-            GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("playerController is nullptr...(?)"));
+            GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("ComputerSaviourGameInstance is nullptr...(?)"));
     }
 }
 
-void ALoginManager::TestLogin() //creates the game instance and populates it  with info without the need to contact the server.
+void ULoginManager::TestLogin() //creates the game instance and populates it  with info without the need to contact the server.
 {
     FString CharInfoPart = "Exter|1|0|hair:0-0,face:0-0";
-    if (playerController != nullptr)
+
+    if (ComputerSaviourGameInstance != nullptr)
     {
-            UGameInstance* GameInstance = playerController->GetGameInstance();
-            if (GameInstance != nullptr)
-            {
-                UComputerSaviourGameInstance* ComputerSaviourGameInstance = Cast<UComputerSaviourGameInstance>(GameInstance);
-            if (ComputerSaviourGameInstance != nullptr)
-            {
-                ComputerSaviourGameInstance->setCharInfo(CharInfoPart);
-                // Transition to the "CharacterSelection" map
-                if (World)
-                    UGameplayStatics::OpenLevel(World, TEXT("CharacterSelection"));
-                else ShowErrorWidget("error: World nullptr - cant open new map");
-            }
-            else {
-                ShowErrorWidget("error: Can't get game instance object.");
-            }
-        }
-        else ShowErrorWidget("error: World nullptr.");
+        ComputerSaviourGameInstance->setCharInfo(CharInfoPart);
+        // Transition to the "CharacterSelection" map
+        if (ComputerSaviourGameInstance->GetCurrWorld())
+            UGameplayStatics::OpenLevel(ComputerSaviourGameInstance->GetCurrWorld(), TEXT("CharacterSelection"));
+        else ShowErrorWidget("error: World nullptr - cant open new map");
     }
+    else {
+        ShowErrorWidget("error: Can't get game instance object.");
+    } 
 }
 
-void ALoginManager::SendLoginRequest(const FString& RequestData, bool isRetry) // retry - is it the first time we call the function or is it a call to retry? to prevent a loop
+void ULoginManager::setCSGameInstance(UComputerSaviourGameInstance* gameInstance)
+{
+    if(gameInstance)
+        ComputerSaviourGameInstance = gameInstance;
+}
+
+UComputerSaviourGameInstance* ULoginManager::GetGameInstance()
+{
+    return ComputerSaviourGameInstance;
+}
+
+void ULoginManager::SendLoginRequest(const FString& RequestData, bool isRetry) // retry - is it the first time we call the function or is it a call to retry? to prevent a loop
 {
     bSuccessfulRequest = false;
     // Construct the full URL for your login server
@@ -311,7 +253,7 @@ void ALoginManager::SendLoginRequest(const FString& RequestData, bool isRetry) /
     HttpRequest->ProcessRequest();
 }
 
-void ALoginManager::SendCheckNameRequest(const FString& RequestData, const bool isCreation, bool isRetry)
+void ULoginManager::SendCheckNameRequest(const FString& RequestData, const bool isCreation, bool isRetry)
 {
     bSuccessfulRequest = false;
     // Construct the full URL for your login server
@@ -358,7 +300,7 @@ void ALoginManager::SendCheckNameRequest(const FString& RequestData, const bool 
     HttpRequest->ProcessRequest();
 }
 
-void ALoginManager::HandleCheckNameResponse(const FString& Response, const bool isCreation)
+void ULoginManager::HandleCheckNameResponse(const FString& Response, const bool isCreation)
 {
     FString o_message = "";
     if (Response == TEXT("exists"))
@@ -389,7 +331,7 @@ void ALoginManager::HandleCheckNameResponse(const FString& Response, const bool 
         OnCheckNameResponseReceived.Broadcast(bCharacterNameAvailable, o_message, isCreation);
 }
 
-void ALoginManager::LoadGameLevelMap()
+void ULoginManager::LoadGameLevelMap()
 {
     // Assuming ServerIP is the IP address of your game server
     FString ServerIP = TEXT("127.0.0.1");  // will need to put EC2's ip addr of the last map the player was on.

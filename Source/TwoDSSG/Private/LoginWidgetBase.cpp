@@ -2,6 +2,7 @@
 
 #include "LoginWidgetBase.h"
 #include "LoginManager.h"
+#include "ComputerSaviourGameInstance.h"
 
 ULoginWidgetBase::ULoginWidgetBase(const FObjectInitializer& ObjectInitializer)
     : Super(ObjectInitializer)
@@ -9,11 +10,22 @@ ULoginWidgetBase::ULoginWidgetBase(const FObjectInitializer& ObjectInitializer)
     
 }
 
-ALoginManager* ULoginWidgetBase::InitializeLoginManager(APlayerController* i_playerController)
+ULoginManager* ULoginWidgetBase::InitializeLoginManager(APlayerController* i_playerController)
 {
-    LoginManager = NewObject<ALoginManager>(this);
-    LoginManager->SetPlayerController(i_playerController);
-    LoginManager->SetWorld();
+    LoginManager = NewObject<ULoginManager>(this);
+    if (i_playerController != nullptr)
+    {
+        UGameInstance* GameInstance = i_playerController->GetGameInstance();
+        if (GameInstance != nullptr)
+        {
+            UComputerSaviourGameInstance* ComputerSaviourGameInstance = Cast<UComputerSaviourGameInstance>(GameInstance);
+            if (ComputerSaviourGameInstance != nullptr)
+            {
+                ComputerSaviourGameInstance->SetLoginManager(LoginManager);
+                LoginManager->setCSGameInstance(ComputerSaviourGameInstance);
+            }
+        }
+    }
     return LoginManager;
 }
 

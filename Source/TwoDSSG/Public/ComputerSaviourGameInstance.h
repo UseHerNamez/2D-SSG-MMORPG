@@ -4,7 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Engine/GameInstance.h"
-#include "LoginManager.h"
+class LoginManager;
 #include "ComputerSaviourGameInstance.generated.h"
 
 /**
@@ -19,13 +19,10 @@ public:
     UComputerSaviourGameInstance();
 
     UFUNCTION(BlueprintCallable)
-    void SetLoginManager(ALoginManager* const i_loginManager);
+    void SetLoginManager(ULoginManager* const i_loginManager);
 
     UFUNCTION(BlueprintCallable)
-    void CreateLoginManager(APlayerController* i_playerController);
-
-    UFUNCTION(BlueprintCallable)
-    ALoginManager* GetLoginManager() const;
+    ULoginManager* GetLoginManager() const;
 
     UFUNCTION(BlueprintCallable, Category = "Character Info")
     bool isCharInfoEmpty();
@@ -39,10 +36,15 @@ public:
     UFUNCTION(BlueprintCallable)
     FString getToekenFromSysEnvVar();
 
+    APlayerController* UComputerSaviourGameInstance::GetPlayerController();
+    UWorld* UComputerSaviourGameInstance::GetCurrWorld();
+
 private:
 
     FString CharactersInfo;
-    ALoginManager* loginManagerREF;
+
+    UPROPERTY()
+    ULoginManager* loginManagerREF;
 
     // Add any functions or additional data you need here
 };
