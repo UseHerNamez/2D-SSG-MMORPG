@@ -71,6 +71,7 @@ void ULoginManager::HandleResponse(const FString& Response) // response is made 
 
                 if (ComputerSaviourGameInstance != nullptr)
                 {
+                    GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, CharInfoPart);
                     ComputerSaviourGameInstance->setCharInfo(CharInfoPart);
                     // Transition to the "CharacterSelection" map
                     if(ComputerSaviourGameInstance->GetCurrWorld())
