@@ -125,11 +125,9 @@ FString ULoginManager::CreateDeleteCharRequest(const FString& charName)
 
 void ULoginManager::SendDeleteCharHttpRequest(const FString& RequestData, const FString& charName)
 {
-    FString ServerURL = TEXT("http://localhost:12345");
-
     TSharedPtr<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = FHttpModule::Get().CreateRequest();
     HttpRequest->SetVerb(TEXT("POST"));
-    HttpRequest->SetURL(ServerURL);
+    HttpRequest->SetURL(LoginServerURL);
     HttpRequest->SetHeader(TEXT("Content-Type"), TEXT("text/plain"));
     HttpRequest->SetContentAsString(RequestData);
 
@@ -208,13 +206,11 @@ UComputerSaviourGameInstance* ULoginManager::GetGameInstance()
 void ULoginManager::SendLoginRequest(const FString& RequestData, bool isRetry) // retry - is it the first time we call the function or is it a call to retry? to prevent a loop
 {
     bSuccessfulRequest = false;
-    // Construct the full URL for your login server
-    FString ServerURL = TEXT("http://localhost:12345");
 
     LastLoginRequestData = RequestData;
     TSharedPtr<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = FHttpModule::Get().CreateRequest();
     HttpRequest->SetVerb(TEXT("POST"));
-    HttpRequest->SetURL(ServerURL);
+    HttpRequest->SetURL(LoginServerURL);
     HttpRequest->SetHeader(TEXT("Content-Type"), TEXT("text/plain"));
     HttpRequest->SetContentAsString(RequestData);
 
@@ -257,12 +253,10 @@ void ULoginManager::SendLoginRequest(const FString& RequestData, bool isRetry) /
 void ULoginManager::SendCheckNameRequest(const FString& RequestData, const bool isCreation, bool isRetry)
 {
     bSuccessfulRequest = false;
-    // Construct the full URL for your login server
-    FString ServerURL = TEXT("http://localhost:12345"); //login server's addrs
 
     TSharedPtr<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = FHttpModule::Get().CreateRequest();
     HttpRequest->SetVerb(TEXT("POST"));
-    HttpRequest->SetURL(ServerURL);
+    HttpRequest->SetURL(LoginServerURL);
     HttpRequest->SetHeader(TEXT("Content-Type"), TEXT("text/plain"));
     HttpRequest->SetContentAsString(RequestData);
 
@@ -342,4 +336,85 @@ void ULoginManager::LoadGameLevelMap()
 
     // Load the game level - will need to check where was the player last logged in
     UGameplayStatics::OpenLevel(GetWorld(), TEXT("WhereTheJourneyBegins"), true, URL);
+}
+
+void ULoginManager::SelectCharacter(const FString& charName)
+{
+    if (ComputerSaviourGameInstance != nullptr)
+    {
+        FString Token = ComputerSaviourGameInstance->getToekenFromSysEnvVar();
+        FString SelectCharRequest = FString::Printf(TEXT("CHARSELECT %s %s"), *charName, *Token);
+        NumAttempts = 0;
+
+        SendSelectCharRequest(SelectCharRequest, charName);
+    }
+}
+
+void ULoginManager::SendSelectCharRequest(const FString& RequestData, const FString& charName) // here we also handle response(inside lambda)
+{
+    TSharedPtr<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = FHttpModule::Get().CreateRequest();
+    HttpRequest->SetVerb(TEXT("POST"));
+    HttpRequest->SetURL(LoginServerURL);
+    HttpRequest->SetHeader(TEXT("Content-Type"), TEXT("text/plain"));
+    HttpRequest->SetContentAsString(RequestData);
+
+    HttpRequest->OnProcessRequestComplete().BindLambda(
+        [this, charName](FHttpRequestPtr Request, FHttpResponsePtr Response, bool bWasSuccessful)
+        {
+            if (!bWasSuccessful || !Response.IsValid())
+            {
+                UE_LOG(LogTemp, Error, TEXT("Character selection request failed."));
+                return;
+            }
+
+            FString ResponseStr = Response->GetContentAsString();
+            UE_LOG(LogTemp, Display, TEXT("Login server response: %s"), *ResponseStr);
+
+            if (Response->GetResponseCode() == 200)
+            {
+                FString Token, MapName;
+
+                // Parse token
+                const FString TokenKey = TEXT("token=");
+                const FString MapKey = TEXT("map=");
+
+                int32 TokenIndex = ResponseStr.Find(TokenKey);
+                int32 MapIndex = ResponseStr.Find(MapKey);
+
+                if (TokenIndex != INDEX_NONE && MapIndex != INDEX_NONE)
+                {
+                    TokenIndex += TokenKey.Len();
+                    MapIndex += MapKey.Len();
+
+                    Token = ResponseStr.Mid(TokenIndex, MapIndex - TokenIndex);
+                    MapName = ResponseStr.Mid(MapIndex);
+
+                    if (MapName.IsEmpty()) // this means the character is new, havent logged in to any map yet...
+                    {
+                        MapName = "WhereTheJourneyBegins";
+                    }
+
+                    FString TravelURL = FString::Printf(TEXT("/Game/Maps/%s?Token=%s"), *MapName, *Token);
+                    UWorld* World = GetWorld();
+                    if (World)
+                    {
+                        APlayerController* PC = UGameplayStatics::GetPlayerController(World, 0);
+                        if (PC)
+                        {
+                            PC->ClientTravel(TravelURL, ETravelType::TRAVEL_Absolute);
+                        }
+                    }
+                }
+                else
+                {
+                    UE_LOG(LogTemp, Error, TEXT("Malformed server response, token or map missing."));
+                }
+            }
+            else
+            {
+                UE_LOG(LogTemp, Error, TEXT("Character selection failed with code %d"), Response->GetResponseCode());
+            }
+        });
+
+    HttpRequest->ProcessRequest();
 }

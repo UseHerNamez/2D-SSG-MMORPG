@@ -46,6 +46,9 @@ public:
     UFUNCTION(BlueprintCallable, Category = "Login")
     void CheckName(const FString& charName, const bool isCreation, const FString& charData);
 
+    UFUNCTION(BlueprintCallable, Category = "Login")
+    void SelectCharacter(const FString& charName);
+
     UFUNCTION(BlueprintCallable, Category = "Test")
     void TestLogin();
 
@@ -65,6 +68,7 @@ protected:
 
 private:
     UComputerSaviourGameInstance* ComputerSaviourGameInstance;
+    const FString LoginServerURL = TEXT("http://localhost:12345");
 
     FString CreateDeleteCharRequest(const FString& charName);
     void SendDeleteCharHttpRequest(const FString& RequestData, const FString& charName);
@@ -73,6 +77,7 @@ private:
     void SendLoginRequest(const FString& RequestData, bool isRetry);
     void SendCheckNameRequest(const FString& RequestData, const bool isCreation, bool isRetry);
     void HandleCheckNameResponse(const FString& Response, const bool isCreation);
+    void SendSelectCharRequest(const FString& RequestData, const FString& charName);
     void LoadGameLevelMap();
     FTimerHandle TimerHandle;
     int maxAttemptsToConnect;
