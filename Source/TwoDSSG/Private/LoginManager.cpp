@@ -326,7 +326,7 @@ void ULoginManager::HandleCheckNameResponse(const FString& Response, const bool 
         OnCheckNameResponseReceived.Broadcast(bCharacterNameAvailable, o_message, isCreation);
 }
 
-void ULoginManager::LoadGameLevelMap()
+/*void ULoginManager::LoadGameLevelMap()
 {
     // Assuming ServerIP is the IP address of your game server
     FString ServerIP = TEXT("127.0.0.1");  // will need to put EC2's ip addr of the last map the player was on.
@@ -336,7 +336,7 @@ void ULoginManager::LoadGameLevelMap()
 
     // Load the game level - will need to check where was the player last logged in
     UGameplayStatics::OpenLevel(GetWorld(), TEXT("WhereTheJourneyBegins"), true, URL);
-}
+}*/
 
 void ULoginManager::SelectCharacter(const FString& charName)
 {
@@ -372,29 +372,39 @@ void ULoginManager::SendSelectCharRequest(const FString& RequestData, const FStr
 
             if (Response->GetResponseCode() == 200)
             {
-                FString Token, MapName;
+                TSharedPtr<FJsonObject> JsonObject;
+                TSharedRef<TJsonReader<>> Reader = TJsonReaderFactory<>::Create(ResponseStr);
 
-                // Parse token
-                const FString TokenKey = TEXT("token=");
-                const FString MapKey = TEXT("map=");
-
-                int32 TokenIndex = ResponseStr.Find(TokenKey);
-                int32 MapIndex = ResponseStr.Find(MapKey);
-
-                if (TokenIndex != INDEX_NONE && MapIndex != INDEX_NONE)
+                if (FJsonSerializer::Deserialize(Reader, JsonObject) && JsonObject.IsValid())
                 {
-                    TokenIndex += TokenKey.Len();
-                    MapIndex += MapKey.Len();
+                    FString Token;
+                    FString MapName;
+                    FString ServerAddressFromResponse;
 
-                    Token = ResponseStr.Mid(TokenIndex, MapIndex - TokenIndex);
-                    MapName = ResponseStr.Mid(MapIndex);
+                    bool bHasToken = JsonObject->TryGetStringField(TEXT("token"), Token);
+                    bool bHasMap = JsonObject->TryGetStringField(TEXT("map"), MapName);
+                    bool bHasServerAddress = JsonObject->TryGetStringField(TEXT("server_address"), ServerAddressFromResponse);
 
-                    if (MapName.IsEmpty()) // this means the character is new, havent logged in to any map yet...
+                    if (!bHasToken)
                     {
-                        MapName = "WhereTheJourneyBegins";
+                        UE_LOG(LogTemp, Error, TEXT("Server response missing token."));
+                        return; // need to call a UE error for the user to see.
                     }
 
-                    FString TravelURL = FString::Printf(TEXT("/Game/Maps/%s?Token=%s"), *MapName, *Token);
+                    // If there's no map or the map is empty, use the default map name
+                    if (!bHasMap || MapName.IsEmpty())
+                    {
+                        MapName = TEXT("WhereTheJourneyBegins");
+                    }
+
+                    // Use the server address from the response if it exists, otherwise fallback to default
+                    FString FinalServerAddress = (bHasServerAddress && !ServerAddressFromResponse.IsEmpty())
+                        ? ServerAddressFromResponse : DefaultServerAddress;
+
+                    FString TravelURL = FString::Printf(TEXT("%s?/%s?AuthToken=%s"),
+                        *FinalServerAddress, *MapName, *Token);
+                    UE_LOG(LogTemp, Log, TEXT("Traveling to server: %s with token: %s"), *TravelURL, *Token);
+
                     UWorld* World = GetWorld();
                     if (World)
                     {
@@ -403,11 +413,19 @@ void ULoginManager::SendSelectCharRequest(const FString& RequestData, const FStr
                         {
                             PC->ClientTravel(TravelURL, ETravelType::TRAVEL_Absolute);
                         }
+                        else
+                        {
+                            UE_LOG(LogTemp, Error, TEXT("PlayerController not found."));
+                        }
+                    }
+                    else
+                    {
+                        UE_LOG(LogTemp, Error, TEXT("World not found."));
                     }
                 }
                 else
                 {
-                    UE_LOG(LogTemp, Error, TEXT("Malformed server response, token or map missing."));
+                    UE_LOG(LogTemp, Error, TEXT("Failed to parse JSON response."));
                 }
             }
             else

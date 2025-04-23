@@ -6,14 +6,11 @@
 #include "GameFramework/Actor.h"
 #include "Engine/World.h"
 #include "Http.h"
-//#include "Net/UnrealNetwork.h"
 #include "HttpModule.h"
 #include "GameFramework/PlayerController.h"
 #include "Interfaces/IHttpResponse.h"
 #include <Kismet/GameplayStatics.h>
 #include "Delegates/DelegateCombinations.h"
-//#include <Networking/Public/Interfaces/IPv4/IPv4Address.h>
-//#include <SocketSubsystem.h>
 #include "LoginErrorWidget.h"
 class UComputerSaviourGameInstance;
 #include "LoginManager.generated.h"
@@ -69,6 +66,9 @@ protected:
 private:
     UComputerSaviourGameInstance* ComputerSaviourGameInstance;
     const FString LoginServerURL = TEXT("http://localhost:12345");
+    const FString DefaultServerAddress = TEXT("127.0.0.1:7777");
+    //const FString ServerAddress = TEXT("ec2-xx-xx-xx-xx.compute-1.amazonaws.com:7777");
+
 
     FString CreateDeleteCharRequest(const FString& charName);
     void SendDeleteCharHttpRequest(const FString& RequestData, const FString& charName);
@@ -78,7 +78,7 @@ private:
     void SendCheckNameRequest(const FString& RequestData, const bool isCreation, bool isRetry);
     void HandleCheckNameResponse(const FString& Response, const bool isCreation);
     void SendSelectCharRequest(const FString& RequestData, const FString& charName);
-    void LoadGameLevelMap();
+    //void LoadGameLevelMap();
     FTimerHandle TimerHandle;
     int maxAttemptsToConnect;
     float timeoutBetweenRequests;
