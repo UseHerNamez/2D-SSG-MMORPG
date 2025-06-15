@@ -5,7 +5,6 @@
 
 ULoginManager::ULoginManager() : maxAttemptsToConnect(1), timeoutBetweenRequests(5.0f), NumAttempts(0)
 {
-    // Set this actor to call Tick() every frame
     bCharacterNameAvailable = false;
     bSuccessfulRequest = false;
 }
@@ -49,7 +48,7 @@ void ULoginManager::HandleResponse(const FString& Response) // response is made 
 
     // Split the response into parts
     TArray<FString> ResponseParts;
-    Response.ParseIntoArray(ResponseParts, TEXT(" "), true);
+    Response.ParseIntoArray(ResponseParts, TEXT(" "), true); //divide by spaces, can be seen in the login server
 
     if (ResponseParts.Num() >= 2)
     {

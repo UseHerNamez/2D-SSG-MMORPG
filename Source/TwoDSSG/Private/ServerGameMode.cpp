@@ -1,11 +1,10 @@
 #include "ServerGameMode.h"
 #include "HttpModule.h"
-#include "Interfaces/IHttpRequest.h"
-#include "Interfaces/IHttpResponse.h"
+
 #include "EngineUtils.h"
 #include "Camera/CameraActor.h"
 #include "Kismet/GameplayStatics.h"
-#include "ClientPlayerController.h" // Include your custom PlayerController
+#include "ClientPlayerController.h"
 
 AServerGameMode::AServerGameMode()
 {
@@ -15,7 +14,7 @@ AServerGameMode::AServerGameMode()
 FString AServerGameMode::InitNewPlayer(APlayerController* NewPlayerController, const FUniqueNetIdRepl& UniqueId, const FString& Options, const FString& Portal)
 {
     FString Token;
-    FParse::Value(*Options, TEXT("AuthToken="), Token);
+    FParse::Value(*Options, TEXT("AuthToken="), Token); // suitable string?
 
     if (Token.IsEmpty())
     {
@@ -26,10 +25,8 @@ FString AServerGameMode::InitNewPlayer(APlayerController* NewPlayerController, c
 
     if (NewPlayerController)
     {
-        // Disable player input
         NewPlayerController->DisableInput(NewPlayerController);
 
-        // Set view to loading camera if available | TODO: need to create a camrea actor with this tag
         for (TActorIterator<ACameraActor> It(GetWorld()); It; ++It)
         {
             if (It->ActorHasTag("LoadingCamera"))
@@ -39,89 +36,107 @@ FString AServerGameMode::InitNewPlayer(APlayerController* NewPlayerController, c
             }
         }
 
-        // Call client-side loading UI
         if (AClientPlayerController* ClientPC = Cast<AClientPlayerController>(NewPlayerController))
         {
-            ClientPC->ShowLoadingWidget(); // TODO: should implement in BP
+            ClientPC->RPC_ShowLoadingWidget(); // This shows the widget on the client
+        }
+
+        // Start async validation here
+        ValidateTokenWithLoginServer(NewPlayerController, Token);
+    }
+
+    return FString(); // Return early — don’t finalize spawn yet
+}
+
+void AServerGameMode::ValidateTokenWithLoginServer(APlayerController* PlayerController, const FString& Token)
+{
+    if (!PlayerController) return;
+
+    // Store token
+    TokenToControllerMap.Add(Token, PlayerController);
+
+    TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = FHttpModule::Get().CreateRequest();
+
+    HttpRequest->OnProcessRequestComplete().BindUObject(this, &AServerGameMode::OnTokenValidationComplete);
+    HttpRequest->SetURL(LoginServerURL);
+    HttpRequest->SetVerb("POST");
+    HttpRequest->SetHeader(TEXT("Content-Type"), TEXT("text/plain")); // Important: plain text
+
+    FString RequestBody = FString::Printf(TEXT("VERIFY_TOKEN %s"), *Token);
+    HttpRequest->SetContentAsString(RequestBody);
+
+    UE_LOG(LogTemp, Log, TEXT("Sending token verification request: %s"), *RequestBody);
+
+    HttpRequest->ProcessRequest();
+}
+
+void AServerGameMode::OnTokenValidationComplete(FHttpRequestPtr Request, FHttpResponsePtr Response, bool bWasSuccessful)
+{
+    if (!bWasSuccessful || !Response.IsValid())
+    {
+        UE_LOG(LogTemp, Warning, TEXT("Token validation failed: No response or network error"));
+        return;
+    }
+
+    FString ResponseString = Response->GetContentAsString().TrimStartAndEnd();
+    UE_LOG(LogTemp, Log, TEXT("Login server response: %s"), *ResponseString);
+
+    // Expected: "OK <Token> <CharID>" or "ERROR <Token> <Reason>"
+    TArray<FString> Parts;
+    ResponseString.ParseIntoArrayWS(Parts);
+
+    if (Parts.Num() < 3)
+    {
+        UE_LOG(LogTemp, Warning, TEXT("Unexpected response format"));
+        return;
+    }
+
+    const FString& Status = Parts[0];
+    const FString& Token = Parts[1];
+    const FString& CharIdOrReason = Parts[2];
+
+    APlayerController* PlayerController = nullptr;
+
+    if (TWeakObjectPtr<APlayerController>* FoundPtr = TokenToControllerMap.Find(Token))
+    {
+        if (FoundPtr->IsValid())
+        {
+            PlayerController = FoundPtr->Get();
         }
     }
 
-    int32 CharId = -1;
-    ValidateTokenWithLoginServer(Token, NewPlayerController, CharId);
+    if (!PlayerController)
+    {
+        UE_LOG(LogTemp, Warning, TEXT("No matching player controller for token: %s"), *Token);
+        return;
+    }
 
-    return TEXT(""); // Delay player full spawn
+    // Clean up the map
+    TokenToControllerMap.Remove(Token);
+
+    if (Status.Equals(TEXT("ERROR"), ESearchCase::IgnoreCase))
+    {
+        FString Reason = CharIdOrReason;
+        UE_LOG(LogTemp, Warning, TEXT("Token validation failed: %s"), *Reason);
+        KickPlayer(PlayerController, Reason);
+        return;
+    }
+
+    if (Status.Equals(TEXT("OK"), ESearchCase::IgnoreCase))
+    {
+        FString CharId = CharIdOrReason;
+        UE_LOG(LogTemp, Log, TEXT("Token valid. CharID: %s"), *CharId);
+
+        // Now continue game logic
+        OnTokenValidated_Internal(PlayerController, FCString::Atoi(*CharId));
+        FetchCharacterDataFromDB(CharId);
+    }
+    else
+    {
+        UE_LOG(LogTemp, Warning, TEXT("Unknown status in response: %s"), *Status);
+        KickPlayer(PlayerController, TEXT("Unknown response status"));
+    }
 }
-
-void AServerGameMode::ValidateTokenWithLoginServer(const FString& Token, APlayerController* PlayerController, int32& OutPlayerId)
-{
-    TWeakObjectPtr<APlayerController> WeakPlayerController(PlayerController);
-
-    TSharedRef<IHttpRequest, ESPMode::ThreadSafe> Request = FHttpModule::Get().CreateRequest();
-    Request->SetURL(LoginServerURL + "/validate-token");
-    Request->SetVerb("POST");
-    Request->SetHeader(TEXT("Content-Type"), TEXT("application/json"));
-
-    TSharedPtr<FJsonObject> JsonRequest = MakeShared<FJsonObject>();
-    JsonRequest->SetStringField(TEXT("token"), Token);
-
-    FString RequestBody;
-    TSharedRef<TJsonWriter<>> Writer = TJsonWriterFactory<>::Create(&RequestBody);
-    FJsonSerializer::Serialize(JsonRequest.ToSharedRef(), Writer);
-    Request->SetContentAsString(RequestBody);
-
-    Request->OnProcessRequestComplete().BindLambda([this, WeakPlayerController, &OutPlayerId](FHttpRequestPtr Req, FHttpResponsePtr Resp, bool bWasSuccessful)
-        {
-            if (!WeakPlayerController.IsValid())
-            {
-                UE_LOG(LogTemp, Warning, TEXT("Player disconnected before validation finished"));
-                return;
-            }
-
-            APlayerController* PC = WeakPlayerController.Get();
-
-            if (!bWasSuccessful || !Resp.IsValid())
-            {
-                UE_LOG(LogTemp, Error, TEXT("Token validation request failed"));
-                KickPlayer(PC, TEXT("Login server error"));
-                return;
-            }
-
-            if (Resp->GetResponseCode() != 200)
-            {
-                UE_LOG(LogTemp, Warning, TEXT("Unexpected response code: %d"), Resp->GetResponseCode());
-                KickPlayer(PC, TEXT("Invalid login response"));
-                return;
-            }
-
-            TSharedPtr<FJsonObject> Json;
-            TSharedRef<TJsonReader<>> Reader = TJsonReaderFactory<>::Create(Resp->GetContentAsString());
-            if (!FJsonSerializer::Deserialize(Reader, Json) || !Json.IsValid())
-            {
-                UE_LOG(LogTemp, Error, TEXT("Failed to parse JSON response"));
-                KickPlayer(PC, TEXT("Invalid login server response"));
-                return;
-            }
-
-            // Check for validity and extract player ID
-            bool bIsValid = Json->GetBoolField(TEXT("valid"));
-            if (!bIsValid)
-            {
-                UE_LOG(LogTemp, Warning, TEXT("Token invalid"));
-                KickPlayer(PC, TEXT("Invalid or expired token"));
-                return;
-            }
-
-            OutPlayerId = Json->GetIntegerField(TEXT("character_id"));
-
-            // Notify success (delegate or next logic)
-            UE_LOG(LogTemp, Log, TEXT("Token validated. Character ID: %d"), OutPlayerId);
-            OnTokenValidatedDelegate.ExecuteIfBound(PC, OutPlayerId);
-        });
-
-    Request->ProcessRequest();
-}
-
-
 
 void AServerGameMode::KickPlayer(APlayerController* PlayerController, const FString& Reason)
 {
@@ -133,7 +148,7 @@ void AServerGameMode::KickPlayer(APlayerController* PlayerController, const FStr
     }
 }
 
-void AServerGameMode::OnTokenValidated_Internal(APlayerController* PlayerController, int32 CharId)
+void AServerGameMode::OnTokenValidated_Internal(APlayerController* PlayerController, int32 CharId) // call fetch data from db
 {
     if (!PlayerController)
     {

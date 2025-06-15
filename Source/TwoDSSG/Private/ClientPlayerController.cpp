@@ -1,9 +1,14 @@
 #include "ClientPlayerController.h"
 #include "Kismet/GameplayStatics.h"
 
-
-void AClientPlayerController::ShowLoadingWidget()
+void AClientPlayerController::RPC_ShowLoadingWidget_Implementation()
 {
+    ShowLoadingWidget();
+}
+
+void AClientPlayerController::RPC_HideLoadingWidget_Implementation()
+{
+    HideLoadingWidget();
 }
 
 void AClientPlayerController::BeginPlay()
@@ -17,7 +22,6 @@ void AClientPlayerController::BeginPlay()
         HandleReturnedFromServer(ErrorMessage);
     }
 }
-
 void AClientPlayerController::HandleReturnedFromServer(const FString& ErrorMessage)
 {
     UE_LOG(LogTemp, Warning, TEXT("Got error from travel: %s"), *ErrorMessage);

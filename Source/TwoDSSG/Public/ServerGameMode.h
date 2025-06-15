@@ -4,6 +4,8 @@
 #include "GameFramework/GameModeBase.h"
 #include "GameFramework/PlayerController.h" 
 #include "Delegates/DelegateCombinations.h"
+#include "Interfaces/IHttpRequest.h"
+#include "Interfaces/IHttpResponse.h"
 #include "ServerGameMode.generated.h"
 
 class AClientPlayerController;
@@ -20,14 +22,15 @@ public:
 	FString InitNewPlayer(APlayerController* NewPlayerController, const FUniqueNetIdRepl& UniqueId, const FString& Options, const FString& Portal);
 
 private:
-	void ValidateTokenWithLoginServer(const FString& Token, APlayerController* PlayerController, int32& OutPlayerId);
+	void ValidateTokenWithLoginServer(APlayerController* PlayerController, const FString& Token);
+	void OnTokenValidationComplete(FHttpRequestPtr Request, FHttpResponsePtr Response, bool bWasSuccessful);
 	void KickPlayer(APlayerController* PlayerController, const FString& Reason);
 	void FetchCharacterDataFromDB(const FString& CharacterID);
 	void OnTokenValidated_Internal(APlayerController* PlayerController, int32 CharId);
 	void BeginPlay();
 
 	FOnTokenValidated OnTokenValidatedDelegate;
-
+	TMap<FString, TWeakObjectPtr<APlayerController>> TokenToControllerMap;
 	const FString LoginServerURL = TEXT("http://localhost:12345");
 };
 

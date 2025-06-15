@@ -11,12 +11,25 @@ class TWODSSG_API AClientPlayerController : public APlayerController
 
 public:
     UFUNCTION(BlueprintImplementableEvent, Category = "UI")
-    void ShowErrorWidget(const FString& ErrorMessage);
-    void ShowLoadingWidget();
+        void ShowLoadingWidget();
 
+    UFUNCTION(BlueprintImplementableEvent, Category = "UI")
+        void HideLoadingWidget();
+
+    UFUNCTION(BlueprintImplementableEvent, Category = "UI")
+        void ShowErrorWidget(const FString& ErrorMessage); //ch
+
+    UFUNCTION(Client, Reliable)
+        void RPC_ShowLoadingWidget();
+
+    UFUNCTION(Client, Reliable)
+        void RPC_HideLoadingWidget();
+              
 protected:
+
     virtual void BeginPlay() override;
 
 private:
+
     void HandleReturnedFromServer(const FString& ErrorMessage);
 };
