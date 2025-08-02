@@ -14,7 +14,7 @@ void UComputerSaviourGameInstance::setCharInfo(const FString& charInfo)
 
 FString UComputerSaviourGameInstance::getToekenFromSysEnvVar()
 {
-    FString Token = FPlatformMisc::GetEnvironmentVariable(TEXT("GAME_TOKEN"));
+    FString Token = FPlatformMisc::GetEnvironmentVariable(TEXT("CSGAME_TOKEN"));
 
     // Trim leading and trailing spaces or newline characters
     Token = Token.TrimStartAndEnd();
@@ -72,4 +72,11 @@ UWorld * UComputerSaviourGameInstance::GetCurrWorld()
 {
     UWorld* World = GetWorld();
     return World;
+}
+
+void UComputerSaviourGameInstance::OnForceLogout()
+{
+    FPlatformMisc::SetEnvironmentVar(TEXT("CSGAME_TOKEN"), TEXT(""));
+    CharactersInfo.Empty();
+    UGameplayStatics::OpenLevel(this, "LoginScreen");
 }

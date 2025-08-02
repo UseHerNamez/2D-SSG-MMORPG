@@ -11,7 +11,8 @@ AServerGameMode::AServerGameMode()
 
 }
 
-FString AServerGameMode::InitNewPlayer(APlayerController* NewPlayerController, const FUniqueNetIdRepl& UniqueId, const FString& Options, const FString& Portal)
+FString AServerGameMode::InitNewPlayer(APlayerController* NewPlayerController, const FUniqueNetIdRepl& UniqueId, 
+    const FString& Options, const FString& Portal)
 {
     FString Token;
     FParse::Value(*Options, TEXT("AuthToken="), Token); // suitable string?
@@ -81,55 +82,71 @@ void AServerGameMode::OnTokenValidationComplete(FHttpRequestPtr Request, FHttpRe
     FString ResponseString = Response->GetContentAsString().TrimStartAndEnd();
     UE_LOG(LogTemp, Log, TEXT("Login server response: %s"), *ResponseString);
 
-    // Expected: "OK <Token> <CharID>" or "ERROR <Token> <Reason>"
+    // Expected: "OK <Token>" or "ERROR <token> <Reason> or "ERROR <Reason> if empty token somehow"
     TArray<FString> Parts;
     ResponseString.ParseIntoArrayWS(Parts);
 
-    if (Parts.Num() < 3)
+    if (Parts.Num() < 2)
     {
         UE_LOG(LogTemp, Warning, TEXT("Unexpected response format"));
         return;
     }
 
     const FString& Status = Parts[0];
-    const FString& Token = Parts[1];
-    const FString& CharIdOrReason = Parts[2];
+    const FString& TokenOrReason = Parts[1];
 
-    APlayerController* PlayerController = nullptr;
-
-    if (TWeakObjectPtr<APlayerController>* FoundPtr = TokenToControllerMap.Find(Token))
-    {
-        if (FoundPtr->IsValid())
+    if (Status.Equals(TEXT("ERROR"), ESearchCase::IgnoreCase)) // catches if token is empty or if there is a reason and then kicks player.
+    { // 1 - Should we just return void and let the exec continue unless we find something bad?
+        // 2 - should use the Reason part here in the UE_LOG and maybe return this message..
+        if (TokenOrReason.Equals("emptyToken", ESearchCase::IgnoreCase))
         {
-            PlayerController = FoundPtr->Get();
+            FString Reason = TokenOrReason;
+            UE_LOG(LogTemp, Warning, TEXT("Token validation failed: %s"), *Reason);
+            return;
         }
-    }
+        const FString& CharIdOrReason = Parts[2];
 
-    if (!PlayerController)
-    {
-        UE_LOG(LogTemp, Warning, TEXT("No matching player controller for token: %s"), *Token);
-        return;
-    }
-
-    // Clean up the map
-    TokenToControllerMap.Remove(Token);
-
-    if (Status.Equals(TEXT("ERROR"), ESearchCase::IgnoreCase))
-    {
+        APlayerController* PlayerController = nullptr;
+        if (TWeakObjectPtr<APlayerController>* FoundPtr = TokenToControllerMap.Find(TokenOrReason))
+        {
+            if (FoundPtr->IsValid())
+            {
+                PlayerController = FoundPtr->Get(); // gets the suitable playerController..
+            }
+        }
         FString Reason = CharIdOrReason;
         UE_LOG(LogTemp, Warning, TEXT("Token validation failed: %s"), *Reason);
         KickPlayer(PlayerController, Reason);
         return;
     }
 
+    const FString& CharId = Parts[2];
+    const FString& Token = TokenOrReason;
+    APlayerController* PlayerController = nullptr;
+
+    if (TWeakObjectPtr<APlayerController>* FoundPtr = TokenToControllerMap.Find(Token))
+    {
+        if (FoundPtr->IsValid())
+        {
+            PlayerController = FoundPtr->Get(); // gets the suitable playerController..
+        }
+    }
+
+    if (!PlayerController)
+    {
+        UE_LOG(LogTemp, Warning, TEXT("No matching player controller for token: %s"), *Token); // weird
+        return;
+    }
+
+    // Clean up the map
+    TokenToControllerMap.Remove(Token); // why do I clean up the map? maybe should clean this value only if the player disconnects or changes maps?
+
     if (Status.Equals(TEXT("OK"), ESearchCase::IgnoreCase))
     {
-        FString CharId = CharIdOrReason;
         UE_LOG(LogTemp, Log, TEXT("Token valid. CharID: %s"), *CharId);
 
         // Now continue game logic
-        OnTokenValidated_Internal(PlayerController, FCString::Atoi(*CharId));
-        FetchCharacterDataFromDB(CharId);
+        FetchCharacterDataFromDB(PlayerController, FCString::Atoi(*CharId));
     }
     else
     {
@@ -148,24 +165,16 @@ void AServerGameMode::KickPlayer(APlayerController* PlayerController, const FStr
     }
 }
 
-void AServerGameMode::OnTokenValidated_Internal(APlayerController* PlayerController, int32 CharId) // call fetch data from db
+void AServerGameMode::FetchCharacterDataFromDB(APlayerController* PlayerController, int32 CharId)
 {
     if (!PlayerController)
     {
-        UE_LOG(LogTemp, Warning, TEXT("OnTokenValidated_Internal called with null PlayerController"));
+        UE_LOG(LogTemp, Warning, TEXT("On FetchCharacterDataFromDB called with null PlayerController"));
         return;
     }
 
     UE_LOG(LogTemp, Log, TEXT("Token validated! Proceeding to fetch character data for CharId: %d"), CharId);
     FString CharacterID = FString::FromInt(CharId);
-    FetchCharacterDataFromDB(CharacterID);
-}
-
-
-void AServerGameMode::FetchCharacterDataFromDB(const FString& CharacterID)
-{
-	// TODO: Connect to DB and retrieve saved state for this character
-	UE_LOG(LogTemp, Log, TEXT("Fetching character data for User: %s, Character: %s"), *CharacterID);
 }
 
 void AServerGameMode::BeginPlay()

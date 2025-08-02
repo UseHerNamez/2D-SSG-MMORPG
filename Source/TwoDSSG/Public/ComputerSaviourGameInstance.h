@@ -37,6 +37,8 @@ public:
     APlayerController* UComputerSaviourGameInstance::GetPlayerController();
     UWorld* UComputerSaviourGameInstance::GetCurrWorld();
 
+    void OnForceLogout();
+
 private:
 
     FString CharactersInfo;

@@ -66,7 +66,7 @@ void ULoginManager::HandleResponse(const FString& Response) // response is made 
                 // Extract token from the response:
                 FString Token = ResponseParts[ResponseParts.Num() - 1];
                 // Store the token in the environment variable or a secure storage
-                FPlatformMisc::SetEnvironmentVar(TEXT("GAME_TOKEN"), *Token);                      
+                FPlatformMisc::SetEnvironmentVar(TEXT("CSGAME_TOKEN"), *Token);                      
 
                 if (ComputerSaviourGameInstance != nullptr)
                 {
@@ -82,7 +82,7 @@ void ULoginManager::HandleResponse(const FString& Response) // response is made 
                 }
             }
             else if (ResponseType == TEXT("LOGIN_FAILURE") || ResponseType == TEXT("REGISTER_FAILURE")
-                || ResponseType == TEXT("LOGIN_FAILURE_REGISTER_FAILURE"))
+                || ResponseType == TEXT("ERROR"))
             {
                 // Handle failure
                 // Display an error message to the user
@@ -95,7 +95,7 @@ void ULoginManager::HandleResponse(const FString& Response) // response is made 
         else {
             ShowErrorWidget(Response);
         }
-    }
+    } else ShowErrorWidget("Bad response format - not as expected");
 }
 
 void ULoginManager::ShowErrorWidget(const FString& ErrorMessage)
@@ -145,14 +145,47 @@ void ULoginManager::HandleDeleteCharResponse(FHttpRequestPtr Request, FHttpRespo
     {
         FString ServerResponse = Response->GetContentAsString();
         NumAttempts = 0;
-        OnDeleteCharResponse.Broadcast(ServerResponse);
-        if (GEngine)
-            GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Cyan, FString::Printf(TEXT("DeleteChar Response: %s"), *ServerResponse));
-        return;
+
+        if (ServerResponse.Contains(TEXT("TOKEN")))
+        {
+            // Handle token issue: force logout or show login screen
+            ComputerSaviourGameInstance->OnForceLogout();
+            if (GEngine)
+                GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("Session expired or invalid token. Returning to login screen..."));
+            return;
+        }
+        else if (ServerResponse.Contains(TEXT("ERROR"))) //expecting ERROR some_reason
+        {
+            TArray<FString> ResponseParts;
+            ServerResponse.ParseIntoArray(ResponseParts, TEXT(" "), true);
+
+            ComputerSaviourGameInstance->OnForceLogout();
+            if (GEngine)
+            {
+                if (ResponseParts.Num() > 1 && !ResponseParts[1].IsEmpty())
+                    GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, ResponseParts[1]);
+                else GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("ERROR"));
+            }
+            return;
+        }
+        else if (ServerResponse.Contains(TEXT("CHARACTER_DELETED")) || ServerResponse.Contains(TEXT("CHARACTER_NOT_FOUND")))
+        {
+            OnDeleteCharResponse.Broadcast(ServerResponse);
+            if (GEngine)
+                GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Cyan, FString::Printf(TEXT("DeleteChar Response: %s"), *ServerResponse));
+            return;
+        }
+        else // some other weird unexpected return message..
+        {
+            ComputerSaviourGameInstance->OnForceLogout();
+            if (GEngine)
+                GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("Unknown Error"));
+            return;
+        }
     }
     else 
     {
-        OnDeleteCharResponse.Broadcast("Response for character deletion not valid or operation was not successful.");
+        OnDeleteCharResponse.Broadcast("Response for character deletion operation was not successful.");
     }
 }
 
@@ -166,7 +199,7 @@ void ULoginManager::CheckName(const FString& charName, const bool isCreation, co
         FString CheckNameRequest = FString::Printf(TEXT("CHECKNAME %s %s %s %s"), *charName, *charData, *Token, isCreation ? TEXT("1") : TEXT("0"));
         NumAttempts = 0;
         // Send the check name request to the server
-        SendCheckNameRequest(CheckNameRequest, isCreation, false); //Last bool is retry indicator - which is false when first trying to reach the server.
+        SendCheckNameRequest(CheckNameRequest, isCreation, false); //Last bool is retry indicator - which is false when its the first time trying to reach the server.
     } else 
     {
         if (GEngine)
@@ -280,7 +313,7 @@ void ULoginManager::SendCheckNameRequest(const FString& RequestData, const bool 
         else if (!bSuccessfulRequest)
         {
             // Maximum attempts reached, handle accordingly
-            FString o_message = "Login server is currently unreachable...";
+            FString o_message = "Login server is currently unreachable... try again in a minute";
             bCharacterNameAvailable = false;
             if (OnCheckNameResponseReceived.IsBound())
             {
@@ -400,8 +433,8 @@ void ULoginManager::SendSelectCharRequest(const FString& RequestData, const FStr
                     FString FinalServerAddress = (bHasServerAddress && !ServerAddressFromResponse.IsEmpty())
                         ? ServerAddressFromResponse : DefaultServerAddress;
 
-                    FString TravelURL = FString::Printf(TEXT("%s?/%s?AuthToken=%s"),
-                        *FinalServerAddress, *MapName, *Token);
+                    FString EncodedToken = FPlatformHttp::UrlEncode(Token);
+                    FString TravelURL = FString::Printf(TEXT("%s?/%s?AuthToken=%s"),*FinalServerAddress, *MapName, *Token);
                     UE_LOG(LogTemp, Log, TEXT("Traveling to server: %s with token: %s"), *TravelURL, *Token);
 
                     UWorld* World = GetWorld();

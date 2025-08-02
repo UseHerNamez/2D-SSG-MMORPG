@@ -18,6 +18,7 @@ class UComputerSaviourGameInstance;
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_ThreeParams(FOnCheckNameResponseReceived, bool, bNameAvailable, FString, message, bool, bIsCreation);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnDeleteCharResponse, FString, Response);
 
+
 UCLASS()
 class TWODSSG_API ULoginManager : public UObject
 {
@@ -65,7 +66,7 @@ protected:
 
 private:
     UComputerSaviourGameInstance* ComputerSaviourGameInstance;
-    const FString LoginServerURL = TEXT("http://localhost:12345");
+    const FString LoginServerURL = TEXT("https://localhost:12345");
     const FString DefaultServerAddress = TEXT("127.0.0.1:7777");
     //const FString ServerAddress = TEXT("ec2-xx-xx-xx-xx.compute-1.amazonaws.com:7777");
 
@@ -77,7 +78,7 @@ private:
     void SendLoginRequest(const FString& RequestData, bool isRetry);
     void SendCheckNameRequest(const FString& RequestData, const bool isCreation, bool isRetry);
     void HandleCheckNameResponse(const FString& Response, const bool isCreation);
-    void SendSelectCharRequest(const FString& RequestData, const FString& charName);
+    void SendSelectCharRequest(const FString& RequestData, const FString& charName); // includes a lambda which handles the response
     //void LoadGameLevelMap();
     FTimerHandle TimerHandle;
     int maxAttemptsToConnect;

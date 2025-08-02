@@ -25,8 +25,7 @@ private:
 	void ValidateTokenWithLoginServer(APlayerController* PlayerController, const FString& Token);
 	void OnTokenValidationComplete(FHttpRequestPtr Request, FHttpResponsePtr Response, bool bWasSuccessful);
 	void KickPlayer(APlayerController* PlayerController, const FString& Reason);
-	void FetchCharacterDataFromDB(const FString& CharacterID);
-	void OnTokenValidated_Internal(APlayerController* PlayerController, int32 CharId);
+	void FetchCharacterDataFromDB(APlayerController* PlayerController, int32 CharId);
 	void BeginPlay();
 
 	FOnTokenValidated OnTokenValidatedDelegate;
