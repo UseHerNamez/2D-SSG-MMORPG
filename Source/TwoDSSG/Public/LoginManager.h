@@ -66,8 +66,8 @@ protected:
 
 private:
     UComputerSaviourGameInstance* ComputerSaviourGameInstance;
-    const FString LoginServerURL = TEXT("https://localhost:12345");
-    const FString DefaultServerAddress = TEXT("127.0.0.1:7777");
+    const FString LoginServerURL = TEXT("https://localhost:8443");
+    const FString DefaultServerAddress = TEXT("https://localhost:8444");
     //const FString ServerAddress = TEXT("ec2-xx-xx-xx-xx.compute-1.amazonaws.com:7777");
 
 
