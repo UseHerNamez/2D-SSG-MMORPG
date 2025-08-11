@@ -41,7 +41,14 @@ public class TwoDSSG : ModuleRules
             PublicAdditionalLibraries.Add(Path.Combine(OsslLibDir, "libcrypto.lib"));
 
             // Windows system libs used by the connector
-            PublicSystemLibraries.AddRange(new string[] { "Ws2_32", "Dnsapi" });
+            PublicSystemLibraries.AddRange(new string[]
+            {
+                "ws2_32.lib",
+                "dnsapi.lib",
+                "crypt32.lib",
+                "advapi32.lib",
+                "user32.lib"
+            });
 
             // Stage runtime DLLs
             Action<string, string> Stage = (dir, dll) =>
