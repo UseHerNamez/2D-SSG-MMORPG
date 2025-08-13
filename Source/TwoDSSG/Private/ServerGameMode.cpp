@@ -8,8 +8,10 @@
 #include "Interfaces/IHttpResponse.h"
 #include "EncryptionUtils.h"
 #include "ClientPlayerController.h"
-
+#include "DatabaseConnectionPool.h"
 #include <string>
+#include "Misc/Paths.h"
+#include "Misc/OutputDeviceDebug.h"
 
 namespace {
     inline FString ToFString(const std::string& s) { return UTF8_TO_TCHAR(s.c_str()); }
@@ -79,95 +81,94 @@ void AServerGameMode::ValidateTokenWithLoginServer(APlayerController* PlayerCont
 {
     if (!PlayerController) return;
 
-    // Store token
-    TokenToControllerMap.Add(Token, PlayerController);
+    // Create a correlation id for this request
+    const FString RequestId = FGuid::NewGuid().ToString(EGuidFormats::DigitsWithHyphens);
+
+    // Track who initiated this validation
+    FPendingAuth Pending;
+    Pending.PC = PlayerController;
+    Pending.SubmittedToken = Token;
+    Pending.StartTimeSeconds = FPlatformTime::Seconds();
+    PendingAuthByRequestId.Add(RequestId, MoveTemp(Pending));
 
     TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = FHttpModule::Get().CreateRequest();
-
     HttpRequest->OnProcessRequestComplete().BindUObject(this, &AServerGameMode::OnTokenValidationComplete);
     HttpRequest->SetURL(LoginServerURL);
-    HttpRequest->SetVerb("POST");
-    HttpRequest->SetHeader(TEXT("Content-Type"), TEXT("text/plain")); // Important: plain text
+    HttpRequest->SetVerb(TEXT("POST"));
+    HttpRequest->SetHeader(TEXT("Content-Type"), TEXT("text/plain"));
 
-    FString RequestBody = FString::Printf(TEXT("VERIFY_TOKEN %s"), *Token);
+    // Put the RequestId in a header so we can read it back in the completion callback
+    HttpRequest->SetHeader(TEXT("X-Request-Id"), RequestId);
+
+    const FString RequestBody = FString::Printf(TEXT("VERIFY_TOKEN %s"), *Token);
     HttpRequest->SetContentAsString(RequestBody);
 
-    UE_LOG(LogTemp, Log, TEXT("Sending token verification request: %s"), *RequestBody);
-
+    UE_LOG(LogTemp, Log, TEXT("Sending token verification request [req=%s]: %s"), *RequestId, *RequestBody);
     HttpRequest->ProcessRequest();
 }
 
 void AServerGameMode::OnTokenValidationComplete(FHttpRequestPtr Request, FHttpResponsePtr Response, bool bWasSuccessful)
 {
+    const FString RequestId = Request.IsValid() ? Request->GetHeader(TEXT("X-Request-Id")) : TEXT("");
+    FPendingAuth Pending;
+    const bool bHadPending = PendingAuthByRequestId.RemoveAndCopyValue(RequestId, Pending);
+
+    APlayerController* PC = bHadPending ? Pending.PC.Get() : nullptr;
+
     if (!bWasSuccessful || !Response.IsValid())
     {
-        UE_LOG(LogTemp, Warning, TEXT("Token validation failed - network or response error"));
+        UE_LOG(LogTemp, Warning, TEXT("Token validation failed - network or response error [req=%s]"), *RequestId);
+        if (PC) KickPlayer(PC, TEXT("AuthServerError"));
         return;
     }
 
     const FString Resp = Response->GetContentAsString().TrimStartAndEnd();
-    UE_LOG(LogTemp, Log, TEXT("Login server response: %s"), *Resp);
+    UE_LOG(LogTemp, Log, TEXT("Login server response [req=%s]: %s"), *RequestId, *Resp);
 
     FString Status, A1, A2;
     if (!ParseResponse(Resp, Status, A1, A2))
     {
-        UE_LOG(LogTemp, Warning, TEXT("Unexpected response format"));
+        UE_LOG(LogTemp, Warning, TEXT("Unexpected response format [req=%s]"), *RequestId);
+        if (PC) KickPlayer(PC, TEXT("AuthMalformedResponse"));
         return;
     }
 
     if (Status.Equals(TEXT("ERROR"), ESearchCase::IgnoreCase))
     {
-        // "ERROR emptyToken" or "ERROR <token> <reason>"
-        const FString& ErrorReason = A2.IsEmpty() ? A1 : A2;
-        HandleTokenErrorStatus(A1, ErrorReason);
+        // Forms:
+        //  "ERROR emptyToken"            -> A1 = "emptyToken", A2 = ""
+        //  "ERROR <token> <reason>"      -> A1 = token, A2 = reason
+        const bool bHasExplicitReason = !A2.IsEmpty();
+        const FString ErrorReason = bHasExplicitReason ? A2 : A1;
+
+        UE_LOG(LogTemp, Warning, TEXT("Token validation error [req=%s]: %s"), *RequestId, *ErrorReason);
+
+        if (PC) KickPlayer(PC, ErrorReason);
         return;
     }
 
-    // Status is OK - A1 is the token
+    // OK path - A1 is the token
     const FString& Token = A1;
 
-    APlayerController* PC = FindControllerForToken(Token);
     if (!PC)
     {
-        UE_LOG(LogTemp, Warning, TEXT("No matching player controller for token: %s"), *Token);
+        UE_LOG(LogTemp, Warning, TEXT("Validation OK but player no longer valid [req=%s]"), *RequestId);
         return;
     }
-
-    // token used - remove mapping
-    TokenToControllerMap.Remove(Token);
 
     // Claims - need charId
     const std::optional<int32> CharIdOpt = GetCharIdFromJWT(Token);
     if (!CharIdOpt)
     {
-        UE_LOG(LogTemp, Warning, TEXT("Token claims missing or invalid - charId"));
+        UE_LOG(LogTemp, Warning, TEXT("Token claims missing or invalid - charId [req=%s]"), *RequestId);
         KickPlayer(PC, TEXT("InvalidTokenClaims"));
         return;
     }
 
     const int32 CharId = CharIdOpt.value();
-    UE_LOG(LogTemp, Log, TEXT("Token valid - CharId: %d"), CharId);
+    UE_LOG(LogTemp, Log, TEXT("Token valid - CharId: %d [req=%s]"), CharId, *RequestId);
 
-    // Use the delegate you bound in BeginPlay - keeps the flow clean
-    OnTokenValidatedDelegate.ExecuteIfBound(PC, CharId);
-    // If you prefer direct call instead of the delegate:
-    // FetchCharacterDataFromDB(PC, CharId);
-}
-
-APlayerController* AServerGameMode::FindControllerForToken(const FString& Token)
-{
-    if (TWeakObjectPtr<APlayerController>* Found = TokenToControllerMap.Find(Token))
-    {
-        if (Found->IsValid()) return Found->Get();
-    }
-    return nullptr;
-}
-
-void AServerGameMode::HandleTokenErrorStatus(const FString& TokenOrReason, const FString& ErrorReason)
-{
-    APlayerController* PC = FindControllerForToken(TokenOrReason);
-    UE_LOG(LogTemp, Warning, TEXT("Token validation failed: %s"), *ErrorReason);
-    KickPlayer(PC, ErrorReason);
+    FetchCharacterDataFromDB(PC, CharId);
 }
 
 std::optional<int32> AServerGameMode::GetCharIdFromJWT(const FString& Token)
@@ -216,4 +217,44 @@ void AServerGameMode::FetchCharacterDataFromDB(APlayerController* PlayerControll
 void AServerGameMode::BeginPlay()
 {
     Super::BeginPlay();
+    GetWorldTimerManager().SetTimer(AuthCleanupHandle, this, &AServerGameMode::TickAuthCleanup, 15.0f, true);
+
+    char* encryptionKeyRaw = nullptr;
+    size_t size = 0;
+
+    if (_dupenv_s(&encryptionKeyRaw, &size, "ENCRYPTION_KEY") != 0 || encryptionKeyRaw == nullptr)
+    {
+        UE_LOG(LogTemp, Error, TEXT("Failed to get ENCRYPTION_KEY from environment."));
+        return;
+    }
+
+    std::string key(encryptionKeyRaw);
+    free(encryptionKeyRaw);
+
+#include "Misc/Paths.h"
+
+    std::string configPath = TCHAR_TO_UTF8(*FPaths::Combine(FPaths::ProjectDir(), TEXT("Config/config.ini.encrypted")));
+    // drop it where the exe lives, usually under .../YourProject/Binaries/Win64/
+
+    DbPool = std::make_shared<DatabaseConnectionPool>(configPath, key);
+    UE_LOG(LogTemp, Log, TEXT("Database connection pool initialized in Gameplay Server."));
 }
+
+void AServerGameMode::TickAuthCleanup()
+{
+    const double Now = FPlatformTime::Seconds();
+    const double TimeoutSec = 10.0; // tune for your infra
+
+    for (auto It = PendingAuthByRequestId.CreateIterator(); It; ++It)
+    {
+        if (Now - It->Value.StartTimeSeconds > TimeoutSec)
+        {
+            if (APlayerController* PC = It->Value.PC.Get())
+            {
+                KickPlayer(PC, TEXT("AuthTimeout"));
+            }
+            It.RemoveCurrent();
+        }
+    }
+}
+

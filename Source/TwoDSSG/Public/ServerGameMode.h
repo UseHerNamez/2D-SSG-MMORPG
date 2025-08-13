@@ -6,13 +6,12 @@
 #include "Interfaces/IHttpRequest.h"
 #include "Interfaces/IHttpResponse.h"
 #include <optional>
+#include <memory>
 #include "ServerGameMode.generated.h"
 
 struct FUniqueNetIdRepl;
+class DatabaseConnectionPool;
 class AClientPlayerController;
-
-// APlayerController*, int32(CharId)
-DECLARE_DELEGATE_TwoParams(FOnTokenValidated, APlayerController*, int32);
 
 UCLASS()
 class TWODSSG_API AServerGameMode : public AGameModeBase
@@ -36,15 +35,22 @@ private:
     void KickPlayer(APlayerController* PlayerController, const FString& Reason);
     void FetchCharacterDataFromDB(APlayerController* PlayerController, int32 CharId);
 
-    // helpers
-    APlayerController* FindControllerForToken(const FString& Token);
-    void HandleTokenErrorStatus(const FString& TokenOrReason, const FString& ErrorReason);
+    // DB
+    std::shared_ptr<DatabaseConnectionPool> DbPool;
+
+    // helper
     std::optional<int32> GetCharIdFromJWT(const FString& Token);
 
+    struct FPendingAuth
+    {
+        TWeakObjectPtr<APlayerController> PC;
+        FString SubmittedToken; // may be empty
+        double StartTimeSeconds = 0.0; // UGameplayStatics::GetRealTimeSeconds(World) or FPlatformTime::Seconds()
+    };
+    TMap<FString, FPendingAuth> PendingAuthByRequestId; // RequestId -> pending
 
-
-    FOnTokenValidated OnTokenValidatedDelegate;
-    TMap<FString, TWeakObjectPtr<APlayerController>> TokenToControllerMap;
+    void TickAuthCleanup();
+    FTimerHandle AuthCleanupHandle;
 
     const FString LoginServerURL = TEXT("http://localhost:12345");
 };
