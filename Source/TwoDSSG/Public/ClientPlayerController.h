@@ -17,7 +17,7 @@ public:
         void HideLoadingWidget();
 
     UFUNCTION(BlueprintImplementableEvent, Category = "UI")
-        void ShowErrorWidget(const FString& ErrorMessage); //ch
+        void ShowErrorWidget(const FString& ErrorMessage);
 
     UFUNCTION(Client, Reliable)
         void RPC_ShowLoadingWidget();

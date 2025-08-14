@@ -12,6 +12,8 @@
 #include <string>
 #include "Misc/Paths.h"
 #include "Misc/OutputDeviceDebug.h"
+#include "CustomPlayerState.h"
+#include "CharacterInitTypes.h"
 
 namespace {
     inline FString ToFString(const std::string& s) { return UTF8_TO_TCHAR(s.c_str()); }
@@ -36,7 +38,7 @@ namespace {
 
 AServerGameMode::AServerGameMode()
 {
-
+    bStartPlayersAsSpectators = true;
 }
 
 FString AServerGameMode::InitNewPlayer(APlayerController* NewPlayerController, const FUniqueNetIdRepl& UniqueId, 
@@ -202,16 +204,124 @@ void AServerGameMode::KickPlayer(APlayerController* PlayerController, const FStr
     }
 }
 
+int32 AServerGameMode::ParseGenderToInt(const FString& GenderStr)
+{
+    if (GenderStr.IsEmpty())
+        return 0; // default to female
+
+    return FCString::Atoi(*GenderStr);
+}
+
 void AServerGameMode::FetchCharacterDataFromDB(APlayerController* PlayerController, int32 CharId)
 {
     if (!PlayerController)
     {
-        UE_LOG(LogTemp, Warning, TEXT("On FetchCharacterDataFromDB called with null PlayerController"));
+        UE_LOG(LogTemp, Warning, TEXT("FetchCharacterDataFromDB called with null PlayerController"));
+        return;
+    }
+    if (!DbPool)
+    {
+        UE_LOG(LogTemp, Error, TEXT("DbPool is null — cannot fetch character data"));
         return;
     }
 
-    UE_LOG(LogTemp, Log, TEXT("Token validated! Proceeding to fetch character data for CharId: %d"), CharId);
-    FString CharacterID = FString::FromInt(CharId);
+    UE_LOG(LogTemp, Log, TEXT("Fetching character data for CharId: %d"), CharId);
+
+    TWeakObjectPtr<APlayerController> PCWeak = PlayerController;
+    auto PoolCopy = DbPool;
+
+    // Off the game thread
+    Async(EAsyncExecution::ThreadPool, [this, PoolCopy, PCWeak, CharId]()
+        {
+            FCharacterInitData_Client OutInit;
+            bool bOk = false;
+
+            // Acquire a connector from your pool
+            std::shared_ptr<DatabaseConnector> Conn = PoolCopy->Acquire();
+            if (!Conn)
+            {
+                UE_LOG(LogTemp, Warning, TEXT("DB pool exhausted — scheduling retry"));
+                // schedule a small retry on the game thread
+                AsyncTask(ENamedThreads::GameThread, [this, PCWeak, CharId]()
+                    {
+                        if (!PCWeak.IsValid()) return;
+                        FTimerHandle Handle;
+                        GetWorldTimerManager().SetTimer(
+                            Handle,
+                            FTimerDelegate::CreateLambda([this, PCWeak, CharId]()
+                                {
+                                    if (PCWeak.IsValid()) FetchCharacterDataFromDB(PCWeak.Get(), CharId);
+                                }),
+                            0.25f, false
+                                    );
+                    });
+                return; // important — do not continue on this thread
+            }
+
+            // Call your static lib
+            auto Opt = Conn->GetCharGameplayDataById(CharId);
+            if (Opt.has_value())
+            {
+                // Unpack your tuple
+                const auto& T = Opt.value();
+                const std::string& Name = std::get<0>(T);
+                const std::string& GenderStr = std::get<1>(T);
+                const int          Level = std::get<2>(T);
+                const std::string& Appearance = std::get<3>(T);
+                const int          Str = std::get<4>(T);
+                const int          Dex = std::get<5>(T);
+                const int          Wis = std::get<6>(T);
+                const int          Luk = std::get<7>(T);
+                const int          Pur = std::get<8>(T);
+                const int          Vic = std::get<9>(T);
+
+                // Fill public structs
+                OutInit.Base.Name = UTF8_TO_TCHAR(Name.c_str());
+                OutInit.Base.Level = FString::FromInt(Level);         // your Level is FString right now
+                OutInit.Base.Gender = ParseGenderToInt(UTF8_TO_TCHAR(GenderStr.c_str()));
+                OutInit.Base.Appearance = UTF8_TO_TCHAR(Appearance.c_str());
+
+                OutInit.Stats.Str = Str;
+                OutInit.Stats.Dex = Dex;
+                OutInit.Stats.Wis = Wis;
+                OutInit.Stats.Luk = Luk;
+                OutInit.Stats.Pur = Pur;
+                OutInit.Stats.Vic = Vic;
+
+                bOk = !OutInit.Base.Name.IsEmpty();
+            }
+            else
+            {
+                UE_LOG(LogTemp, Warning, TEXT("GetCharGameplayDataById returned empty for CharId %d"), CharId);
+            }
+
+            // Back to game thread — touch UObjects here
+            AsyncTask(ENamedThreads::GameThread, [this, PCWeak, bOk, OutInit]()
+                {
+                    if (!PCWeak.IsValid()) return;
+
+                    APlayerController* PC = PCWeak.Get();
+                    ACustomPlayerState* PS = PC ? PC->GetPlayerState<ACustomPlayerState>() : nullptr;
+                    if (!PS)
+                    {
+                        UE_LOG(LogTemp, Warning, TEXT("PlayerState not ready when applying InitData"));
+                        return;
+                    }
+
+                    if (!bOk)
+                    {
+                        UE_LOG(LogTemp, Warning, TEXT("Character data invalid — kicking player"));
+                        KickPlayer(PC, TEXT("CharNotFoundOrInvalid"));
+                        return;
+                    }
+
+                    // 1) Replicated payload — this is where your CharacterInitTypes structs are used
+                    PS->SetInitData_Server(OutInit);
+
+                    // 2) Spawn now that data is ready
+                    RestartPlayer(PC);
+                });
+        });
 }
 
 void AServerGameMode::BeginPlay()
@@ -236,14 +346,14 @@ void AServerGameMode::BeginPlay()
     std::string configPath = TCHAR_TO_UTF8(*FPaths::Combine(FPaths::ProjectDir(), TEXT("Config/config.ini.encrypted")));
     // drop it where the exe lives, usually under .../YourProject/Binaries/Win64/
 
-    DbPool = std::make_shared<DatabaseConnectionPool>(configPath, key);
+    DbPool = std::make_shared<DatabaseConnectionPool>(configPath, key, poolSize);
     UE_LOG(LogTemp, Log, TEXT("Database connection pool initialized in Gameplay Server."));
 }
 
 void AServerGameMode::TickAuthCleanup()
 {
     const double Now = FPlatformTime::Seconds();
-    const double TimeoutSec = 10.0; // tune for your infra
+    const double TimeoutSec = 7.0; // tune for your infra
 
     for (auto It = PendingAuthByRequestId.CreateIterator(); It; ++It)
     {

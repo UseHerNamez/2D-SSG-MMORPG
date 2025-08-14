@@ -31,6 +31,9 @@ std::string GenerateToken(const std::unordered_map<std::string, std::string>& pa
     std::chrono::seconds expiresIn = std::chrono::hours(24));
 
 // Validate and return claims if ok
+namespace EncryptionUtils {
+    TokenVerificationResult validateAndExtractClaims_ns(const std::string& token);
+}
 TokenVerificationResult validateAndExtractClaims(const std::string& token);
 
 // Convenience - extract a single field directly from a token string

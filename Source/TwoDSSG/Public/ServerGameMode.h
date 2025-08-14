@@ -34,9 +34,11 @@ private:
     void OnTokenValidationComplete(FHttpRequestPtr Request, FHttpResponsePtr Response, bool bWasSuccessful);
     void KickPlayer(APlayerController* PlayerController, const FString& Reason);
     void FetchCharacterDataFromDB(APlayerController* PlayerController, int32 CharId);
+    int32 ParseGenderToInt(const FString& GenderStr);
 
     // DB
     std::shared_ptr<DatabaseConnectionPool> DbPool;
+    int32 poolSize = 20;
 
     // helper
     std::optional<int32> GetCharIdFromJWT(const FString& Token);
