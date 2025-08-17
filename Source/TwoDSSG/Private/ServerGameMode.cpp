@@ -39,6 +39,7 @@ namespace {
 AServerGameMode::AServerGameMode()
 {
     bStartPlayersAsSpectators = true;
+    PlayerStateClass = ACustomPlayerState::StaticClass();
 }
 
 FString AServerGameMode::InitNewPlayer(APlayerController* NewPlayerController, const FUniqueNetIdRepl& UniqueId, 
@@ -236,7 +237,7 @@ void AServerGameMode::FetchCharacterDataFromDB(APlayerController* PlayerControll
             FCharacterInitData_Client OutInit;
             bool bOk = false;
 
-            // Acquire a connector from your pool
+            // Acquire a connector from pool
             std::shared_ptr<DatabaseConnector> Conn = PoolCopy->Acquire();
             if (!Conn)
             {
@@ -258,11 +259,11 @@ void AServerGameMode::FetchCharacterDataFromDB(APlayerController* PlayerControll
                 return; // important — do not continue on this thread
             }
 
-            // Call your static lib
+            // Call static lib
             auto Opt = Conn->GetCharGameplayDataById(CharId);
             if (Opt.has_value())
             {
-                // Unpack your tuple
+                // Unpack tuple
                 const auto& T = Opt.value();
                 const std::string& Name = std::get<0>(T);
                 const std::string& GenderStr = std::get<1>(T);
@@ -277,7 +278,7 @@ void AServerGameMode::FetchCharacterDataFromDB(APlayerController* PlayerControll
 
                 // Fill public structs
                 OutInit.Base.Name = UTF8_TO_TCHAR(Name.c_str());
-                OutInit.Base.Level = FString::FromInt(Level);         // your Level is FString right now
+                OutInit.Base.Level = FString::FromInt(Level);
                 OutInit.Base.Gender = ParseGenderToInt(UTF8_TO_TCHAR(GenderStr.c_str()));
                 OutInit.Base.Appearance = UTF8_TO_TCHAR(Appearance.c_str());
 
@@ -315,7 +316,7 @@ void AServerGameMode::FetchCharacterDataFromDB(APlayerController* PlayerControll
                         return;
                     }
 
-                    // 1) Replicated payload — this is where your CharacterInitTypes structs are used
+                    // 1) Replicated payload — this is where CharacterInitTypes structs are used
                     PS->SetInitData_Server(OutInit);
 
                     // 2) Spawn now that data is ready
