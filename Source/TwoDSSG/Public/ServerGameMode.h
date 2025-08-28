@@ -26,6 +26,9 @@ public:
         const FString& Options,
         const FString& Portal) override;
 
+    UFUNCTION(BlueprintImplementableEvent, Category = "Init")
+        void BP_AfterPlayerSpawned(APlayerController* PC);
+
 protected:
     virtual void BeginPlay() override;
 

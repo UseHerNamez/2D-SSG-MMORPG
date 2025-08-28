@@ -321,6 +321,28 @@ void AServerGameMode::FetchCharacterDataFromDB(APlayerController* PlayerControll
 
                     // 2) Spawn now that data is ready
                     RestartPlayer(PC);
+
+                    if (APawn* P = PC->GetPawn())
+                    {
+                        // Ensure the view is on the spawned pawn
+                        PC->SetViewTargetWithBlend(P, 0.0f);
+
+                        // Re-enable input on the pawn
+                        P->EnableInput(PC);
+
+                        // to update translucent priority var
+                        BP_AfterPlayerSpawned(PC);
+
+                        // clears ignore flags on the controller anywhere
+                        PC->SetIgnoreMoveInput(false);
+                        PC->SetIgnoreLookInput(false);
+
+                        // notify the client to hide loading UI
+                        if (AClientPlayerController* CPC = Cast<AClientPlayerController>(PC))
+                        {
+                            CPC->RPC_HideLoadingWidget();
+                        }
+                    }
                 });
         });
 }
