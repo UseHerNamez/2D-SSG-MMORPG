@@ -12,6 +12,7 @@
 struct FUniqueNetIdRepl;
 class DatabaseConnectionPool;
 class AClientPlayerController;
+class ACustomPlayerState;
 
 UCLASS()
 class TWODSSG_API AServerGameMode : public AGameModeBase
@@ -39,12 +40,8 @@ private:
     void FetchCharacterDataFromDB(APlayerController* PlayerController, int32 CharId);
     int32 ParseGenderToInt(const FString& GenderStr);
 
-    // DB
-    std::shared_ptr<DatabaseConnectionPool> DbPool;
-    int32 poolSize = 20;
-
     // helper
-    std::optional<int32> GetCharIdFromJWT(const FString& Token);
+    bool GetIdsFromJWT(const FString& Token, ACustomPlayerState* PS, int32& o_CharId);
 
     struct FPendingAuth
     {

@@ -1,4 +1,5 @@
 #pragma once
+//ServerInitTypes.h
 #include "CoreMinimal.h"
 
 // Only compiled for server builds

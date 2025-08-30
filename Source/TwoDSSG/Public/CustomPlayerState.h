@@ -14,8 +14,6 @@ public:
         FCharacterInitData_Client InitData;
 
     UFUNCTION() void OnRep_InitData();
-
-
     UFUNCTION(BlueprintImplementableEvent, Category = "Init")
         void BP_OnInitDataReceived(); // optional BP event for UI
 
@@ -30,12 +28,19 @@ public:
     virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& Out) const override;
 
 
-    #if WITH_SERVER_CODE
+#if WITH_SERVER_CODE
     private:
         // server only - never compiled into client builds
-        FCharacterInitData_Server ServerOnly;
+        FCharacterInitData_Server ServerOnly; // has player id in it
+
     public:
         void SetServerOnlyData(const FCharacterInitData_Server& In) { check(HasAuthority()); ServerOnly = In; }
         const FCharacterInitData_Server& GetServerOnlyData() const { check(HasAuthority()); return ServerOnly; }
-    #endif
+#endif
+
+        UFUNCTION(BlueprintPure, Category = "Persistence", meta = (BlueprintAuthorityOnly))
+            int32 GetCharId_Server() const;
+
+        UFUNCTION(BlueprintPure, Category = "Persistence", meta = (BlueprintAuthorityOnly))
+            int32 GetUserId_Server() const;
 };

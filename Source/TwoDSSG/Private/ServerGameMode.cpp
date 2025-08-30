@@ -14,6 +14,7 @@
 #include "Misc/OutputDeviceDebug.h"
 #include "CustomPlayerState.h"
 #include "CharacterInitTypes.h"
+#include "CustomGameInstanceSubsystem.h"
 
 namespace {
     inline FString ToFString(const std::string& s) { return UTF8_TO_TCHAR(s.c_str()); }
@@ -29,6 +30,17 @@ namespace {
         OutStatus = Parts[0];
         OutA1 = (Parts.Num() >= 2) ? Parts[1] : FString();
         OutA2 = (Parts.Num() >= 3) ? Parts[2] : FString();
+        return true;
+    }
+
+    inline bool TryParsePositiveInt32(const std::string& s, int32& Out)
+    {
+        if (s.empty()) return false;
+        const FString Fs = ToFString(s);
+        if (!Fs.IsNumeric()) return false;                       // reject "12abc" etc
+        int64 Tmp = FCString::Atoi64(*Fs);                       // non-throwing
+        if (Tmp < 0 || Tmp > MAX_int32) return false;            // bounds check
+        Out = static_cast<int32>(Tmp);
         return true;
     }
 
@@ -129,7 +141,7 @@ void AServerGameMode::OnTokenValidationComplete(FHttpRequestPtr Request, FHttpRe
     UE_LOG(LogTemp, Log, TEXT("Login server response [req=%s]: %s"), *RequestId, *Resp);
 
     FString Status, A1, A2;
-    if (!ParseResponse(Resp, Status, A1, A2))
+    if (!ParseResponse(Resp, Status, A1, A2)) //A1 A2 are just answers from the server
     {
         UE_LOG(LogTemp, Warning, TEXT("Unexpected response format [req=%s]"), *RequestId);
         if (PC) KickPlayer(PC, TEXT("AuthMalformedResponse"));
@@ -160,41 +172,55 @@ void AServerGameMode::OnTokenValidationComplete(FHttpRequestPtr Request, FHttpRe
     }
 
     // Claims - need charId
-    const std::optional<int32> CharIdOpt = GetCharIdFromJWT(Token);
-    if (!CharIdOpt)
-    {
-        UE_LOG(LogTemp, Warning, TEXT("Token claims missing or invalid - charId [req=%s]"), *RequestId);
-        KickPlayer(PC, TEXT("InvalidTokenClaims"));
-        return;
+    if (ACustomPlayerState* PS = PC->GetPlayerState<ACustomPlayerState>()) {
+        int32 CharId = -1;
+        if (!GetIdsFromJWT(Token, PS, CharId)) {
+            UE_LOG(LogTemp, Warning, TEXT("Token claims missing or invalid"));
+            KickPlayer(PC, TEXT("InvalidTokenClaims"));
+            return;
+        }
+        UE_LOG(LogTemp, Log, TEXT("Token valid - UserId:%d CharId:%d"), PS->GetUserId_Server(), PS->GetCharId_Server());
+        FetchCharacterDataFromDB(PC, CharId);
     }
-
-    const int32 CharId = CharIdOpt.value();
-    UE_LOG(LogTemp, Log, TEXT("Token valid - CharId: %d [req=%s]"), CharId, *RequestId);
-
-    FetchCharacterDataFromDB(PC, CharId);
+    else {
+        UE_LOG(LogTemp, Warning, TEXT("PlayerState not ready when setting ServerOnly data"));
+    }
 }
 
-std::optional<int32> AServerGameMode::GetCharIdFromJWT(const FString& Token)
+bool AServerGameMode::GetIdsFromJWT(const FString& Token, ACustomPlayerState* PS, int32& OutCharId)
 {
+    if (!PS) return false;
+
     TokenVerificationResult Res = validateAndExtractClaims(FromFString(Token));
+    if (Res.status != TokenStatus::Valid || !Res.claims) return false;
 
-    if (Res.status != TokenStatus::Valid || !Res.claims)
-        return std::nullopt;
-
-    // Works whether claims->charId is std::string or std::optional<std::string>
     const std::string CharIdStr = AsStringRef(Res.claims->charId);
-    if (CharIdStr.empty())
-        return std::nullopt;
+    const std::string UserIdStr = AsStringRef(Res.claims->userId);
 
-    try {
-        // FCString::Atoi needs FString, but std::stoi is fine here
-        return static_cast<int32>(std::stoi(CharIdStr));
+    int32 CharId = -1, UserId = -1;
+
+    if (!TryParsePositiveInt32(CharIdStr, CharId)) {
+        UE_LOG(LogTemp, Warning, TEXT("Invalid CharId claim: %s"), *ToFString(CharIdStr));
+        return false; // CharId is required
     }
-    catch (...) {
-        return std::nullopt;
+
+    if (!UserIdStr.empty() && !TryParsePositiveInt32(UserIdStr, UserId)) {
+        UE_LOG(LogTemp, Warning, TEXT("Invalid UserId claim: %s"), *ToFString(UserIdStr));
+        UserId = -1; // optional - proceed without it
     }
+
+    if (CharId < 0) return false;
+
+#if WITH_SERVER_CODE
+    FCharacterInitData_Server Srv;
+    Srv.UserId = UserId;
+    Srv.CharId = CharId;
+    PS->SetServerOnlyData(Srv);
+#endif
+
+    OutCharId = CharId;
+    return true;
 }
-
 void AServerGameMode::KickPlayer(APlayerController* PlayerController, const FString& Reason)
 {
     if (PlayerController)
@@ -220,19 +246,20 @@ void AServerGameMode::FetchCharacterDataFromDB(APlayerController* PlayerControll
         UE_LOG(LogTemp, Warning, TEXT("FetchCharacterDataFromDB called with null PlayerController"));
         return;
     }
-    if (!DbPool)
+    if (UCustomGameInstanceSubsystem* Sub = GetGameInstance()->GetSubsystem<UCustomGameInstanceSubsystem>()) 
     {
-        UE_LOG(LogTemp, Error, TEXT("DbPool is null — cannot fetch character data"));
-        return;
-    }
+        if (!Sub->IsReady()) {
+            UE_LOG(LogTemp, Error, TEXT("DbPool is null - cannot fetch character data"));
+            return;
+        }
 
-    UE_LOG(LogTemp, Log, TEXT("Fetching character data for CharId: %d"), CharId);
+        TSharedPtr<DatabaseConnectionPool> Pool = Sub->GetPool();
+        UE_LOG(LogTemp, Log, TEXT("Fetching character data for CharId: %d"), CharId);
 
-    TWeakObjectPtr<APlayerController> PCWeak = PlayerController;
-    auto PoolCopy = DbPool;
-
-    // Off the game thread
-    Async(EAsyncExecution::ThreadPool, [this, PoolCopy, PCWeak, CharId]()
+        TWeakObjectPtr<APlayerController> PCWeak = PlayerController;
+    
+        // Off the game thread
+        Async(EAsyncExecution::ThreadPool, [this, PoolCopy = Pool, PCWeak, CharId]()
         {
             FCharacterInitData_Client OutInit;
             bool bOk = false;
@@ -297,54 +324,55 @@ void AServerGameMode::FetchCharacterDataFromDB(APlayerController* PlayerControll
             }
 
             // Back to game thread — touch UObjects here
-            AsyncTask(ENamedThreads::GameThread, [this, PCWeak, bOk, OutInit]()
+            AsyncTask(ENamedThreads::GameThread, [this, PCWeak, bOk, OutInit = MoveTemp(OutInit)]()
+            {
+                if (!PCWeak.IsValid()) return;
+
+                APlayerController* PC = PCWeak.Get();
+                ACustomPlayerState* PS = PC ? PC->GetPlayerState<ACustomPlayerState>() : nullptr;
+                if (!PS)
                 {
-                    if (!PCWeak.IsValid()) return;
+                    UE_LOG(LogTemp, Warning, TEXT("PlayerState not ready when applying InitData"));
+                    return;
+                }
 
-                    APlayerController* PC = PCWeak.Get();
-                    ACustomPlayerState* PS = PC ? PC->GetPlayerState<ACustomPlayerState>() : nullptr;
-                    if (!PS)
+                if (!bOk)
+                {
+                    UE_LOG(LogTemp, Warning, TEXT("Character data invalid — kicking player"));
+                    KickPlayer(PC, TEXT("CharNotFoundOrInvalid"));
+                    return;
+                }
+
+                // 1) Replicated payload — this is where CharacterInitTypes structs are used
+                PS->SetInitData_Server(OutInit);
+
+                // 2) Spawn now that data is ready
+                RestartPlayer(PC);
+
+                if (APawn* P = PC->GetPawn())
+                {
+                    // Ensure the view is on the spawned pawn
+                    PC->SetViewTargetWithBlend(P, 0.0f);
+
+                    // Re-enable input on the pawn
+                    P->EnableInput(PC);
+
+                    // to update translucent priority var
+                    BP_AfterPlayerSpawned(PC);
+
+                    // clears ignore flags on the controller anywhere
+                    PC->SetIgnoreMoveInput(false);
+                    PC->SetIgnoreLookInput(false);
+
+                    // notify the client to hide loading UI
+                    if (AClientPlayerController* CPC = Cast<AClientPlayerController>(PC))
                     {
-                        UE_LOG(LogTemp, Warning, TEXT("PlayerState not ready when applying InitData"));
-                        return;
+                        CPC->RPC_HideLoadingWidget();
                     }
-
-                    if (!bOk)
-                    {
-                        UE_LOG(LogTemp, Warning, TEXT("Character data invalid — kicking player"));
-                        KickPlayer(PC, TEXT("CharNotFoundOrInvalid"));
-                        return;
-                    }
-
-                    // 1) Replicated payload — this is where CharacterInitTypes structs are used
-                    PS->SetInitData_Server(OutInit);
-
-                    // 2) Spawn now that data is ready
-                    RestartPlayer(PC);
-
-                    if (APawn* P = PC->GetPawn())
-                    {
-                        // Ensure the view is on the spawned pawn
-                        PC->SetViewTargetWithBlend(P, 0.0f);
-
-                        // Re-enable input on the pawn
-                        P->EnableInput(PC);
-
-                        // to update translucent priority var
-                        BP_AfterPlayerSpawned(PC);
-
-                        // clears ignore flags on the controller anywhere
-                        PC->SetIgnoreMoveInput(false);
-                        PC->SetIgnoreLookInput(false);
-
-                        // notify the client to hide loading UI
-                        if (AClientPlayerController* CPC = Cast<AClientPlayerController>(PC))
-                        {
-                            CPC->RPC_HideLoadingWidget();
-                        }
-                    }
-                });
+                }
+            });
         });
+    }
 }
 
 void AServerGameMode::BeginPlay()
@@ -352,25 +380,17 @@ void AServerGameMode::BeginPlay()
     Super::BeginPlay();
     GetWorldTimerManager().SetTimer(AuthCleanupHandle, this, &AServerGameMode::TickAuthCleanup, 15.0f, true);
 
-    char* encryptionKeyRaw = nullptr;
-    size_t size = 0;
-
-    if (_dupenv_s(&encryptionKeyRaw, &size, "ENCRYPTION_KEY") != 0 || encryptionKeyRaw == nullptr)
+    if (UCustomGameInstanceSubsystem* Sub = GetGameInstance()->GetSubsystem<UCustomGameInstanceSubsystem>())
     {
-        UE_LOG(LogTemp, Error, TEXT("Failed to get ENCRYPTION_KEY from environment."));
-        return;
+        if (!Sub->IsReady())
+        {
+            UE_LOG(LogTemp, Error, TEXT("Persistence subsystem not ready - DB pool missing"));
+        }
     }
-
-    std::string key(encryptionKeyRaw);
-    free(encryptionKeyRaw);
-
-#include "Misc/Paths.h"
-
-    std::string configPath = TCHAR_TO_UTF8(*FPaths::Combine(FPaths::ProjectDir(), TEXT("Config/config.ini.encrypted")));
-    // drop it where the exe lives, usually under .../YourProject/Binaries/Win64/
-
-    DbPool = std::make_shared<DatabaseConnectionPool>(configPath, key, poolSize);
-    UE_LOG(LogTemp, Log, TEXT("Database connection pool initialized in Gameplay Server."));
+    else
+    {
+        UE_LOG(LogTemp, Error, TEXT("CustomGameInstanceSubsystem not found"));
+    }
 }
 
 void AServerGameMode::TickAuthCleanup()
