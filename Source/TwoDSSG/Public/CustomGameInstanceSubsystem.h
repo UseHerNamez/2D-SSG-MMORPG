@@ -2,6 +2,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "CharacterInitTypes.h"
 #include "Subsystems/GameInstanceSubsystem.h"
 #include "CustomGameInstanceSubsystem.generated.h"
 
@@ -27,6 +28,9 @@ public:
         void EnqueueSetLevel(int32 CharId, int32 NewLevel);
 
     UFUNCTION(BlueprintCallable, Category = "Persistence", meta = (BlueprintAuthorityOnly))
+        void EnqueueSetBaseStats(int32 CharId, const FCharStatsPublic& NewStats);
+
+    UFUNCTION(BlueprintCallable, Category = "Persistence", meta = (BlueprintAuthorityOnly))
         void EnqueueAddItem(int32 CharId, int32 ItemId, int32 Qty);
 
     UFUNCTION(BlueprintCallable, Category = "Persistence", meta = (BlueprintAuthorityOnly))
@@ -39,9 +43,25 @@ private:
     // Own the pool here - one per server process
     TSharedPtr<DatabaseConnectionPool> DbPool;
 
-    // Optional: store your flusher, journal, queue handles here
-    // ...
+    // flusher, journal, queue handles
+    // 
+    // Write queue and synchronization
+    struct FDbCommand
+    {
+        std::string Sql;
+    };
+
+    std::queue<FDbCommand> WriteQueue;
+    std::mutex WriteQueueMutex;
+    std::condition_variable WriteQueueCv;
+    std::atomic<bool> bStopWriterThread;
+    std::thread WriterThread;
+
+    void QueueWorker(); // the thread function that executes SQL
+    void EnqueueSQL(const std::string& Sql); // pushes SQL to the queue
+
 
     // Helper to build the pool
     bool InitDbPool();
+    int32 PoolSize = 15;
 };

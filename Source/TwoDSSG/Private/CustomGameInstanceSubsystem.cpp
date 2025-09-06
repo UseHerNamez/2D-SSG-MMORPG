@@ -27,8 +27,10 @@ void UCustomGameInstanceSubsystem::Initialize(FSubsystemCollectionBase& Collecti
         return;
     }
 
-    // Start your background flusher threads here if you have them
-    // ...
+    // Start the write queue thread
+    bStopWriterThread = false;
+    WriterThread = std::thread(&UCustomGameInstanceSubsystem::QueueWorker, this);
+    UE_LOG(LogTemp, Log, TEXT("Persistence subsystem write queue started"));
 }
 
 void UCustomGameInstanceSubsystem::Deinitialize()
@@ -36,6 +38,11 @@ void UCustomGameInstanceSubsystem::Deinitialize()
     // Stop background threads first, then release pool
     // ...
     DbPool.Reset();
+
+    bStopWriterThread = true;
+    WriteQueueCv.notify_all();
+    if (WriterThread.joinable())
+        WriterThread.join();
 
     Super::Deinitialize();
 }
@@ -51,7 +58,7 @@ bool UCustomGameInstanceSubsystem::InitDbPool()
     }
 
     // Read optional pool size from config - default 16
-    int32 PoolSize = 16;
+    
     GConfig->GetInt(TEXT("/Script/Engine.GameInstance"), TEXT("DbPoolSize"), PoolSize, GGameIni); // is there such a setting set?
 
     const FString EncCfg = FPaths::Combine(FPaths::ProjectDir(), TEXT("Config/config.ini.encrypted"));
@@ -72,6 +79,11 @@ void UCustomGameInstanceSubsystem::EnqueueSetLevel(int32 CharId, int32 NewLevel)
     UE_LOG(LogTemp, Verbose, TEXT("EnqueueSetLevel CharId=%d Level=%d"), CharId, NewLevel);
 }
 
+void EnqueueSetBaseStats(int32 CharId, const FCharStatsPublic& NewStats)
+{
+
+}
+
 void UCustomGameInstanceSubsystem::EnqueueAddItem(int32 CharId, int32 ItemId, int32 Qty)
 {
     if (!IsReady()) { UE_LOG(LogTemp, Warning, TEXT("EnqueueAddItem - pool not ready")); return; }
@@ -90,3 +102,36 @@ void UCustomGameInstanceSubsystem::FlushCharacter(int32 CharId)
     UE_LOG(LogTemp, Log, TEXT("FlushCharacter CharId=%d"), CharId);
     // TODO: run a synchronous flush for this CharId in your flusher
 }
+
+void UCustomGameInstanceSubsystem::QueueWorker()
+{
+    while (!bStopWriterThread)
+    {
+        std::unique_lock<std::mutex> Lock(WriteQueueMutex);
+        WriteQueueCv.wait(Lock, [this]() { return !WriteQueue.empty() || bStopWriterThread; }); // this is the condition variable. It lets the thread sleep until there is work (or shutdown).
+
+        if (bStopWriterThread) break;
+
+        auto Command = WriteQueue.front();
+        WriteQueue.pop();
+        Lock.unlock();
+
+        if (DbPool.IsValid())
+        {
+            auto Conn = DbPool->Acquire(std::chrono::milliseconds(100)); // short timeout
+            if (Conn)
+            {
+                // Execute the SQL
+                // Conn->Execute(Command.Sql);
+            }
+        }
+    }
+}
+
+void UCustomGameInstanceSubsystem::EnqueueSQL(const std::string& Sql)
+{
+    std::lock_guard<std::mutex> Lock(WriteQueueMutex);
+    WriteQueue.push({ Sql });
+    WriteQueueCv.notify_one();
+}
+
