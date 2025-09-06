@@ -15,6 +15,23 @@ struct FCharStatsPublic
 };
 
 USTRUCT(BlueprintType)
+struct FSingleStat
+{
+    GENERATED_BODY()
+
+        // The name of the stat, e.g., "Str", "Dex", "Wis"
+        UPROPERTY(BlueprintReadWrite)
+        FString StatName;
+
+    // The value to set
+    UPROPERTY(BlueprintReadWrite)
+        int32 Value = 1;
+
+    FSingleStat() {}
+    FSingleStat(const FString& InName, int32 InValue) : StatName(InName), Value(InValue) {}
+};
+
+USTRUCT(BlueprintType)
 struct FCharBasePublic
 {
     GENERATED_BODY()

@@ -65,7 +65,7 @@ bool UCustomGameInstanceSubsystem::InitDbPool()
     const std::string ConfigPath = TCHAR_TO_UTF8(*EncCfg);
     const std::string EncKey = std::string(TCHAR_TO_UTF8(*Key));
 
-    DbPool = MakeShared<DatabaseConnectionPool>(ConfigPath, EncKey, PoolSize);
+    DbPool = MakeShared<DatabaseConnectionPool>(ConfigPath, EncKey, PoolSize, WriterConnections);
     UE_LOG(LogTemp, Log, TEXT("DB pool initialized in GameInstance subsystem (size=%d)"), PoolSize);
     return true;
 }
@@ -74,14 +74,26 @@ bool UCustomGameInstanceSubsystem::InitDbPool()
 
 void UCustomGameInstanceSubsystem::EnqueueSetLevel(int32 CharId, int32 NewLevel)
 {
-    if (!IsReady()) { UE_LOG(LogTemp, Warning, TEXT("EnqueueSetLevel - pool not ready")); return; }
-    // TODO: push to your write-behind queue and let flusher use DbPool->Acquire()
-    UE_LOG(LogTemp, Verbose, TEXT("EnqueueSetLevel CharId=%d Level=%d"), CharId, NewLevel);
+    if (!IsReady()) return;
+
+    auto Job = std::make_shared<FJobSetLevel>(CharId, NewLevel);
+    {
+        std::lock_guard<std::mutex> Lock(WriteQueueMutex);
+        WriteQueue.push(Job);
+    }
+    WriteQueueCv.notify_one();
 }
 
-void EnqueueSetBaseStats(int32 CharId, const FCharStatsPublic& NewStats)
+void UCustomGameInstanceSubsystem::EnqueueSetBaseStats(int32 CharId, const TArray<FSingleStat>& StatsToUpdate)
 {
+    if (!IsReady()) return;
 
+    auto Job = std::make_shared<FJobSetBaseStats>(CharId, StatsToUpdate);
+    {
+        std::lock_guard<std::mutex> Lock(WriteQueueMutex);
+        WriteQueue.push(Job);
+    }
+    WriteQueueCv.notify_one();
 }
 
 void UCustomGameInstanceSubsystem::EnqueueAddItem(int32 CharId, int32 ItemId, int32 Qty)
@@ -108,30 +120,53 @@ void UCustomGameInstanceSubsystem::QueueWorker()
     while (!bStopWriterThread)
     {
         std::unique_lock<std::mutex> Lock(WriteQueueMutex);
-        WriteQueueCv.wait(Lock, [this]() { return !WriteQueue.empty() || bStopWriterThread; }); // this is the condition variable. It lets the thread sleep until there is work (or shutdown).
+        WriteQueueCv.wait(Lock, [this]() { return !WriteQueue.empty() || bStopWriterThread; });
 
         if (bStopWriterThread) break;
 
-        auto Command = WriteQueue.front();
+        // Take ownership of the job
+        auto Job = std::move(WriteQueue.front());
         WriteQueue.pop();
         Lock.unlock();
 
-        if (DbPool.IsValid())
+        if (DbPool.IsValid() && Job)
         {
-            auto Conn = DbPool->Acquire(std::chrono::milliseconds(100)); // short timeout
+            auto Conn = DbPool->Acquire(std::chrono::milliseconds(100));
             if (Conn)
             {
-                // Execute the SQL
-                // Conn->Execute(Command.Sql);
+                switch (Job->Type)
+                {
+                case EPersistenceJobType::SetLevel:
+                {
+                    auto* SetLevelJob = static_cast<FJobSetLevel*>(Job.get());
+                    FString Sql = FString::Printf(TEXT("UPDATE characters SET level=%d WHERE id=%d"),
+                        SetLevelJob->NewLevel,
+                        SetLevelJob->CharId);
+                    // Conn->Execute(Sql);
+                    break;
+                }
+                case EPersistenceJobType::SetBaseStats:
+                {
+                    auto* StatsJob = static_cast<FJobSetBaseStats*>(Job.get());
+                    if (!StatsJob) return; // sanity check
+
+                    int32 CharId = StatsJob->CharId;
+                    const TArray<FSingleStat>& StatsToUpdate = StatsJob->StatsToUpdate;
+                    for (const auto& stat : StatsToUpdate)
+                    {
+                        // Build dynamic SQL
+                        std::string sql = std::string("UPDATE character_stats SET ") + TCHAR_TO_UTF8(*stat.StatName)
+                            + " = " + std::to_string(stat.Value)
+                            + " WHERE character_id = " + std::to_string(CharId) + ";";
+
+                        // Execute on the acquired connection
+                        //Conn->Execute(sql);
+                    }
+                    break;
+                }
+                }
             }
         }
     }
-}
-
-void UCustomGameInstanceSubsystem::EnqueueSQL(const std::string& Sql)
-{
-    std::lock_guard<std::mutex> Lock(WriteQueueMutex);
-    WriteQueue.push({ Sql });
-    WriteQueueCv.notify_one();
 }
 

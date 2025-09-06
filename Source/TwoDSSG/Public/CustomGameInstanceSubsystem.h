@@ -2,7 +2,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "CharacterInitTypes.h"
+#include "PersistenceJobs.h"
 #include "Subsystems/GameInstanceSubsystem.h"
 #include "CustomGameInstanceSubsystem.generated.h"
 
@@ -28,7 +28,7 @@ public:
         void EnqueueSetLevel(int32 CharId, int32 NewLevel);
 
     UFUNCTION(BlueprintCallable, Category = "Persistence", meta = (BlueprintAuthorityOnly))
-        void EnqueueSetBaseStats(int32 CharId, const FCharStatsPublic& NewStats);
+        void EnqueueSetBaseStats(int32 CharId, const TArray<FSingleStat>& StatsToUpdate);
 
     UFUNCTION(BlueprintCallable, Category = "Persistence", meta = (BlueprintAuthorityOnly))
         void EnqueueAddItem(int32 CharId, int32 ItemId, int32 Qty);
@@ -51,17 +51,16 @@ private:
         std::string Sql;
     };
 
-    std::queue<FDbCommand> WriteQueue;
+    std::queue<std::shared_ptr<FJobBase>> WriteQueue;
     std::mutex WriteQueueMutex;
     std::condition_variable WriteQueueCv;
     std::atomic<bool> bStopWriterThread;
     std::thread WriterThread;
 
     void QueueWorker(); // the thread function that executes SQL
-    void EnqueueSQL(const std::string& Sql); // pushes SQL to the queue
-
 
     // Helper to build the pool
     bool InitDbPool();
     int32 PoolSize = 15;
+    const int32 WriterConnections = 2;
 };
