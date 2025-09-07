@@ -4,6 +4,12 @@
 #include "CoreMinimal.h"
 #include "PersistenceJobs.h"
 #include "Subsystems/GameInstanceSubsystem.h"
+#include <string>
+#include <queue>
+#include <mutex>
+#include <condition_variable>
+#include <atomic>
+#include <thread>
 #include "CustomGameInstanceSubsystem.generated.h"
 
 // Forward declares

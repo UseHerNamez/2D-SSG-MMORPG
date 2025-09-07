@@ -1,5 +1,6 @@
 #pragma once
 #include "CoreMinimal.h"
+#include <string>
 #include "CharacterInitTypes.generated.h"
 
 USTRUCT(BlueprintType)
