@@ -47,6 +47,66 @@ void UCustomGameInstanceSubsystem::Deinitialize()
     Super::Deinitialize();
 }
 
+// Test Mode Functions
+void UCustomGameInstanceSubsystem::SetTestMode(bool bEnabled)
+{
+    bTestMode = bEnabled;
+    UE_LOG(LogTemp, Log, TEXT("Test Mode: %s"), bEnabled ? TEXT("ENABLED") : TEXT("DISABLED"));
+}
+
+void UCustomGameInstanceSubsystem::PopulateTestData(ACustomPlayerState* PlayerState)
+{
+    if (!PlayerState)
+    {
+        UE_LOG(LogTemp, Error, TEXT("PopulateTestData: PlayerState is null"));
+        return;
+    }
+
+    if (!IsValid(PlayerState))
+    {
+        UE_LOG(LogTemp, Error, TEXT("PopulateTestData: PlayerState is not valid"));
+        return;
+    }
+
+    UE_LOG(LogTemp, Log, TEXT("Populating test data for player"));
+
+    // Set Identity (Name, Gender) - direct assignment for test
+    PlayerState->Identity.Name = TEXT("TestPlayer");
+    PlayerState->Identity.Gender = 0; // Female
+
+    // Set Progression (XP, Level, AP) - direct assignment for test
+    PlayerState->Progression.Level = 5;
+    PlayerState->Progression.XP = 30;
+    PlayerState->Progression.UnspentAP = 3;
+
+    // Set Base Stats - direct assignment for test
+    PlayerState->BaseStats.Str = 15;
+    PlayerState->BaseStats.Dex = 12;
+    PlayerState->BaseStats.Wis = 10;
+    PlayerState->BaseStats.Luk = 8;
+    PlayerState->BaseStats.Pur = 14;
+    PlayerState->BaseStats.Vic = 11;
+
+    // Set Public Inspect (what others see) - direct assignment for test
+    PlayerState->PublicInspect.Level = PlayerState->Progression.Level;
+    PlayerState->PublicInspect.BaseStats = PlayerState->BaseStats;
+    PlayerState->PublicInspect.Appearance = TEXT("hair:0-0,face:0-0,Weapon:TestSword");
+
+    // Force replication update
+    PlayerState->ForceNetUpdate();
+
+    // Set Server-only data
+    FCharacterInitData_Server ServerData;
+    ServerData.UserId = 999;
+    ServerData.CharId = 123;
+    PlayerState->SetServerOnlyData(ServerData);
+
+    // Notify that initial data is loaded
+    PlayerState->NotifyInitialDataLoaded_ServerOnly();
+
+    UE_LOG(LogTemp, Log, TEXT("Test data populated successfully"));
+}
+
 bool UCustomGameInstanceSubsystem::InitDbPool()
 {
     // Read encryption key from env - safer UE API
@@ -69,8 +129,6 @@ bool UCustomGameInstanceSubsystem::InitDbPool()
     UE_LOG(LogTemp, Log, TEXT("DB pool initialized in GameInstance subsystem (size=%d)"), PoolSize);
     return true;
 }
-
-// ---- BP stubs (server only). Right now they just log. Wire them to your queue/flusher next.
 
 void UCustomGameInstanceSubsystem::EnqueueSetLevel(int32 CharId, int32 NewLevel)
 {
@@ -108,11 +166,59 @@ void UCustomGameInstanceSubsystem::EnqueueCurrencyDelta(int32 CharId, int32 Delt
     UE_LOG(LogTemp, Verbose, TEXT("EnqueueCurrencyDelta CharId=%d dG=%d dS=%d dH=%d"), CharId, DeltaGold, DeltaSoft, DeltaHard);
 }
 
-void UCustomGameInstanceSubsystem::FlushCharacter(int32 CharId)
+void UCustomGameInstanceSubsystem::FlushCharacterByPC(APlayerController* PC)
 {
-    if (!IsReady()) { UE_LOG(LogTemp, Warning, TEXT("FlushCharacter - pool not ready")); return; }
-    UE_LOG(LogTemp, Log, TEXT("FlushCharacter CharId=%d"), CharId);
-    // TODO: run a synchronous flush for this CharId in your flusher
+#if WITH_SERVER_CODE
+    if (!PC) return;
+    if (auto* PS = PC->GetPlayerState<ACustomPlayerState>())
+    {
+        FlushCharacterByPS(PS);
+    }
+    else
+    {
+        UE_LOG(LogTemp, Warning, TEXT("FlushCharacter(PC): no PlayerState"));
+    }
+#endif
+}
+
+void UCustomGameInstanceSubsystem::FlushCharacterByPS(ACustomPlayerState* PS)
+{
+#if WITH_SERVER_CODE
+    if (!IsReady())
+    {
+        UE_LOG(LogTemp, Warning, TEXT("FlushCharacter: DB not ready (CharId=%d)"),
+            PS ? PS->GetCharId_Server() : -1);
+        return;
+    }
+
+    if (!PS || !PS->HasAuthority())
+    {
+        UE_LOG(LogTemp, Warning, TEXT("FlushCharacter: invalid PlayerState or not server authority"));
+        return;
+    }
+
+    const int32 CharId = PS->GetCharId_Server();
+    const int32 Level = PS->Progression.Level;
+    const FCharStats Stats = PS->BaseStats;
+
+    auto ToLower = [](const FString& In) {
+        return In.ToLower(); // UE helper
+    };
+
+    TArray<FSingleStat> JobStats;
+    JobStats.Emplace(ToLower(TEXT("Str")), Stats.Str);
+    JobStats.Emplace(ToLower(TEXT("Dex")), Stats.Dex);
+    JobStats.Emplace(ToLower(TEXT("Wis")), Stats.Wis);
+    JobStats.Emplace(ToLower(TEXT("Luk")), Stats.Luk);
+    JobStats.Emplace(ToLower(TEXT("Pur")), Stats.Pur);
+    JobStats.Emplace(ToLower(TEXT("Vic")), Stats.Vic);
+
+    EnqueueSetLevel(CharId, Level);
+    EnqueueSetBaseStats(CharId, JobStats);
+
+    UE_LOG(LogTemp, Log, TEXT("FlushCharacter: queued Level=%d & %d base stats for CharId=%d"),
+        Level, JobStats.Num(), CharId);
+#endif
 }
 
 void UCustomGameInstanceSubsystem::QueueWorker()

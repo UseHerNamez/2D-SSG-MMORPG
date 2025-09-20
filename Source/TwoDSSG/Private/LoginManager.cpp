@@ -209,11 +209,14 @@ void ULoginManager::CheckName(const FString& charName, const bool isCreation, co
 
 void ULoginManager::TestLogin() //creates the game instance and populates it  with info without the need to contact the server.
 {
-    FString CharInfoPart = "Exter|1|0|hair:0-0,face:0-0";
-
     if (ComputerSaviourGameInstance != nullptr)
     {
+        UE_LOG(LogTemp, Log, TEXT("TestLogin: Using test data for character selection"));
+        
+        // Use consistent test data that matches PopulateTestData function
+        FString CharInfoPart = "TestPlayer|5|0|hair:0-0,face:0-0,Weapon:TestSword";
         ComputerSaviourGameInstance->setCharInfo(CharInfoPart);
+        
         // Transition to the "CharacterSelection" map
         if (ComputerSaviourGameInstance->GetCurrWorld())
             UGameplayStatics::OpenLevel(ComputerSaviourGameInstance->GetCurrWorld(), TEXT("CharacterSelection"));

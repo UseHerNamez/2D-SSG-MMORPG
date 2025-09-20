@@ -15,6 +15,7 @@
 #include "CustomPlayerState.h"
 #include "CharacterInitTypes.h"
 #include "CustomGameInstanceSubsystem.h"
+//#include "CustomGameInstanceSubsystem.h"
 
 namespace {
     inline FString ToFString(const std::string& s) { return UTF8_TO_TCHAR(s.c_str()); }
@@ -57,39 +58,17 @@ AServerGameMode::AServerGameMode()
 FString AServerGameMode::InitNewPlayer(APlayerController* NewPlayerController, const FUniqueNetIdRepl& UniqueId, 
     const FString& Options, const FString& Portal)
 {
-    FString Token;
-    FParse::Value(*Options, TEXT("AuthToken="), Token); // suitable string?
-
-    if (Token.IsEmpty())
+    // Check if test mode is enabled (simple bool)
+    if (bTestMode)
     {
-        UE_LOG(LogTemp, Warning, TEXT("No AuthToken provided"));
-        KickPlayer(NewPlayerController, TEXT("No AuthToken provided"));
-        return TEXT("Missing AuthToken");
+        //return HandleTestModePlayer(NewPlayerController);
     }
 
-    if (NewPlayerController)
-    {
-        NewPlayerController->DisableInput(NewPlayerController);
+    // Normal flow - token validation and database fetch
+    //return HandleNormalPlayer(NewPlayerController, Options);
 
-        for (TActorIterator<ACameraActor> It(GetWorld()); It; ++It)
-        {
-            if (It->ActorHasTag("LoadingCamera"))
-            {
-                NewPlayerController->SetViewTarget(*It);
-                break;
-            }
-        }
 
-        if (AClientPlayerController* ClientPC = Cast<AClientPlayerController>(NewPlayerController))
-        {
-            ClientPC->RPC_ShowLoadingWidget(); // This shows the widget on the client
-        }
-
-        // Start async validation here
-        ValidateTokenWithLoginServer(NewPlayerController, Token);
-    }
-
-    return FString(); // Return early — don’t finalize spawn yet
+    return FString(); // Return early - don't finalize spawn yet
 }
 
 void AServerGameMode::ValidateTokenWithLoginServer(APlayerController* PlayerController, const FString& Token)
@@ -188,6 +167,22 @@ void AServerGameMode::OnTokenValidationComplete(FHttpRequestPtr Request, FHttpRe
 }
 
 bool AServerGameMode::GetIdsFromJWT(const FString& Token, ACustomPlayerState* PS, int32& OutCharId)
+    if (ACustomPlayerState* PS = PC->GetPlayerState<ACustomPlayerState>()) {
+        int32 CharId = -1;
+        if (!GetIdsFromJWT(Token, PS, CharId)) {
+            UE_LOG(LogTemp, Warning, TEXT("Token claims missing or invalid"));
+            KickPlayer(PC, TEXT("InvalidTokenClaims"));
+            return;
+        }
+        UE_LOG(LogTemp, Log, TEXT("Token valid - UserId:%d CharId:%d"), PS->GetUserId_Server(), PS->GetCharId_Server());
+        //FetchCharacterDataFromDB(PC, CharId);
+    }
+    else {
+        UE_LOG(LogTemp, Warning, TEXT("PlayerState not ready when setting ServerOnly data"));
+    }
+}
+
+bool AServerGameMode::GetIdsFromJWT(const FString& Token, ACustomPlayerState* PS, int32& OutCharId)
 {
     if (!PS) return false;
 
@@ -221,6 +216,7 @@ bool AServerGameMode::GetIdsFromJWT(const FString& Token, ACustomPlayerState* PS
     OutCharId = CharId;
     return true;
 }
+
 void AServerGameMode::KickPlayer(APlayerController* PlayerController, const FString& Reason)
 {
     if (PlayerController)
@@ -238,7 +234,7 @@ int32 AServerGameMode::ParseGenderToInt(const FString& GenderStr)
 
     return FCString::Atoi(*GenderStr);
 }
-
+/*
 void AServerGameMode::FetchCharacterDataFromDB(APlayerController* PlayerController, int32 CharId)
 {
     if (!PlayerController)
@@ -246,9 +242,11 @@ void AServerGameMode::FetchCharacterDataFromDB(APlayerController* PlayerControll
         UE_LOG(LogTemp, Warning, TEXT("FetchCharacterDataFromDB called with null PlayerController"));
         return;
     }
-    if (UCustomGameInstanceSubsystem* Sub = GetGameInstance()->GetSubsystem<UCustomGameInstanceSubsystem>()) 
+
+    if (UCustomGameInstanceSubsystem* Sub = GetGameInstance()->GetSubsystem<UCustomGameInstanceSubsystem>())
     {
-        if (!Sub->IsReady()) {
+        if (!Sub->IsReady())
+        {
             UE_LOG(LogTemp, Error, TEXT("DbPool is null - cannot fetch character data"));
             return;
         }
@@ -257,123 +255,135 @@ void AServerGameMode::FetchCharacterDataFromDB(APlayerController* PlayerControll
         UE_LOG(LogTemp, Log, TEXT("Fetching character data for CharId: %d"), CharId);
 
         TWeakObjectPtr<APlayerController> PCWeak = PlayerController;
-    
+
         // Off the game thread
         Async(EAsyncExecution::ThreadPool, [this, PoolCopy = Pool, PCWeak, CharId]()
-        {
-            FCharacterInitData_Client OutInit;
-            bool bOk = false;
-
-            // Acquire a connector from pool
-            std::shared_ptr<DatabaseConnector> Conn = PoolCopy->Acquire();
-            if (!Conn)
             {
-                UE_LOG(LogTemp, Warning, TEXT("DB pool exhausted — scheduling retry"));
-                // schedule a small retry on the game thread
-                AsyncTask(ENamedThreads::GameThread, [this, PCWeak, CharId]()
-                    {
-                        if (!PCWeak.IsValid()) return;
-                        FTimerHandle Handle;
-                        GetWorldTimerManager().SetTimer(
-                            Handle,
-                            FTimerDelegate::CreateLambda([this, PCWeak, CharId]()
-                                {
-                                    if (PCWeak.IsValid()) FetchCharacterDataFromDB(PCWeak.Get(), CharId);
-                                }),
-                            0.25f, false
-                                    );
-                    });
-                return; // important — do not continue on this thread
-            }
+                // ---- Worker-thread locals (no UObjects here) ----
+                bool        bOk = false;
 
-            // Call static lib
-            auto Opt = Conn->GetCharGameplayDataById(CharId);
-            if (Opt.has_value())
-            {
-                // Unpack tuple
-                const auto& T = Opt.value();
-                const std::string& Name = std::get<0>(T);
-                const std::string& GenderStr = std::get<1>(T);
-                const int          Level = std::get<2>(T);
-                const std::string& Appearance = std::get<3>(T);
-                const int          Str = std::get<4>(T);
-                const int          Dex = std::get<5>(T);
-                const int          Wis = std::get<6>(T);
-                const int          Luk = std::get<7>(T);
-                const int          Pur = std::get<8>(T);
-                const int          Vic = std::get<9>(T);
+                FString     OutName;
+                int32       OutGender = 0;
+                FString     OutAppearanceStr;
+                int32       DBLevel = 1;
 
-                // Fill public structs
-                OutInit.Base.Name = UTF8_TO_TCHAR(Name.c_str());
-                OutInit.Base.Level = FString::FromInt(Level);
-                OutInit.Base.Gender = ParseGenderToInt(UTF8_TO_TCHAR(GenderStr.c_str()));
-                OutInit.Base.Appearance = UTF8_TO_TCHAR(Appearance.c_str());
+                int32 Str = 0, Dex = 0, Wis = 0, Luk = 0, Pur = 0, Vic = 0;
 
-                OutInit.Stats.Str = Str;
-                OutInit.Stats.Dex = Dex;
-                OutInit.Stats.Wis = Wis;
-                OutInit.Stats.Luk = Luk;
-                OutInit.Stats.Pur = Pur;
-                OutInit.Stats.Vic = Vic;
-
-                bOk = !OutInit.Base.Name.IsEmpty();
-            }
-            else
-            {
-                UE_LOG(LogTemp, Warning, TEXT("GetCharGameplayDataById returned empty for CharId %d"), CharId);
-            }
-
-            // Back to game thread — touch UObjects here
-            AsyncTask(ENamedThreads::GameThread, [this, PCWeak, bOk, OutInit = MoveTemp(OutInit)]()
-            {
-                if (!PCWeak.IsValid()) return;
-
-                APlayerController* PC = PCWeak.Get();
-                ACustomPlayerState* PS = PC ? PC->GetPlayerState<ACustomPlayerState>() : nullptr;
-                if (!PS)
+                // Acquire connector
+                std::shared_ptr<DatabaseConnector> Conn = PoolCopy->Acquire();
+                if (!Conn)
                 {
-                    UE_LOG(LogTemp, Warning, TEXT("PlayerState not ready when applying InitData"));
+                    // Retry shortly on game thread
+                    AsyncTask(ENamedThreads::GameThread, [this, PCWeak, CharId]()
+                        {
+                            if (!PCWeak.IsValid()) return;
+                            FTimerHandle Handle;
+                            GetWorldTimerManager().SetTimer(
+                                Handle,
+                                FTimerDelegate::CreateLambda([this, PCWeak, CharId]()
+                                    {
+                                        if (PCWeak.IsValid()) FetchCharacterDataFromDB(PCWeak.Get(), CharId);
+                                    }),
+                                0.25f, false
+                                        );
+                        });
                     return;
                 }
 
-                if (!bOk)
+                // Query static lib
+                auto Opt = Conn->GetCharGameplayDataById(CharId);
+                if (Opt.has_value())
                 {
-                    UE_LOG(LogTemp, Warning, TEXT("Character data invalid — kicking player"));
-                    KickPlayer(PC, TEXT("CharNotFoundOrInvalid"));
-                    return;
+                    // Unpack tuple
+                    const auto& T = Opt.value();
+                    const std::string& Name = std::get<0>(T);
+                    const std::string& GenderStr = std::get<1>(T);
+                    const int          Level = std::get<2>(T);
+                    const std::string& Appearance = std::get<3>(T);
+                    Str = std::get<4>(T);
+                    Dex = std::get<5>(T);
+                    Wis = std::get<6>(T);
+                    Luk = std::get<7>(T);
+                    Pur = std::get<8>(T);
+                    Vic = std::get<9>(T);
+
+                    OutName = UTF8_TO_TCHAR(Name.c_str());
+                    OutGender = ParseGenderToInt(UTF8_TO_TCHAR(GenderStr.c_str()));
+                    OutAppearanceStr = UTF8_TO_TCHAR(Appearance.c_str());
+                    DBLevel = FMath::Max(1, Level);
+
+                    bOk = !OutName.IsEmpty();
+                }
+                else
+                {
+                    UE_LOG(LogTemp, Warning, TEXT("GetCharGameplayDataById returned empty for CharId %d"), CharId);
                 }
 
-                // 1) Replicated payload — this is where CharacterInitTypes structs are used
-                PS->SetInitData_Server(OutInit);
-
-                // 2) Spawn now that data is ready
-                RestartPlayer(PC);
-
-                if (APawn* P = PC->GetPawn())
+                // ---- Back to game thread ----
+                AsyncTask(ENamedThreads::GameThread, [this, PCWeak, bOk,
+                    OutName = MoveTemp(OutName),
+                    OutGender = OutGender,
+                    OutAppearance = MoveTemp(OutAppearanceStr),
+                    DBLevel = DBLevel,
+                    Str = Str, Dex = Dex, Wis = Wis, Luk = Luk, Pur = Pur, Vic = Vic]()
                 {
-                    // Ensure the view is on the spawned pawn
-                    PC->SetViewTargetWithBlend(P, 0.0f);
+                    if (!PCWeak.IsValid()) return;
 
-                    // Re-enable input on the pawn
-                    P->EnableInput(PC);
-
-                    // to update translucent priority var
-                    BP_AfterPlayerSpawned(PC);
-
-                    // clears ignore flags on the controller anywhere
-                    PC->SetIgnoreMoveInput(false);
-                    PC->SetIgnoreLookInput(false);
-
-                    // notify the client to hide loading UI
-                    if (AClientPlayerController* CPC = Cast<AClientPlayerController>(PC))
+                    APlayerController* PC = PCWeak.Get();
+                    ACustomPlayerState* PS = PC ? PC->GetPlayerState<ACustomPlayerState>() : nullptr;
+                    if (!PS)
                     {
-                        CPC->RPC_HideLoadingWidget();
+                        UE_LOG(LogTemp, Warning, TEXT("PlayerState not ready when applying character data"));
+                        return;
                     }
-                }
+
+                    if (!bOk)
+                    {
+                        UE_LOG(LogTemp, Warning, TEXT("Character data invalid ï¿½ kicking player"));
+                        KickPlayer(PC, TEXT("CharNotFoundOrInvalid"));
+                        return;
+                    }
+
+                    // -------- Apply to live replicated props (server only) --------
+                    // Public identity
+                    PS->Identity.Name = OutName;
+                    PS->Identity.Gender = OutGender;
+
+                    PS->Progression.Level = DBLevel;
+                    PS->BaseStats.Str = Str;
+                    PS->BaseStats.Dex = Dex;
+                    PS->BaseStats.Wis = Wis;
+                    PS->BaseStats.Luk = Luk;
+                    PS->BaseStats.Pur = Pur;
+                    PS->BaseStats.Vic = Vic;
+
+                    // Public snapshot (everyone can inspect instantly)
+                    PS->PublicInspect.Level = PS->Progression.Level;
+                    PS->PublicInspect.BaseStats = PS->BaseStats;
+                    PS->NotifyInitialDataLoaded_ServerOnly();
+
+                    // -------- Spawn now that data is ready --------
+                    RestartPlayer(PC);
+
+                    if (APawn* P = PC->GetPawn())
+                    {
+                        PC->SetViewTargetWithBlend(P, 0.0f);
+                        P->EnableInput(PC);
+
+                        BP_AfterPlayerSpawned(PC);
+
+                        PC->SetIgnoreMoveInput(false);
+                        PC->SetIgnoreLookInput(false);
+
+                        if (AClientPlayerController* CPC = Cast<AClientPlayerController>(PC))
+                        {
+                            CPC->RPC_HideLoadingWidget();
+                        }
+                    }
+                });
             });
-        });
     }
-}
+}*/
 
 void AServerGameMode::BeginPlay()
 {
@@ -391,6 +401,18 @@ void AServerGameMode::BeginPlay()
     {
         UE_LOG(LogTemp, Error, TEXT("CustomGameInstanceSubsystem not found"));
     }
+    /*
+    if (UCustomGameInstanceSubsystem* Sub = GetGameInstance()->GetSubsystem<UCustomGameInstanceSubsystem>())
+    {
+        if (!Sub->IsReady())
+        {
+            UE_LOG(LogTemp, Error, TEXT("Persistence subsystem not ready - DB pool missing"));
+        }
+    }
+    else
+    {
+        UE_LOG(LogTemp, Error, TEXT("CustomGameInstanceSubsystem not found"));
+    }*/
 }
 
 void AServerGameMode::TickAuthCleanup()
@@ -409,5 +431,83 @@ void AServerGameMode::TickAuthCleanup()
             It.RemoveCurrent();
         }
     }
+}
+
+// Test mode helper functions
+/*
+FString AServerGameMode::HandleTestModePlayer(APlayerController* NewPlayerController)
+{
+    UE_LOG(LogTemp, Log, TEXT("Test mode enabled - bypassing token validation and database fetch"));
+    
+    if (NewPlayerController)
+    {
+        NewPlayerController->DisableInput(NewPlayerController);
+
+        for (TActorIterator<ACameraActor> It(GetWorld()); It; ++It)
+        {
+            if (It->ActorHasTag("LoadingCamera"))
+            {
+                NewPlayerController->SetViewTarget(*It);
+                break;
+            }
+        }
+
+        if (AClientPlayerController* ClientPC = Cast<AClientPlayerController>(NewPlayerController))
+        {
+            ClientPC->RPC_ShowLoadingWidget(); // This shows the widget on the client
+        }
+
+        // Populate test data directly
+        if (UGameInstance* GI = GetWorld()->GetGameInstance())
+        {
+            if (UCustomGameInstanceSubsystem* Subsystem = GI->GetSubsystem<UCustomGameInstanceSubsystem>())
+            {
+                if (ACustomPlayerState* PS = NewPlayerController->GetPlayerState<ACustomPlayerState>())
+                {
+                    Subsystem->PopulateTestData(PS);
+                    
+                    // Spawn player with test data
+                    RestartPlayer(NewPlayerController);
+                }
+            }
+        }
+    }
+    return FString(); // Return early - test mode handled
+}*/
+FString AServerGameMode::HandleNormalPlayer(APlayerController* NewPlayerController, const FString& Options)
+{
+    FString Token;
+    FParse::Value(*Options, TEXT("AuthToken="), Token);
+
+    if (Token.IsEmpty())
+    {
+        UE_LOG(LogTemp, Warning, TEXT("No AuthToken provided"));
+        KickPlayer(NewPlayerController, TEXT("No AuthToken provided"));
+        return TEXT("Missing AuthToken");
+    }
+
+    if (NewPlayerController)
+    {
+        NewPlayerController->DisableInput(NewPlayerController);
+
+        for (TActorIterator<ACameraActor> It(GetWorld()); It; ++It)
+        {
+            if (It->ActorHasTag("LoadingCamera"))
+            {
+                NewPlayerController->SetViewTarget(*It);
+                break;
+            }
+        }
+
+        if (AClientPlayerController* ClientPC = Cast<AClientPlayerController>(NewPlayerController))
+        {
+            ClientPC->RPC_ShowLoadingWidget(); // This shows the widget on the client
+        }
+
+        // Start async validation here
+        ValidateTokenWithLoginServer(NewPlayerController, Token);
+    }
+
+    return FString();
 }
 

@@ -10,6 +10,7 @@
 #include <condition_variable>
 #include <atomic>
 #include <thread>
+#include "CustomPlayerState.h"
 #include "CustomGameInstanceSubsystem.generated.h"
 
 // Forward declares
@@ -43,7 +44,20 @@ public:
         void EnqueueCurrencyDelta(int32 CharId, int32 DeltaGold, int32 DeltaSoft, int32 DeltaHard);
 
     UFUNCTION(BlueprintCallable, Category = "Persistence", meta = (BlueprintAuthorityOnly))
-        void FlushCharacter(int32 CharId);
+    void FlushCharacterByPS(ACustomPlayerState* PS);
+
+    UFUNCTION(BlueprintCallable, Category = "Persistence", meta = (BlueprintAuthorityOnly))
+    void FlushCharacterByPC(APlayerController* PC);
+
+    // Test Mode Functions
+    UFUNCTION(BlueprintCallable, Category = "Test Mode", meta = (BlueprintAuthorityOnly))
+    void SetTestMode(bool bEnabled);
+
+    UFUNCTION(BlueprintCallable, Category = "Test Mode", meta = (BlueprintAuthorityOnly))
+    void PopulateTestData(ACustomPlayerState* PlayerState);
+
+    UFUNCTION(BlueprintPure, Category = "Test Mode")
+    bool IsTestMode() const { return bTestMode; }
 
 private:
     // Own the pool here - one per server process
@@ -69,4 +83,7 @@ private:
     bool InitDbPool();
     int32 PoolSize = 15;
     const int32 WriterConnections = 2;
+
+    // Test Mode
+    bool bTestMode = false;
 };

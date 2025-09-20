@@ -1,4 +1,3 @@
-// CustomPlayerState.h
 #pragma once
 #include "CoreMinimal.h"
 #include "GameFramework/PlayerState.h"
@@ -7,40 +6,65 @@
 #include "CustomPlayerState.generated.h"
 
 UCLASS()
-class TWODSSG_API ACustomPlayerState : public APlayerState {
+class TWODSSG_API ACustomPlayerState : public APlayerState
+{
     GENERATED_BODY()
+
 public:
-    UPROPERTY(ReplicatedUsing = OnRep_InitData, BlueprintReadOnly, Category = "Init")
-        FCharacterInitData_Client InitData;
+    virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 
-    UFUNCTION() void OnRep_InitData();
-    UFUNCTION(BlueprintImplementableEvent, Category = "Init")
-        void BP_OnInitDataReceived(); // optional BP event for UI
+    // -------- Public, minimal (everyone) --------
+    UPROPERTY(Replicated, BlueprintReadOnly, Category = "Persistence|Live|Public")
+        FIdentityState Identity; // rarely changes - name, gender
 
-    // called by server GameMode once DB returns
-    void SetInitData_Server(const FCharacterInitData_Client& In)
-    {
-        check(HasAuthority());
-        InitData = In;
-        OnRep_InitData(); // let server side react too if needed
-    }
+    UPROPERTY(ReplicatedUsing = OnRep_PublicInspect, BlueprintReadOnly, Category = "Persistence|Live|Public")
+        FPublicInspectState PublicInspect; // level, stats, appearance
+    UFUNCTION() void OnRep_PublicInspect();
 
-    virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& Out) const override;
+    // -------- Owner-only (HUD/private) --------
+    UPROPERTY(ReplicatedUsing = OnRep_Progression, BlueprintReadOnly, Category = "Persistence|Live|Owner")
+        FProgressionState Progression; // contains  XP, AP - owner-only
+    UFUNCTION() void OnRep_Progression();
 
+        // NOTE: This is the *owner-view* copy. Public stats live in PublicInspect.
+    UPROPERTY(ReplicatedUsing = OnRep_BaseStats, BlueprintReadOnly, Category = "Persistence|Live|Owner")
+        FCharStats BaseStats;
+    UFUNCTION() void OnRep_BaseStats();
 
-#if WITH_SERVER_CODE
-    private:
-        // server only - never compiled into client builds
-        FCharacterInitData_Server ServerOnly; // has player id in it
+    // OnRep_ declarations
+    UFUNCTION(BlueprintImplementableEvent, Category = "UI")
+        void BP_OnPublicInspectChanged();
 
-    public:
-        void SetServerOnlyData(const FCharacterInitData_Server& In) { check(HasAuthority()); ServerOnly = In; }
-        const FCharacterInitData_Server& GetServerOnlyData() const { check(HasAuthority()); return ServerOnly; }
-#endif
+    UFUNCTION(BlueprintImplementableEvent, Category = "UI")
+        void BP_OnProgressionChanged();
 
-        UFUNCTION(BlueprintPure, Category = "Persistence", meta = (BlueprintAuthorityOnly))
-            int32 GetCharId_Server() const;
+    UFUNCTION(BlueprintImplementableEvent, Category = "UI")
+        void BP_OnBaseStatsChanged();
 
-        UFUNCTION(BlueprintPure, Category = "Persistence", meta = (BlueprintAuthorityOnly))
-            int32 GetUserId_Server() const;
+    UFUNCTION(BlueprintImplementableEvent, Category = "UI")
+        void BP_OnInitialDataLoaded();
+
+    // ------- Server-only helpers (not replicated) -------
+    UFUNCTION(BlueprintCallable, Category = "Persistence", meta = (BlueprintAuthorityOnly))
+        void ApplyLevel_ServerOnly(int32 NewLevel);
+
+    UFUNCTION(BlueprintCallable, Category = "Persistence", meta = (BlueprintAuthorityOnly))
+        void ApplyBaseStats_ServerOnly(const TArray<FSingleStat>& InStats);
+
+    UFUNCTION(Category = "Persistence", meta = (BlueprintAuthorityOnly))
+        void NotifyInitialDataLoaded_ServerOnly();
+
+    #if WITH_SERVER_CODE
+        void SetServerOnlyData(const FCharacterInitData_Server& In);
+    #endif
+
+    UFUNCTION(BlueprintPure, Category = "Persistence", meta = (BlueprintAuthorityOnly))
+        int32 GetCharId_Server() const { check(HasAuthority()); return ServerOnlyData.CharId; }
+
+    UFUNCTION(BlueprintPure, Category = "Persistence", meta = (BlueprintAuthorityOnly))
+        int32 GetUserId_Server() const { check(HasAuthority()); return ServerOnlyData.UserId; }
+
+private:
+    // Backing store for server-only data
+    FCharacterInitData_Server ServerOnlyData;
 };

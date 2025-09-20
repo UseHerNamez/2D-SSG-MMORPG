@@ -1,10 +1,9 @@
 #pragma once
 #include "CoreMinimal.h"
-#include <string>
 #include "CharacterInitTypes.generated.h"
 
 USTRUCT(BlueprintType)
-struct FCharStatsPublic
+struct FCharStats
 {
     GENERATED_BODY()
     UPROPERTY(BlueprintReadOnly) int32 Str = 0;
@@ -19,33 +18,36 @@ USTRUCT(BlueprintType)
 struct FSingleStat
 {
     GENERATED_BODY()
-
-        // The name of the stat, e.g., "Str", "Dex", "Wis"
-        UPROPERTY(BlueprintReadWrite)
-        FString StatName;
-
-    // The value to set
-    UPROPERTY(BlueprintReadWrite)
-        int32 Value = 1;
+    UPROPERTY(BlueprintReadWrite) FString StatName; // "Str","Dex",...
+    UPROPERTY(BlueprintReadWrite) int32   Value = 1;
 
     FSingleStat() {}
     FSingleStat(const FString& InName, int32 InValue) : StatName(InName), Value(InValue) {}
 };
 
 USTRUCT(BlueprintType)
-struct FCharBasePublic
+struct FIdentityState
 {
     GENERATED_BODY()
-        UPROPERTY(BlueprintReadOnly) FString Name;
-    UPROPERTY(BlueprintReadOnly) FString Level;
+    UPROPERTY(BlueprintReadOnly) FString Name;
     UPROPERTY(BlueprintReadOnly) int32   Gender = 0;
-    UPROPERTY(BlueprintReadOnly) FString Appearance;
 };
 
 USTRUCT(BlueprintType)
-struct FCharacterInitData_Client
+struct FProgressionState
 {
     GENERATED_BODY()
-        UPROPERTY(BlueprintReadOnly) FCharBasePublic  Base;
-    UPROPERTY(BlueprintReadOnly) FCharStatsPublic Stats;
+    UPROPERTY(BlueprintReadOnly) int32  Level = 1;
+    UPROPERTY(BlueprintReadOnly) int64  XP = 0;
+    UPROPERTY(BlueprintReadOnly) int32  UnspentAP = 0;
+};
+
+// ---- Public inspect snapshot (global scope; not nested in a class) ----
+USTRUCT(BlueprintType)
+struct FPublicInspectState
+{
+    GENERATED_BODY()
+    UPROPERTY(BlueprintReadOnly) int32 Level = 1;
+    UPROPERTY(BlueprintReadOnly) FCharStats BaseStats; // public, lightweight
+    UPROPERTY(BlueprintReadOnly) FString Appearance;
 };

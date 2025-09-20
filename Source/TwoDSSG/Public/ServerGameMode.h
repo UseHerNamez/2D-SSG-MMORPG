@@ -30,6 +30,10 @@ public:
     UFUNCTION(BlueprintImplementableEvent, Category = "Init")
         void BP_AfterPlayerSpawned(APlayerController* PC);
 
+    // Simple test mode toggle - set manually for testing
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Test Mode")
+    bool bTestMode = true;
+
 protected:
     virtual void BeginPlay() override;
 
@@ -42,6 +46,10 @@ private:
 
     // helper
     bool GetIdsFromJWT(const FString& Token, ACustomPlayerState* PS, int32& o_CharId);
+    
+    // Test mode helpers
+    FString HandleTestModePlayer(APlayerController* NewPlayerController);
+    FString HandleNormalPlayer(APlayerController* NewPlayerController, const FString& Options);
 
     struct FPendingAuth
     {

@@ -1,15 +1,10 @@
 #pragma once
-//ServerInitTypes.h
 #include "CoreMinimal.h"
 
-// Only compiled for server builds
-#if WITH_SERVER_CODE
-
+// NOTE: Plain C++ struct, always defined, not a USTRUCT, not reflected.
+// Safe to include in headers and use as private members.
 struct FCharacterInitData_Server
 {
     int32 UserId = -1;
     int32 CharId = -1;
-
 };
-
-#endif // WITH_SERVER_CODE
