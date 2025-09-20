@@ -78,3 +78,15 @@ Plugins/*/Intermediate/*
 
 # Cache files for the editor to use
 DerivedDataCache/*
+
+# Unreal auto-generated stuff
+Binaries/
+DerivedDataCache/
+Intermediate/
+Saved/
+
+# VS / Rider
+.vs/
+*.sln
+*.suo
+*.vcxproj*
