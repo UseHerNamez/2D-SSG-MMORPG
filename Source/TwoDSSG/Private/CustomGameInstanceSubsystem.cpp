@@ -3,7 +3,10 @@
 #include "Misc/Paths.h"
 #include "Misc/ConfigCacheIni.h"
 #include "HAL/PlatformMisc.h"
+#include "CustomPlayerState.h"
+#if WITH_SERVER_CODE
 #include "DatabaseConnectionPool.h"
+#endif
 
 void UCustomGameInstanceSubsystem::Initialize(FSubsystemCollectionBase& Collection)
 {
@@ -11,9 +14,7 @@ void UCustomGameInstanceSubsystem::Initialize(FSubsystemCollectionBase& Collecti
 
     // Server only - skip on pure clients
     const UWorld* World = GetWorld();
-    const bool bIsServerProcess =
-        (World && World->GetNetMode() != NM_Client) ||
-        IsRunningDedicatedServer();
+    const bool bIsServerProcess = IsRunningDedicatedServer();
 
     if (!bIsServerProcess)
     {
@@ -21,37 +22,65 @@ void UCustomGameInstanceSubsystem::Initialize(FSubsystemCollectionBase& Collecti
         return;
     }
 
-    if (!InitDbPool())
+#if WITH_SERVER_CODE
+    // Only initialize database if we're actually on a server
+    if (bIsServerProcess)
     {
-        UE_LOG(LogTemp, Error, TEXT("Persistence subsystem failed to initialize DB pool"));
-        return;
-    }
+        try
+        {
+            if (!InitDbPool())
+            {
+                UE_LOG(LogTemp, Error, TEXT("Persistence subsystem failed to initialize DB pool"));
+                return;
+            }
+        }
+        catch (const std::exception& e)
+        {
+            UE_LOG(LogTemp, Error, TEXT("Persistence subsystem DB initialization failed: %s"), *FString(e.what()));
+            return;
+        }
+        catch (...)
+        {
+            UE_LOG(LogTemp, Error, TEXT("Persistence subsystem DB initialization failed with unknown exception"));
+            return;
+        }
 
-    // Start the write queue thread
-    bStopWriterThread = false;
-    WriterThread = std::thread(&UCustomGameInstanceSubsystem::QueueWorker, this);
-    UE_LOG(LogTemp, Log, TEXT("Persistence subsystem write queue started"));
+        // Start the write queue thread only if DB pool is valid
+        if (DbPool.IsValid())
+        {
+            bStopWriterThread = false;
+            WriterThread = std::thread(&UCustomGameInstanceSubsystem::QueueWorker, this);
+            UE_LOG(LogTemp, Log, TEXT("Persistence subsystem write queue started"));
+        }
+    }
+#endif
 }
 
 void UCustomGameInstanceSubsystem::Deinitialize()
 {
-    // Stop background threads first, then release pool
-    // ...
-    DbPool.Reset();
-
     bStopWriterThread = true;
     WriteQueueCv.notify_all();
     if (WriterThread.joinable())
         WriterThread.join();
 
+#if WITH_SERVER_CODE
+    DbPool.Reset();
+#endif
+
     Super::Deinitialize();
 }
+
 
 // Test Mode Functions
 void UCustomGameInstanceSubsystem::SetTestMode(bool bEnabled)
 {
     bTestMode = bEnabled;
     UE_LOG(LogTemp, Log, TEXT("Test Mode: %s"), bEnabled ? TEXT("ENABLED") : TEXT("DISABLED"));
+    
+    if (bEnabled)
+    {
+        UE_LOG(LogTemp, Log, TEXT("Test mode enabled - database operations will be skipped"));
+    }
 }
 
 void UCustomGameInstanceSubsystem::PopulateTestData(ACustomPlayerState* PlayerState)
@@ -107,32 +136,68 @@ void UCustomGameInstanceSubsystem::PopulateTestData(ACustomPlayerState* PlayerSt
     UE_LOG(LogTemp, Log, TEXT("Test data populated successfully"));
 }
 
+#if WITH_SERVER_CODE
 bool UCustomGameInstanceSubsystem::InitDbPool()
 {
-    // Read encryption key from env - safer UE API
-    const FString Key = FPlatformMisc::GetEnvironmentVariable(TEXT("ENCRYPTION_KEY"));
-    if (Key.IsEmpty())
+    try
     {
-        UE_LOG(LogTemp, Error, TEXT("ENCRYPTION_KEY missing"));
+        // Read encryption key from env - safer UE API
+        const FString Key = FPlatformMisc::GetEnvironmentVariable(TEXT("ENCRYPTION_KEY"));
+        if (Key.IsEmpty())
+        {
+            UE_LOG(LogTemp, Warning, TEXT("ENCRYPTION_KEY missing - database features disabled"));
+            return false;
+        }
+
+        // Read optional pool size from config - default 16
+        GConfig->GetInt(TEXT("/Script/Engine.GameInstance"), TEXT("DbPoolSize"), PoolSize, GGameIni);
+
+        const FString EncCfg = FPaths::Combine(FPaths::ProjectDir(), TEXT("Config/config.ini.encrypted"));
+        
+        // Check if config file exists
+        if (!FPaths::FileExists(EncCfg))
+        {
+            UE_LOG(LogTemp, Warning, TEXT("Database config file not found: %s - database features disabled"), *EncCfg);
+            return false;
+        }
+
+        const std::string ConfigPath = TCHAR_TO_UTF8(*EncCfg);
+        const std::string EncKey = std::string(TCHAR_TO_UTF8(*Key));
+
+        // Create the database pool with error handling
+        DbPool = MakeShared<DatabaseConnectionPool>(ConfigPath, EncKey, PoolSize, WriterConnections);
+        
+        if (!DbPool.IsValid())
+        {
+            UE_LOG(LogTemp, Error, TEXT("Failed to create database pool"));
+            return false;
+        }
+
+        UE_LOG(LogTemp, Log, TEXT("DB pool initialized in GameInstance subsystem (size=%d)"), PoolSize);
+        return true;
+    }
+    catch (const std::exception& e)
+    {
+        UE_LOG(LogTemp, Error, TEXT("Database pool initialization failed: %s"), *FString(e.what()));
+        DbPool.Reset();
         return false;
     }
-
-    // Read optional pool size from config - default 16
-    
-    GConfig->GetInt(TEXT("/Script/Engine.GameInstance"), TEXT("DbPoolSize"), PoolSize, GGameIni); // is there such a setting set?
-
-    const FString EncCfg = FPaths::Combine(FPaths::ProjectDir(), TEXT("Config/config.ini.encrypted"));
-    const std::string ConfigPath = TCHAR_TO_UTF8(*EncCfg);
-    const std::string EncKey = std::string(TCHAR_TO_UTF8(*Key));
-
-    DbPool = MakeShared<DatabaseConnectionPool>(ConfigPath, EncKey, PoolSize, WriterConnections);
-    UE_LOG(LogTemp, Log, TEXT("DB pool initialized in GameInstance subsystem (size=%d)"), PoolSize);
-    return true;
+    catch (...)
+    {
+        UE_LOG(LogTemp, Error, TEXT("Database pool initialization failed with unknown exception"));
+        DbPool.Reset();
+        return false;
+    }
 }
+#endif
 
 void UCustomGameInstanceSubsystem::EnqueueSetLevel(int32 CharId, int32 NewLevel)
 {
-    if (!IsReady()) return;
+    if (!IsReady() || bTestMode) 
+    {
+        UE_LOG(LogTemp, Verbose, TEXT("EnqueueSetLevel - database not ready, skipping"));
+        return;
+    }
 
     auto Job = std::make_shared<FJobSetLevel>(CharId, NewLevel);
     {
@@ -144,7 +209,11 @@ void UCustomGameInstanceSubsystem::EnqueueSetLevel(int32 CharId, int32 NewLevel)
 
 void UCustomGameInstanceSubsystem::EnqueueSetBaseStats(int32 CharId, const TArray<FSingleStat>& StatsToUpdate)
 {
-    if (!IsReady()) return;
+    if (!IsReady() || bTestMode) 
+    {
+        UE_LOG(LogTemp, Verbose, TEXT("EnqueueSetBaseStats - database not ready, skipping"));
+        return;
+    }
 
     auto Job = std::make_shared<FJobSetBaseStats>(CharId, StatsToUpdate);
     {
@@ -156,20 +225,20 @@ void UCustomGameInstanceSubsystem::EnqueueSetBaseStats(int32 CharId, const TArra
 
 void UCustomGameInstanceSubsystem::EnqueueAddItem(int32 CharId, int32 ItemId, int32 Qty)
 {
-    if (!IsReady()) { UE_LOG(LogTemp, Warning, TEXT("EnqueueAddItem - pool not ready")); return; }
+    if (!IsReady() || bTestMode) { UE_LOG(LogTemp, Warning, TEXT("EnqueueAddItem - pool not ready")); return; }
     UE_LOG(LogTemp, Verbose, TEXT("EnqueueAddItem CharId=%d ItemId=%d Qty=%d"), CharId, ItemId, Qty);
 }
 
 void UCustomGameInstanceSubsystem::EnqueueCurrencyDelta(int32 CharId, int32 DeltaGold, int32 DeltaSoft, int32 DeltaHard)
 {
-    if (!IsReady()) { UE_LOG(LogTemp, Warning, TEXT("EnqueueCurrencyDelta - pool not ready")); return; }
+    if (!IsReady() || bTestMode) { UE_LOG(LogTemp, Warning, TEXT("EnqueueCurrencyDelta - pool not ready")); return; }
     UE_LOG(LogTemp, Verbose, TEXT("EnqueueCurrencyDelta CharId=%d dG=%d dS=%d dH=%d"), CharId, DeltaGold, DeltaSoft, DeltaHard);
 }
 
 void UCustomGameInstanceSubsystem::FlushCharacterByPC(APlayerController* PC)
 {
 #if WITH_SERVER_CODE
-    if (!PC) return;
+    if (!PC || bTestMode) return;
     if (auto* PS = PC->GetPlayerState<ACustomPlayerState>())
     {
         FlushCharacterByPS(PS);
@@ -184,7 +253,7 @@ void UCustomGameInstanceSubsystem::FlushCharacterByPC(APlayerController* PC)
 void UCustomGameInstanceSubsystem::FlushCharacterByPS(ACustomPlayerState* PS)
 {
 #if WITH_SERVER_CODE
-    if (!IsReady())
+    if (!IsReady() || bTestMode)
     {
         UE_LOG(LogTemp, Warning, TEXT("FlushCharacter: DB not ready (CharId=%d)"),
             PS ? PS->GetCharId_Server() : -1);
@@ -235,6 +304,7 @@ void UCustomGameInstanceSubsystem::QueueWorker()
         WriteQueue.pop();
         Lock.unlock();
 
+#if WITH_SERVER_CODE
         if (DbPool.IsValid() && Job)
         {
             auto Conn = DbPool->Acquire(std::chrono::milliseconds(100), true); // true = writer connection
@@ -298,6 +368,7 @@ void UCustomGameInstanceSubsystem::QueueWorker()
                 UE_LOG(LogTemp, Warning, TEXT("Failed to acquire writer connection"));
             }
         }
+#endif
     }
 }
 

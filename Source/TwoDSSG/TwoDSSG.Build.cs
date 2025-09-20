@@ -14,9 +14,12 @@ public class TwoDSSG : ModuleRules
 
         string ModulePath = ModuleDirectory;
 
-        // Public headers for your static libs
-        PublicIncludePaths.Add(Path.Combine(ModulePath, "DbStaticLib", "include"));
-        PublicIncludePaths.Add(Path.Combine(ModulePath, "UtilsStaticLib", "include"));
+        // Public headers for your static libs - server/editor only
+        if (Target.Type == TargetType.Server || Target.Type == TargetType.Editor)
+        {
+            PublicIncludePaths.Add(Path.Combine(ModulePath, "DbStaticLib", "include"));
+            PublicIncludePaths.Add(Path.Combine(ModulePath, "UtilsStaticLib", "include"));
+        }
 
         // Your static libs (.lib) - Win64 subfolder
         string DbLibDir = Path.Combine(ModulePath, "DbStaticLib", "lib", "Win64");
@@ -31,24 +34,33 @@ public class TwoDSSG : ModuleRules
 
         if (Target.Platform == UnrealTargetPlatform.Win64)
         {
-            // Link your libs
-            PublicAdditionalLibraries.Add(Path.Combine(DbLibDir, "DbStaticLib.lib"));
-            PublicAdditionalLibraries.Add(Path.Combine(UtilLibDir, "UtilsStaticLib.lib"));
-
-            // Link third-party import libs required by your .obj code
-            PublicAdditionalLibraries.Add(Path.Combine(MySqlLibDir, "mysqlcppconnx.lib"));
-            PublicAdditionalLibraries.Add(Path.Combine(OsslLibDir, "libssl.lib"));
-            PublicAdditionalLibraries.Add(Path.Combine(OsslLibDir, "libcrypto.lib"));
-
-            // Windows system libs used by the connector
-            PublicSystemLibraries.AddRange(new string[]
+            // Link your libs - server/editor only
+            if (Target.Type == TargetType.Server || Target.Type == TargetType.Editor)
             {
-                "ws2_32.lib",
-                "dnsapi.lib",
-                "crypt32.lib",
-                "advapi32.lib",
-                "user32.lib"
-            });
+                PublicAdditionalLibraries.Add(Path.Combine(DbLibDir, "DbStaticLib.lib"));
+                PublicAdditionalLibraries.Add(Path.Combine(UtilLibDir, "UtilsStaticLib.lib"));
+            }
+
+            // Link third-party import libs required by your .obj code - server/editor only
+            if (Target.Type == TargetType.Server || Target.Type == TargetType.Editor)
+            {
+                PublicAdditionalLibraries.Add(Path.Combine(MySqlLibDir, "mysqlcppconnx.lib"));
+                PublicAdditionalLibraries.Add(Path.Combine(OsslLibDir, "libssl.lib"));
+                PublicAdditionalLibraries.Add(Path.Combine(OsslLibDir, "libcrypto.lib"));
+            }
+
+            // Windows system libs used by the connector - server/editor only
+            if (Target.Type == TargetType.Server || Target.Type == TargetType.Editor)
+            {
+                PublicSystemLibraries.AddRange(new string[]
+                {
+                    "ws2_32.lib",
+                    "dnsapi.lib",
+                    "crypt32.lib",
+                    "advapi32.lib",
+                    "user32.lib"
+                });
+            }
 
             // Stage runtime DLLs
             Action<string, string> Stage = (dir, dll) =>

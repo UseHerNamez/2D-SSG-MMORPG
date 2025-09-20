@@ -15,7 +15,6 @@ void ACustomPlayerState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& O
     DOREPLIFETIME_WITH_PARAMS(ACustomPlayerState, BaseStats, Params);
 }
 
-
 // - - call client side to update UI in BP - -
 void ACustomPlayerState::OnRep_PublicInspect()
 {

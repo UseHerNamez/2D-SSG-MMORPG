@@ -10,11 +10,11 @@
 #include <condition_variable>
 #include <atomic>
 #include <thread>
-#include "CustomPlayerState.h"
 #include "CustomGameInstanceSubsystem.generated.h"
 
 // Forward declares
 class DatabaseConnectionPool;
+class ACustomPlayerState;
 
 UCLASS()
 class TWODSSG_API UCustomGameInstanceSubsystem : public UGameInstanceSubsystem
@@ -28,7 +28,7 @@ public:
 
     // C++ access
     TSharedPtr<DatabaseConnectionPool> GetPool() const { return DbPool; }
-    bool IsReady() const { return DbPool.IsValid(); }
+    bool IsReady() const { return bTestMode || DbPool.IsValid(); }
 
     // BP entry points (server BP only). Add more as you implement the write-behind.
     UFUNCTION(BlueprintCallable, Category = "Persistence", meta = (BlueprintAuthorityOnly))

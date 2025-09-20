@@ -15,7 +15,6 @@
 #include "CustomPlayerState.h"
 #include "CharacterInitTypes.h"
 #include "CustomGameInstanceSubsystem.h"
-//#include "CustomGameInstanceSubsystem.h"
 
 namespace {
     inline FString ToFString(const std::string& s) { return UTF8_TO_TCHAR(s.c_str()); }
@@ -61,11 +60,11 @@ FString AServerGameMode::InitNewPlayer(APlayerController* NewPlayerController, c
     // Check if test mode is enabled (simple bool)
     if (bTestMode)
     {
-        //return HandleTestModePlayer(NewPlayerController);
+        return HandleTestModePlayer(NewPlayerController);
     }
 
     // Normal flow - token validation and database fetch
-    //return HandleNormalPlayer(NewPlayerController, Options);
+    return HandleNormalPlayer(NewPlayerController, Options);
 
 
     return FString(); // Return early - don't finalize spawn yet
@@ -167,22 +166,6 @@ void AServerGameMode::OnTokenValidationComplete(FHttpRequestPtr Request, FHttpRe
 }
 
 bool AServerGameMode::GetIdsFromJWT(const FString& Token, ACustomPlayerState* PS, int32& OutCharId)
-    if (ACustomPlayerState* PS = PC->GetPlayerState<ACustomPlayerState>()) {
-        int32 CharId = -1;
-        if (!GetIdsFromJWT(Token, PS, CharId)) {
-            UE_LOG(LogTemp, Warning, TEXT("Token claims missing or invalid"));
-            KickPlayer(PC, TEXT("InvalidTokenClaims"));
-            return;
-        }
-        UE_LOG(LogTemp, Log, TEXT("Token valid - UserId:%d CharId:%d"), PS->GetUserId_Server(), PS->GetCharId_Server());
-        //FetchCharacterDataFromDB(PC, CharId);
-    }
-    else {
-        UE_LOG(LogTemp, Warning, TEXT("PlayerState not ready when setting ServerOnly data"));
-    }
-}
-
-bool AServerGameMode::GetIdsFromJWT(const FString& Token, ACustomPlayerState* PS, int32& OutCharId)
 {
     if (!PS) return false;
 
@@ -234,7 +217,7 @@ int32 AServerGameMode::ParseGenderToInt(const FString& GenderStr)
 
     return FCString::Atoi(*GenderStr);
 }
-/*
+
 void AServerGameMode::FetchCharacterDataFromDB(APlayerController* PlayerController, int32 CharId)
 {
     if (!PlayerController)
@@ -245,7 +228,7 @@ void AServerGameMode::FetchCharacterDataFromDB(APlayerController* PlayerControll
 
     if (UCustomGameInstanceSubsystem* Sub = GetGameInstance()->GetSubsystem<UCustomGameInstanceSubsystem>())
     {
-        if (!Sub->IsReady())
+        if (!Sub->IsReady() || Sub->IsTestMode())
         {
             UE_LOG(LogTemp, Error, TEXT("DbPool is null - cannot fetch character data"));
             return;
@@ -383,13 +366,13 @@ void AServerGameMode::FetchCharacterDataFromDB(APlayerController* PlayerControll
                 });
             });
     }
-}*/
+}
 
 void AServerGameMode::BeginPlay()
 {
     Super::BeginPlay();
     GetWorldTimerManager().SetTimer(AuthCleanupHandle, this, &AServerGameMode::TickAuthCleanup, 15.0f, true);
-
+    
     if (UCustomGameInstanceSubsystem* Sub = GetGameInstance()->GetSubsystem<UCustomGameInstanceSubsystem>())
     {
         if (!Sub->IsReady())
@@ -401,7 +384,7 @@ void AServerGameMode::BeginPlay()
     {
         UE_LOG(LogTemp, Error, TEXT("CustomGameInstanceSubsystem not found"));
     }
-    /*
+    
     if (UCustomGameInstanceSubsystem* Sub = GetGameInstance()->GetSubsystem<UCustomGameInstanceSubsystem>())
     {
         if (!Sub->IsReady())
@@ -412,7 +395,7 @@ void AServerGameMode::BeginPlay()
     else
     {
         UE_LOG(LogTemp, Error, TEXT("CustomGameInstanceSubsystem not found"));
-    }*/
+    }   
 }
 
 void AServerGameMode::TickAuthCleanup()
@@ -434,7 +417,7 @@ void AServerGameMode::TickAuthCleanup()
 }
 
 // Test mode helper functions
-/*
+
 FString AServerGameMode::HandleTestModePlayer(APlayerController* NewPlayerController)
 {
     UE_LOG(LogTemp, Log, TEXT("Test mode enabled - bypassing token validation and database fetch"));
@@ -454,10 +437,9 @@ FString AServerGameMode::HandleTestModePlayer(APlayerController* NewPlayerContro
 
         if (AClientPlayerController* ClientPC = Cast<AClientPlayerController>(NewPlayerController))
         {
-            ClientPC->RPC_ShowLoadingWidget(); // This shows the widget on the client
+            ClientPC->RPC_ShowLoadingWidget();
         }
-
-        // Populate test data directly
+        
         if (UGameInstance* GI = GetWorld()->GetGameInstance())
         {
             if (UCustomGameInstanceSubsystem* Subsystem = GI->GetSubsystem<UCustomGameInstanceSubsystem>())
@@ -465,15 +447,33 @@ FString AServerGameMode::HandleTestModePlayer(APlayerController* NewPlayerContro
                 if (ACustomPlayerState* PS = NewPlayerController->GetPlayerState<ACustomPlayerState>())
                 {
                     Subsystem->PopulateTestData(PS);
-                    
+
                     // Spawn player with test data
                     RestartPlayer(NewPlayerController);
+
+                    // Finish spawn flow like normal path
+                    if (APawn* P = NewPlayerController->GetPawn())
+                    {
+                        NewPlayerController->SetViewTargetWithBlend(P, 0.0f);
+                        P->EnableInput(NewPlayerController);
+
+                        BP_AfterPlayerSpawned(NewPlayerController);
+
+                        NewPlayerController->SetIgnoreMoveInput(false);
+                        NewPlayerController->SetIgnoreLookInput(false);
+
+                        if (AClientPlayerController* CPC = Cast<AClientPlayerController>(NewPlayerController))
+                        {
+                            CPC->RPC_HideLoadingWidget();
+                        }
+                    }
                 }
             }
-        }
+        }       
     }
-    return FString(); // Return early - test mode handled
-}*/
+    return FString();
+}
+
 FString AServerGameMode::HandleNormalPlayer(APlayerController* NewPlayerController, const FString& Options)
 {
     FString Token;
