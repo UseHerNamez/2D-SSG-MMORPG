@@ -2,6 +2,18 @@
 #include "CustomPlayerState.h"
 #include "Net/UnrealNetwork.h"
 
+bool ACustomPlayerState::NameToStateChangeKey(FName NameKey, EStateChangeKey& OutKey)
+{
+    const FString S = NameKey.ToString();
+    if (S.Equals(TEXT("Level"), ESearchCase::IgnoreCase)) { OutKey = EStateChangeKey::Level; return true; }
+    if (S.Equals(TEXT("XP"), ESearchCase::IgnoreCase)) { OutKey = EStateChangeKey::XP; return true; }
+    if (S.Equals(TEXT("UnspentAP"), ESearchCase::IgnoreCase)) { OutKey = EStateChangeKey::UnspentAP; return true; }
+    if (S.Equals(TEXT("Stats"), ESearchCase::IgnoreCase)) { OutKey = EStateChangeKey::Stats; return true; }
+    if (S.Equals(TEXT("Appearance"), ESearchCase::IgnoreCase)) { OutKey = EStateChangeKey::Appearance; return true; }
+    return false;
+}
+
+
 void ACustomPlayerState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
 {
     Super::GetLifetimeReplicatedProps(OutLifetimeProps);
@@ -16,20 +28,67 @@ void ACustomPlayerState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& O
 }
 
 // - - call client side to update UI in BP - -
-void ACustomPlayerState::OnRep_PublicInspect()
+void ACustomPlayerState::OnRep_PublicInspect(const FPublicInspectState& Previous)
 {
-    BP_OnPublicInspectChanged();
+    // Coarse keys: Level, Appearance, Stats
+    TArray<FName> Keys;
+    if (Previous.Level != PublicInspect.Level)
+    {
+        Keys.Add(TEXT("Level"));
+    }
+    if (Previous.Appearance != PublicInspect.Appearance)
+    {
+        Keys.Add(TEXT("Appearance"));
+    }
+    if (Previous.BaseStats.Str != PublicInspect.BaseStats.Str
+        || Previous.BaseStats.Dex != PublicInspect.BaseStats.Dex
+        || Previous.BaseStats.Wis != PublicInspect.BaseStats.Wis
+        || Previous.BaseStats.Luk != PublicInspect.BaseStats.Luk
+        || Previous.BaseStats.Pur != PublicInspect.BaseStats.Pur
+        || Previous.BaseStats.Vic != PublicInspect.BaseStats.Vic)
+    {
+        Keys.Add(TEXT("Stats"));
+    }
+
+    if (Keys.Num() > 0)
+    {
+        BP_OnPublicInspectChanged_Keys(Keys);
+    }
 }
 
 
-void ACustomPlayerState::OnRep_Progression()
+void ACustomPlayerState::OnRep_Progression(const FProgressionState& Previous)
 {
-    BP_OnProgressionChanged(); 
+    // Coarse keys: Level, XP, UnspentAP
+    TArray<FName> Keys;
+    if (Previous.Level != Progression.Level) { Keys.Add(TEXT("Level")); }
+    if (Previous.XP != Progression.XP) { Keys.Add(TEXT("XP")); }
+    if (Previous.UnspentAP != Progression.UnspentAP) { Keys.Add(TEXT("UnspentAP")); }
+
+    if (Keys.Num() > 0)
+    {
+        BP_OnProgressionChanged_Keys(Keys);
+    }
 }
 
-void ACustomPlayerState::OnRep_BaseStats()
+void ACustomPlayerState::OnRep_BaseStats(const FCharStats& Previous)
 {
-    BP_OnBaseStatsChanged();
+    // Coarse key: Stats
+    TArray<FName> Keys;
+    if (Previous.Str != BaseStats.Str
+        || Previous.Dex != BaseStats.Dex
+        || Previous.Wis != BaseStats.Wis
+        || Previous.Luk != BaseStats.Luk
+        || Previous.Pur != BaseStats.Pur
+        || Previous.Vic != BaseStats.Vic)
+    {
+        Keys.Add(TEXT("Stats"));
+    }
+
+    if (Keys.Num() > 0)
+    {
+        BP_OnBaseStatsChanged_Keys(Keys);
+    }
 }
 // - - call client side to update UI in BP - -
 
@@ -66,6 +125,27 @@ void ACustomPlayerState::ApplyBaseStats_ServerOnly(const TArray<FSingleStat>& In
     }
     // Mirror into public snapshot *only* for the subset you want visible:
     PublicInspect.BaseStats = BaseStats;
+    ForceNetUpdate();
+}
+
+void ACustomPlayerState::ApplyXP_ServerOnly(int64 NewXP)
+{
+    check(HasAuthority());
+    Progression.XP = FMath::Max<int64>(0, NewXP);
+    ForceNetUpdate();
+}
+
+void ACustomPlayerState::ApplyUnspentAP_ServerOnly(int32 NewUnspentAP)
+{
+    check(HasAuthority());
+    Progression.UnspentAP = FMath::Max(0, NewUnspentAP);
+    ForceNetUpdate();
+}
+
+void ACustomPlayerState::ApplyAppearance_ServerOnly(const FString& NewAppearance)
+{
+    check(HasAuthority());
+    PublicInspect.Appearance = NewAppearance;
     ForceNetUpdate();
 }
 

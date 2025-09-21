@@ -40,7 +40,7 @@ public:
 			float Percent0To100,
 			int32 MaxFractionalDigits = 1);
 
-	UFUNCTION(BlueprintPure, Category = "Int64|Math", DisplayName = "Int64 × Float")
+	UFUNCTION(BlueprintPure, Category = "Int64|Math", DisplayName = "Int64 * Float")
 		static float MultiplyInt64Float(int64 Value, float Multiplier);
 
 };

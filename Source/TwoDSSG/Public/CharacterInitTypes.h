@@ -2,6 +2,16 @@
 #include "CoreMinimal.h"
 #include "CharacterInitTypes.generated.h"
 
+UENUM(BlueprintType)
+enum class EStateChangeKey : uint8
+{
+    Level       UMETA(DisplayName = "Level"),
+    XP          UMETA(DisplayName = "XP"),
+    UnspentAP   UMETA(DisplayName = "UnspentAP"),
+    Stats       UMETA(DisplayName = "Stats"),
+    Appearance  UMETA(DisplayName = "Appearance")
+};
+
 USTRUCT(BlueprintType)
 struct FCharStats
 {
