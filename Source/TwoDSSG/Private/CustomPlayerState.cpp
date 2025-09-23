@@ -73,22 +73,7 @@ void ACustomPlayerState::OnRep_Progression(const FProgressionState& Previous)
 
 void ACustomPlayerState::OnRep_BaseStats(const FCharStats& Previous)
 {
-    // Coarse key: Stats
-    TArray<FName> Keys;
-    if (Previous.Str != BaseStats.Str
-        || Previous.Dex != BaseStats.Dex
-        || Previous.Wis != BaseStats.Wis
-        || Previous.Luk != BaseStats.Luk
-        || Previous.Pur != BaseStats.Pur
-        || Previous.Vic != BaseStats.Vic)
-    {
-        Keys.Add(TEXT("Stats"));
-    }
-
-    if (Keys.Num() > 0)
-    {
-        BP_OnBaseStatsChanged_Keys(Keys);
-    }
+    BP_OnBaseStatsChanged_Keys();
 }
 // - - call client side to update UI in BP - -
 

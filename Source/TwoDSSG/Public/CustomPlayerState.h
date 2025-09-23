@@ -39,7 +39,7 @@ public:
         void BP_OnProgressionChanged_Keys(const TArray<FName>& ChangeKeys);
 
     UFUNCTION(BlueprintImplementableEvent, Category = "UI")
-        void BP_OnBaseStatsChanged_Keys(const TArray<FName>& ChangeKeys);
+        void BP_OnBaseStatsChanged_Keys();
 
     UFUNCTION(BlueprintImplementableEvent, Category = "UI")
         void BP_OnInitialDataLoaded();
