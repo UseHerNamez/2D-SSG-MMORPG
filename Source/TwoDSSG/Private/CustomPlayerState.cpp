@@ -1,5 +1,6 @@
 // CustomPlayerState.cpp
 #include "CustomPlayerState.h"
+#include "CustomGameInstanceSubsystem.h"
 #include "Net/UnrealNetwork.h"
 
 bool ACustomPlayerState::NameToStateChangeKey(FName NameKey, EStateChangeKey& OutKey)
@@ -25,57 +26,11 @@ void ACustomPlayerState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& O
     Params.Condition = COND_OwnerOnly;
     DOREPLIFETIME_WITH_PARAMS(ACustomPlayerState, Progression, Params);
     DOREPLIFETIME_WITH_PARAMS(ACustomPlayerState, BaseStats, Params);
+    DOREPLIFETIME_WITH_PARAMS(ACustomPlayerState, Vitals, Params);
+    DOREPLIFETIME_WITH_PARAMS(ACustomPlayerState, Achievements, Params);
 }
 
-// - - call client side to update UI in BP - -
-void ACustomPlayerState::OnRep_PublicInspect(const FPublicInspectState& Previous)
-{
-    // Coarse keys: Level, Appearance, Stats
-    TArray<FName> Keys;
-    if (Previous.Level != PublicInspect.Level)
-    {
-        Keys.Add(TEXT("Level"));
-    }
-    if (Previous.Appearance != PublicInspect.Appearance)
-    {
-        Keys.Add(TEXT("Appearance"));
-    }
-    if (Previous.BaseStats.Str != PublicInspect.BaseStats.Str
-        || Previous.BaseStats.Dex != PublicInspect.BaseStats.Dex
-        || Previous.BaseStats.Wis != PublicInspect.BaseStats.Wis
-        || Previous.BaseStats.Luk != PublicInspect.BaseStats.Luk
-        || Previous.BaseStats.Pur != PublicInspect.BaseStats.Pur
-        || Previous.BaseStats.Vic != PublicInspect.BaseStats.Vic)
-    {
-        Keys.Add(TEXT("Stats"));
-    }
-
-    if (Keys.Num() > 0)
-    {
-        BP_OnPublicInspectChanged_Keys(Keys);
-    }
-}
-
-
-void ACustomPlayerState::OnRep_Progression(const FProgressionState& Previous)
-{
-    // Coarse keys: Level, XP, UnspentAP
-    TArray<FName> Keys;
-    if (Previous.Level != Progression.Level) { Keys.Add(TEXT("Level")); }
-    if (Previous.XP != Progression.XP) { Keys.Add(TEXT("XP")); }
-    if (Previous.UnspentAP != Progression.UnspentAP) { Keys.Add(TEXT("UnspentAP")); }
-
-    if (Keys.Num() > 0)
-    {
-        BP_OnProgressionChanged_Keys(Keys);
-    }
-}
-
-void ACustomPlayerState::OnRep_BaseStats(const FCharStats& Previous)
-{
-    BP_OnBaseStatsChanged_Keys();
-}
-// - - call client side to update UI in BP - -
+// OnRep UI callbacks removed; UI is driven by BP after server-side calculations
 
 void ACustomPlayerState::NotifyInitialDataLoaded_ServerOnly()
 {
@@ -85,15 +40,6 @@ void ACustomPlayerState::NotifyInitialDataLoaded_ServerOnly()
 
 // ====== Server-side mutation paths (non-RPC) ======
 #if WITH_SERVER_CODE
-void ACustomPlayerState::ApplyLevel_ServerOnly(int32 NewLevel)
-{
-    check(HasAuthority());
-    Progression.Level = FMath::Max(1, NewLevel);
-    // Keep PublicInspect in sync for others:
-    PublicInspect.Level = Progression.Level;
-    ForceNetUpdate();
-}
-
 void ACustomPlayerState::ApplyBaseStats_ServerOnly(const TArray<FSingleStat>& InStats)
 {
     check(HasAuthority());
@@ -103,7 +49,7 @@ void ACustomPlayerState::ApplyBaseStats_ServerOnly(const TArray<FSingleStat>& In
         const FString Key = S.StatName.ToLower();
         if (Key == TEXT("str")) BaseStats.Str = S.Value;
         else if (Key == TEXT("dex")) BaseStats.Dex = S.Value;
-        else if (Key == TEXT("wis")) BaseStats.Wis = S.Value;
+        else if (Key == TEXT("wisd")) BaseStats.Wisd = S.Value;
         else if (Key == TEXT("luk")) BaseStats.Luk = S.Value;
         else if (Key == TEXT("pur")) BaseStats.Pur = S.Value;
         else if (Key == TEXT("vic")) BaseStats.Vic = S.Value;
@@ -111,13 +57,24 @@ void ACustomPlayerState::ApplyBaseStats_ServerOnly(const TArray<FSingleStat>& In
     // Mirror into public snapshot *only* for the subset you want visible:
     PublicInspect.BaseStats = BaseStats;
     ForceNetUpdate();
+
+    // Persist changes asynchronously
+    if (UCustomGameInstanceSubsystem* Sub = GetWorld() ? GetWorld()->GetGameInstance()->GetSubsystem<UCustomGameInstanceSubsystem>() : nullptr)
+    {
+        Sub->EnqueueSetBaseStats(GetCharId_Server(), InStats);
+    }
 }
 
-void ACustomPlayerState::ApplyXP_ServerOnly(int64 NewXP)
+void ACustomPlayerState::ApplyXP_ServerOnly(int32 NewXP)
 {
     check(HasAuthority());
-    Progression.XP = FMath::Max<int64>(0, NewXP);
+    Progression.XP = FMath::Max<int32>(0, NewXP);
     ForceNetUpdate();
+
+    if (UCustomGameInstanceSubsystem* Sub = GetWorld() ? GetWorld()->GetGameInstance()->GetSubsystem<UCustomGameInstanceSubsystem>() : nullptr)
+    {
+        Sub->EnqueueSetCurrentXP(GetCharId_Server(), Progression.XP);
+    }
 }
 
 void ACustomPlayerState::ApplyUnspentAP_ServerOnly(int32 NewUnspentAP)
@@ -125,6 +82,11 @@ void ACustomPlayerState::ApplyUnspentAP_ServerOnly(int32 NewUnspentAP)
     check(HasAuthority());
     Progression.UnspentAP = FMath::Max(0, NewUnspentAP);
     ForceNetUpdate();
+
+    if (UCustomGameInstanceSubsystem* Sub = GetWorld() ? GetWorld()->GetGameInstance()->GetSubsystem<UCustomGameInstanceSubsystem>() : nullptr)
+    {
+        Sub->EnqueueSetUnspentAP(GetCharId_Server(), Progression.UnspentAP);
+    }
 }
 
 void ACustomPlayerState::ApplyAppearance_ServerOnly(const FString& NewAppearance)
@@ -132,6 +94,72 @@ void ACustomPlayerState::ApplyAppearance_ServerOnly(const FString& NewAppearance
     check(HasAuthority());
     PublicInspect.Appearance = NewAppearance;
     ForceNetUpdate();
+}
+
+void ACustomPlayerState::ApplyHP_ServerOnly(int32 NewCurrHP)
+{
+    check(HasAuthority());
+    Vitals.CurrHP = FMath::Max(0, NewCurrHP);
+    ForceNetUpdate();
+
+    if (UCustomGameInstanceSubsystem* Sub = GetWorld() ? GetWorld()->GetGameInstance()->GetSubsystem<UCustomGameInstanceSubsystem>() : nullptr)
+    {
+        Sub->EnqueueSetCurrentHP(GetCharId_Server(), Vitals.CurrHP);
+    }
+}
+
+void ACustomPlayerState::ApplyMP_ServerOnly(int32 NewCurrMP)
+{
+    check(HasAuthority());
+    Vitals.CurrMP = FMath::Max(0, NewCurrMP);
+    ForceNetUpdate();
+
+    if (UCustomGameInstanceSubsystem* Sub = GetWorld() ? GetWorld()->GetGameInstance()->GetSubsystem<UCustomGameInstanceSubsystem>() : nullptr)
+    {
+        Sub->EnqueueSetCurrentMP(GetCharId_Server(), Vitals.CurrMP);
+    }
+}
+
+void ACustomPlayerState::ApplyLevelUp_ServerOnly(int32 NewLevel, int32 NewMaxExpToLvl, int32 NewMaxHP, int32 NewMaxMP, int32 NewUnspentAP)
+{
+    check(HasAuthority());
+    // Update progression and vitals atomically on server
+    Progression.Level = FMath::Max(1, NewLevel);
+    Progression.MaxExpToLvl = FMath::Max(0, NewMaxExpToLvl);
+    Progression.UnspentAP = FMath::Max(0, NewUnspentAP);
+
+    Vitals.MaxHPFromLevels = FMath::Max(0, NewMaxHP);
+    Vitals.MaxMPFromLevels = FMath::Max(0, NewMaxMP);
+
+    // Keep public snapshot in sync
+    PublicInspect.Level = Progression.Level;
+
+    ForceNetUpdate();
+
+    // Enqueue consolidated persistence write
+    if (UCustomGameInstanceSubsystem* Sub = GetWorld() ? GetWorld()->GetGameInstance()->GetSubsystem<UCustomGameInstanceSubsystem>() : nullptr)
+    {
+        Sub->EnqueueSetLevelUpSnapshot(GetCharId_Server(), Progression.Level, Progression.MaxExpToLvl, Vitals.MaxHPFromLevels, Vitals.MaxMPFromLevels, Progression.UnspentAP, Progression.XP);
+    }
+}
+
+void ACustomPlayerState::ApplyDamageRangeRecord_ServerOnly(int32 NewMinRange, int32 NewMaxRange)
+{
+    check(HasAuthority());
+    bool bChanged = false;
+    if (NewMinRange > Achievements.HighestMinDamageRange) { Achievements.HighestMinDamageRange = NewMinRange; bChanged = true; }
+    if (NewMaxRange > Achievements.HighestMaxDamageRange) { Achievements.HighestMaxDamageRange = NewMaxRange; bChanged = true; }
+    // Mirror to public snapshot
+    PublicInspect.HighestMinDamageRange = Achievements.HighestMinDamageRange;
+    PublicInspect.HighestMaxDamageRange = Achievements.HighestMaxDamageRange;
+    if (bChanged)
+    {
+        ForceNetUpdate();
+        if (UCustomGameInstanceSubsystem* Sub = GetWorld() ? GetWorld()->GetGameInstance()->GetSubsystem<UCustomGameInstanceSubsystem>() : nullptr)
+        {
+            Sub->EnqueueSetDamageRangeRecord(GetCharId_Server(), PublicInspect.HighestMinDamageRange, PublicInspect.HighestMaxDamageRange);
+        }
+    }
 }
 
 void ACustomPlayerState::SetServerOnlyData(const FCharacterInitData_Server& In)

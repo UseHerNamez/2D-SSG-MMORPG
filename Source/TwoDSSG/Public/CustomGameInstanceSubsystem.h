@@ -32,10 +32,27 @@ public:
 
     // BP entry points (server BP only). Add more as you implement the write-behind.
     UFUNCTION(BlueprintCallable, Category = "Persistence", meta = (BlueprintAuthorityOnly))
-        void EnqueueSetLevel(int32 CharId, int32 NewLevel);
+        void EnqueueSetBaseStats(int32 CharId, const TArray<FSingleStat>& StatsToUpdate);
+
+    // Removed combined vitals enqueue; use individual HP/MP enqueues
 
     UFUNCTION(BlueprintCallable, Category = "Persistence", meta = (BlueprintAuthorityOnly))
-        void EnqueueSetBaseStats(int32 CharId, const TArray<FSingleStat>& StatsToUpdate);
+        void EnqueueSetLevelUpSnapshot(int32 CharId, int32 NewLevel, int32 MaxExpToLvl, int32 MaxHpFromLvls, int32 MaxMpFromLvls, int32 UnspentAP, int32 CurrentXP);
+
+    UFUNCTION(BlueprintCallable, Category = "Persistence", meta = (BlueprintAuthorityOnly))
+        void EnqueueSetCurrentXP(int32 CharId, int32 CurrentXP);
+
+    UFUNCTION(BlueprintCallable, Category = "Persistence", meta = (BlueprintAuthorityOnly))
+        void EnqueueSetUnspentAP(int32 CharId, int32 UnspentAP);
+
+    UFUNCTION(BlueprintCallable, Category = "Persistence", meta = (BlueprintAuthorityOnly))
+        void EnqueueSetDamageRangeRecord(int32 CharId, int32 HighestMinRange, int32 HighestMaxRange);
+
+    // Persist current HP/MP individually
+    UFUNCTION(BlueprintCallable, Category = "Persistence", meta = (BlueprintAuthorityOnly))
+        void EnqueueSetCurrentHP(int32 CharId, int32 CurrHP);
+    UFUNCTION(BlueprintCallable, Category = "Persistence", meta = (BlueprintAuthorityOnly))
+        void EnqueueSetCurrentMP(int32 CharId, int32 CurrMP);
 
     UFUNCTION(BlueprintCallable, Category = "Persistence", meta = (BlueprintAuthorityOnly))
         void EnqueueAddItem(int32 CharId, int32 ItemId, int32 Qty);

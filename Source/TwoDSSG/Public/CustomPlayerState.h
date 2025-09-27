@@ -17,48 +17,55 @@ public:
     UPROPERTY(Replicated, BlueprintReadOnly, Category = "Persistence|Live|Public")
         FIdentityState Identity; // rarely changes - name, gender
 
-    UPROPERTY(ReplicatedUsing = OnRep_PublicInspect, BlueprintReadOnly, Category = "Persistence|Live|Public")
+    UPROPERTY(Replicated, BlueprintReadOnly, Category = "Persistence|Live|Public")
         FPublicInspectState PublicInspect; // level, stats, appearance
-    UFUNCTION() void OnRep_PublicInspect(const FPublicInspectState& Previous);
 
     // -------- Owner-only (HUD/private) --------
-    UPROPERTY(ReplicatedUsing = OnRep_Progression, BlueprintReadOnly, Category = "Persistence|Live|Owner")
-        FProgressionState Progression; // contains  XP, AP - owner-only
-    UFUNCTION() void OnRep_Progression(const FProgressionState& Previous);
+    UPROPERTY(Replicated, BlueprintReadOnly, Category = "Persistence|Live|Owner")
+        FProgressionState Progression; // contains curr&max XP, AP, level - owner-only
 
         // NOTE: This is the *owner-view* copy. Public stats live in PublicInspect.
-    UPROPERTY(ReplicatedUsing = OnRep_BaseStats, BlueprintReadOnly, Category = "Persistence|Live|Owner")
+    UPROPERTY(Replicated, BlueprintReadOnly, Category = "Persistence|Live|Owner")
         FCharStats BaseStats;
-    UFUNCTION() void OnRep_BaseStats(const FCharStats& Previous);
 
-    // OnRep_ declarations
-    UFUNCTION(BlueprintImplementableEvent, Category = "UI")
-        void BP_OnPublicInspectChanged_Keys(const TArray<FName>& ChangeKeys);
+    // Owner-only vitals (HP/MP)
+    UPROPERTY(Replicated, BlueprintReadOnly, Category = "Persistence|Live|Owner")
+        FCombatVitals Vitals;
 
-    UFUNCTION(BlueprintImplementableEvent, Category = "UI")
-        void BP_OnProgressionChanged_Keys(const TArray<FName>& ChangeKeys);
-
-    UFUNCTION(BlueprintImplementableEvent, Category = "UI")
-        void BP_OnBaseStatsChanged_Keys();
+    // Owner-only achievements (canonical)
+    UPROPERTY(Replicated, BlueprintReadOnly, Category = "Persistence|Live|Owner")
+        FAchievementsState Achievements;
 
     UFUNCTION(BlueprintImplementableEvent, Category = "UI")
         void BP_OnInitialDataLoaded();
 
     // ------- Server-only helpers (not replicated) -------
     UFUNCTION(BlueprintCallable, Category = "Persistence", meta = (BlueprintAuthorityOnly))
-        void ApplyLevel_ServerOnly(int32 NewLevel);
-
-    UFUNCTION(BlueprintCallable, Category = "Persistence", meta = (BlueprintAuthorityOnly))
         void ApplyBaseStats_ServerOnly(const TArray<FSingleStat>& InStats);
 
     UFUNCTION(BlueprintCallable, Category = "Persistence", meta = (BlueprintAuthorityOnly))
-        void ApplyXP_ServerOnly(int64 NewXP);
+        void ApplyXP_ServerOnly(int32 NewXP);
 
     UFUNCTION(BlueprintCallable, Category = "Persistence", meta = (BlueprintAuthorityOnly))
         void ApplyUnspentAP_ServerOnly(int32 NewUnspentAP);
 
     UFUNCTION(BlueprintCallable, Category = "Persistence", meta = (BlueprintAuthorityOnly))
         void ApplyAppearance_ServerOnly(const FString& NewAppearance);
+
+    // HP/MP server-only apply helpers
+    UFUNCTION(BlueprintCallable, Category = "Persistence", meta = (BlueprintAuthorityOnly))
+        void ApplyHP_ServerOnly(int32 NewCurrHP);
+
+    UFUNCTION(BlueprintCallable, Category = "Persistence", meta = (BlueprintAuthorityOnly))
+        void ApplyMP_ServerOnly(int32 NewCurrMP);
+
+    // Combined level-up apply to keep state changes consistent
+    UFUNCTION(BlueprintCallable, Category = "Persistence", meta = (BlueprintAuthorityOnly))
+        void ApplyLevelUp_ServerOnly(int32 NewLevel, int32 NewMaxExpToLvl, int32 NewMaxHP, int32 NewMaxMP, int32 NewUnspentAP);
+
+    // Achievements: track highest min/max damage range ever attained
+    UFUNCTION(BlueprintCallable, Category = "Persistence", meta = (BlueprintAuthorityOnly))
+        void ApplyDamageRangeRecord_ServerOnly(int32 NewMinRange, int32 NewMaxRange);
 
     UFUNCTION(Category = "Persistence", meta = (BlueprintAuthorityOnly))
         void NotifyInitialDataLoaded_ServerOnly();

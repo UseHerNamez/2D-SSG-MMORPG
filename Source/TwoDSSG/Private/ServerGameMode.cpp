@@ -2,6 +2,7 @@
 #include "HttpModule.h"
 #include "EngineUtils.h"
 #include "Camera/CameraActor.h"
+#include "Camera/CameraComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "GameFramework/OnlineReplStructs.h"
 #include "Interfaces/IHttpRequest.h"
@@ -250,7 +251,7 @@ void AServerGameMode::FetchCharacterDataFromDB(APlayerController* PlayerControll
                 FString     OutAppearanceStr;
                 int32       DBLevel = 1;
 
-                int32 Str = 0, Dex = 0, Wis = 0, Luk = 0, Pur = 0, Vic = 0;
+                int32 Str = 0, Dex = 0, Wisd = 0, Luk = 0, Pur = 0, Vic = 0;
 
                 // Acquire connector
                 std::shared_ptr<DatabaseConnector> Conn = PoolCopy->Acquire();
@@ -285,17 +286,135 @@ void AServerGameMode::FetchCharacterDataFromDB(APlayerController* PlayerControll
                     const std::string& Appearance = std::get<3>(T);
                     Str = std::get<4>(T);
                     Dex = std::get<5>(T);
-                    Wis = std::get<6>(T);
+                    Wisd = std::get<6>(T);
                     Luk = std::get<7>(T);
                     Pur = std::get<8>(T);
                     Vic = std::get<9>(T);
+
+                    const int MaxHpFromLvls = std::get<10>(T);
+                    const int MaxMpFromLvls = std::get<11>(T);
+                    const int CurrHp        = std::get<12>(T);
+                    const int CurrMp        = std::get<13>(T);
+                    const int MaxExpToLvl   = std::get<14>(T);
+                    const int CurrExp       = std::get<15>(T);
+                    const int HighMinRange       = std::get<16>(T);
+                    const int HighMaxRange       = std::get<17>(T);
 
                     OutName = UTF8_TO_TCHAR(Name.c_str());
                     OutGender = ParseGenderToInt(UTF8_TO_TCHAR(GenderStr.c_str()));
                     OutAppearanceStr = UTF8_TO_TCHAR(Appearance.c_str());
                     DBLevel = FMath::Max(1, Level);
 
-                    bOk = !OutName.IsEmpty();
+                    // Capture vitals/exp/achievements into outer-scope statics via lambda capture below
+                    AsyncTask(ENamedThreads::GameThread, [this, PCWeak, bOk = true,
+                        OutName = MoveTemp(OutName),
+                        OutGender = OutGender,
+                        OutAppearance = MoveTemp(OutAppearanceStr),
+                        DBLevel = DBLevel,
+                        Str = Str, Dex = Dex, Wisd = Wisd, Luk = Luk, Pur = Pur, Vic = Vic,
+                        MaxHpFromLvls, MaxMpFromLvls, CurrHp, CurrMp, MaxExpToLvl, CurrExp, HighMinRange, HighMaxRange]()
+                    {
+                        if (!PCWeak.IsValid()) return;
+
+                        APlayerController* PC = PCWeak.Get();
+                        ACustomPlayerState* PS = PC ? PC->GetPlayerState<ACustomPlayerState>() : nullptr;
+                        if (!PS)
+                        {
+                            UE_LOG(LogTemp, Warning, TEXT("PlayerState not ready when applying character data"));
+                            return;
+                        }
+
+                        // -------- Apply to live replicated props (server only) --------
+                        // Public identity
+                        PS->Identity.Name = OutName;
+                        PS->Identity.Gender = OutGender;
+
+                        PS->Progression.Level = DBLevel;
+                        PS->BaseStats.Str = Str;
+                        PS->BaseStats.Dex = Dex;
+                        PS->BaseStats.Wisd = Wisd;
+                        PS->BaseStats.Luk = Luk;
+                        PS->BaseStats.Pur = Pur;
+                        PS->BaseStats.Vic = Vic;
+
+                        // Public snapshot
+                        PS->PublicInspect.Level = PS->Progression.Level;
+                        PS->PublicInspect.BaseStats = PS->BaseStats;
+
+                        // Progression & vitals
+                        PS->Progression.MaxExpToLvl = MaxExpToLvl;
+                        PS->Progression.XP = CurrExp;
+                        PS->Vitals.MaxHPFromLevels = MaxHpFromLvls;
+                        PS->Vitals.MaxMPFromLevels = MaxMpFromLvls;
+                        PS->Vitals.CurrHP = CurrHp;
+                        PS->Vitals.CurrMP = CurrMp;
+
+                        // Achievements
+                        PS->Achievements.HighestMinDamageRange = HighMinRange;
+                        PS->Achievements.HighestMaxDamageRange = HighMaxRange;
+                        PS->PublicInspect.HighestMinDamageRange = HighMinRange;
+                        PS->PublicInspect.HighestMaxDamageRange = HighMaxRange;
+
+                        PS->NotifyInitialDataLoaded_ServerOnly();
+
+                        // -------- Spawn now that data is ready --------
+                        RestartPlayer(PC);
+
+                        if (APawn* P = PC->GetPawn())
+                        {
+                        PC->SetViewTargetWithBlend(P, 0.0f);
+                        // Prefer the pawn's tagged camera component if available
+                        if (UCameraComponent* TaggedCam = [&]() -> UCameraComponent*
+                        {
+                            TArray<UActorComponent*> Cams = P->GetComponentsByClass(UCameraComponent::StaticClass());
+                            for (UActorComponent* C : Cams)
+                            {
+                                if (C->ComponentHasTag(FName(TEXT("PlayerCamera"))))
+                                {
+                                    return Cast<UCameraComponent>(C);
+                                }
+                            }
+                            return Cams.Num() > 0 ? Cast<UCameraComponent>(Cams[0]) : nullptr;
+                        }())
+                        {
+                            TaggedCam->Activate();
+                        }
+                        PC->bAutoManageActiveCameraTarget = true;
+                        PC->AutoManageActiveCameraTarget(Cast<APawn>(P));
+                        PC->SetViewTargetWithBlend(P, 0.0f);
+                        // Prefer the pawn's tagged camera component if available
+                        if (UCameraComponent* TaggedCam = [&]() -> UCameraComponent*
+                        {
+                            TArray<UActorComponent*> Cams = P->GetComponentsByClass(UCameraComponent::StaticClass());
+                            for (UActorComponent* C : Cams)
+                            {
+                                if (C->ComponentHasTag(FName(TEXT("PlayerCamera"))))
+                                {
+                                    return Cast<UCameraComponent>(C);
+                                }
+                            }
+                            return Cams.Num() > 0 ? Cast<UCameraComponent>(Cams[0]) : nullptr;
+                        }())
+                        {
+                            TaggedCam->Activate();
+                        }
+                        PC->bAutoManageActiveCameraTarget = true;
+                        PC->AutoManageActiveCameraTarget(Cast<APawn>(P));
+                            P->EnableInput(PC);
+
+                            BP_AfterPlayerSpawned(PC);
+
+                        PC->SetIgnoreMoveInput(false);
+                        PC->SetIgnoreLookInput(false);
+
+                            if (AClientPlayerController* CPC = Cast<AClientPlayerController>(PC))
+                            {
+                                CPC->RPC_HideLoadingWidget();
+                            }
+                        }
+                    });
+
+                    return; // already scheduled game-thread work
                 }
                 else
                 {
@@ -303,65 +422,12 @@ void AServerGameMode::FetchCharacterDataFromDB(APlayerController* PlayerControll
                 }
 
                 // ---- Back to game thread ----
-                AsyncTask(ENamedThreads::GameThread, [this, PCWeak, bOk,
-                    OutName = MoveTemp(OutName),
-                    OutGender = OutGender,
-                    OutAppearance = MoveTemp(OutAppearanceStr),
-                    DBLevel = DBLevel,
-                    Str = Str, Dex = Dex, Wis = Wis, Luk = Luk, Pur = Pur, Vic = Vic]()
+                AsyncTask(ENamedThreads::GameThread, [this, PCWeak]()
                 {
                     if (!PCWeak.IsValid()) return;
-
-                    APlayerController* PC = PCWeak.Get();
-                    ACustomPlayerState* PS = PC ? PC->GetPlayerState<ACustomPlayerState>() : nullptr;
-                    if (!PS)
+                    if (APlayerController* PC = PCWeak.Get())
                     {
-                        UE_LOG(LogTemp, Warning, TEXT("PlayerState not ready when applying character data"));
-                        return;
-                    }
-
-                    if (!bOk)
-                    {
-                        UE_LOG(LogTemp, Warning, TEXT("Character data invalid � kicking player"));
                         KickPlayer(PC, TEXT("CharNotFoundOrInvalid"));
-                        return;
-                    }
-
-                    // -------- Apply to live replicated props (server only) --------
-                    // Public identity
-                    PS->Identity.Name = OutName;
-                    PS->Identity.Gender = OutGender;
-
-                    PS->Progression.Level = DBLevel;
-                    PS->BaseStats.Str = Str;
-                    PS->BaseStats.Dex = Dex;
-                    PS->BaseStats.Wis = Wis;
-                    PS->BaseStats.Luk = Luk;
-                    PS->BaseStats.Pur = Pur;
-                    PS->BaseStats.Vic = Vic;
-
-                    // Public snapshot (everyone can inspect instantly)
-                    PS->PublicInspect.Level = PS->Progression.Level;
-                    PS->PublicInspect.BaseStats = PS->BaseStats;
-                    PS->NotifyInitialDataLoaded_ServerOnly();
-
-                    // -------- Spawn now that data is ready --------
-                    RestartPlayer(PC);
-
-                    if (APawn* P = PC->GetPawn())
-                    {
-                        PC->SetViewTargetWithBlend(P, 0.0f);
-                        P->EnableInput(PC);
-
-                        BP_AfterPlayerSpawned(PC);
-
-                        PC->SetIgnoreMoveInput(false);
-                        PC->SetIgnoreLookInput(false);
-
-                        if (AClientPlayerController* CPC = Cast<AClientPlayerController>(PC))
-                        {
-                            CPC->RPC_HideLoadingWidget();
-                        }
                     }
                 });
             });

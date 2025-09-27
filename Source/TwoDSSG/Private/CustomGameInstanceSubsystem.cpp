@@ -4,6 +4,7 @@
 #include "Misc/ConfigCacheIni.h"
 #include "HAL/PlatformMisc.h"
 #include "CustomPlayerState.h"
+#include <memory>
 #if WITH_SERVER_CODE
 #include "DatabaseConnectionPool.h"
 #endif
@@ -107,11 +108,12 @@ void UCustomGameInstanceSubsystem::PopulateTestData(ACustomPlayerState* PlayerSt
     PlayerState->Progression.Level = 5;
     PlayerState->Progression.XP = 30;
     PlayerState->Progression.UnspentAP = 3;
+    PlayerState->Progression.MaxExpToLvl = 100;
 
     // Set Base Stats - direct assignment for test
     PlayerState->BaseStats.Str = 15;
     PlayerState->BaseStats.Dex = 12;
-    PlayerState->BaseStats.Wis = 10;
+    PlayerState->BaseStats.Wisd = 10;
     PlayerState->BaseStats.Luk = 8;
     PlayerState->BaseStats.Pur = 14;
     PlayerState->BaseStats.Vic = 11;
@@ -120,6 +122,18 @@ void UCustomGameInstanceSubsystem::PopulateTestData(ACustomPlayerState* PlayerSt
     PlayerState->PublicInspect.Level = PlayerState->Progression.Level;
     PlayerState->PublicInspect.BaseStats = PlayerState->BaseStats;
     PlayerState->PublicInspect.Appearance = TEXT("hair:0-0,face:0-0,Weapon:TestSword");
+
+    // Set Vitals (owner-only)
+    PlayerState->Vitals.MaxHPFromLevels = 120;
+    PlayerState->Vitals.MaxMPFromLevels = 50;
+    PlayerState->Vitals.CurrHP = 120;
+    PlayerState->Vitals.CurrMP = 40;
+
+    // Set Achievements and mirror to public
+    PlayerState->Achievements.HighestMinDamageRange = 7;
+    PlayerState->Achievements.HighestMaxDamageRange = 13;
+    PlayerState->PublicInspect.HighestMinDamageRange = 7;
+    PlayerState->PublicInspect.HighestMaxDamageRange = 13;
 
     // Force replication update
     PlayerState->ForceNetUpdate();
@@ -191,22 +205,6 @@ bool UCustomGameInstanceSubsystem::InitDbPool()
 }
 #endif
 
-void UCustomGameInstanceSubsystem::EnqueueSetLevel(int32 CharId, int32 NewLevel)
-{
-    if (!IsReady() || bTestMode) 
-    {
-        UE_LOG(LogTemp, Verbose, TEXT("EnqueueSetLevel - database not ready, skipping"));
-        return;
-    }
-
-    auto Job = std::make_shared<FJobSetLevel>(CharId, NewLevel);
-    {
-        std::lock_guard<std::mutex> Lock(WriteQueueMutex);
-        WriteQueue.push(Job);
-    }
-    WriteQueueCv.notify_one();
-}
-
 void UCustomGameInstanceSubsystem::EnqueueSetBaseStats(int32 CharId, const TArray<FSingleStat>& StatsToUpdate)
 {
     if (!IsReady() || bTestMode) 
@@ -215,13 +213,106 @@ void UCustomGameInstanceSubsystem::EnqueueSetBaseStats(int32 CharId, const TArra
         return;
     }
 
-    auto Job = std::make_shared<FJobSetBaseStats>(CharId, StatsToUpdate);
+    std::shared_ptr<FJobBase> Job = std::static_pointer_cast<FJobBase>(std::make_shared<FJobSetBaseStats>(CharId, StatsToUpdate));
     {
         std::lock_guard<std::mutex> Lock(WriteQueueMutex);
         WriteQueue.push(Job);
     }
     WriteQueueCv.notify_one();
 }
+
+void UCustomGameInstanceSubsystem::EnqueueSetCurrentHP(int32 CharId, int32 CurrHP)
+{
+    if (!IsReady() || bTestMode)
+    {
+        UE_LOG(LogTemp, Verbose, TEXT("EnqueueSetCurrentHP - database not ready, skipping"));
+        return;
+    }
+    std::shared_ptr<FJobBase> Job = std::static_pointer_cast<FJobBase>(std::make_shared<FJobSetCurrentHP>(CharId, CurrHP));
+    {
+        std::lock_guard<std::mutex> Lock(WriteQueueMutex);
+        WriteQueue.push(Job);
+    }
+    WriteQueueCv.notify_one();
+}
+
+void UCustomGameInstanceSubsystem::EnqueueSetCurrentMP(int32 CharId, int32 CurrMP)
+{
+    if (!IsReady() || bTestMode)
+    {
+        UE_LOG(LogTemp, Verbose, TEXT("EnqueueSetCurrentMP - database not ready, skipping"));
+        return;
+    }
+    std::shared_ptr<FJobBase> Job = std::static_pointer_cast<FJobBase>(std::make_shared<FJobSetCurrentMP>(CharId, CurrMP));
+    {
+        std::lock_guard<std::mutex> Lock(WriteQueueMutex);
+        WriteQueue.push(Job);
+    }
+    WriteQueueCv.notify_one();
+}
+
+void UCustomGameInstanceSubsystem::EnqueueSetLevelUpSnapshot(int32 CharId, int32 NewLevel, int32 MaxExpToLvl, int32 MaxHpFromLvls, int32 MaxMpFromLvls, int32 UnspentAP, int32 CurrentXP)
+{
+    if (!IsReady() || bTestMode)
+    {
+        UE_LOG(LogTemp, Verbose, TEXT("EnqueueSetLevelUpSnapshot - database not ready, skipping"));
+        return;
+    }
+
+    std::shared_ptr<FJobBase> Job = std::static_pointer_cast<FJobBase>(std::make_shared<FJobSetLevelUpSnapshot>(CharId, NewLevel, MaxExpToLvl, MaxHpFromLvls, MaxMpFromLvls, UnspentAP, CurrentXP));
+    {
+        std::lock_guard<std::mutex> Lock(WriteQueueMutex);
+        WriteQueue.push(Job);
+    }
+    WriteQueueCv.notify_one();
+}
+
+void UCustomGameInstanceSubsystem::EnqueueSetCurrentXP(int32 CharId, int32 CurrentXP)
+{
+    if (!IsReady() || bTestMode)
+    {
+        UE_LOG(LogTemp, Verbose, TEXT("EnqueueSetCurrentXP - database not ready, skipping"));
+        return;
+    }
+    std::shared_ptr<FJobBase> Job = std::static_pointer_cast<FJobBase>(std::make_shared<FJobSetCurrentXP>(CharId, CurrentXP));
+    {
+        std::lock_guard<std::mutex> Lock(WriteQueueMutex);
+        WriteQueue.push(Job);
+    }
+    WriteQueueCv.notify_one();
+}
+
+void UCustomGameInstanceSubsystem::EnqueueSetUnspentAP(int32 CharId, int32 UnspentAP)
+{
+    if (!IsReady() || bTestMode)
+    {
+        UE_LOG(LogTemp, Verbose, TEXT("EnqueueSetUnspentAP - database not ready, skipping"));
+        return;
+    }
+    std::shared_ptr<FJobBase> Job = std::static_pointer_cast<FJobBase>(std::make_shared<FJobSetUnspentAP>(CharId, UnspentAP));
+    {
+        std::lock_guard<std::mutex> Lock(WriteQueueMutex);
+        WriteQueue.push(Job);
+    }
+    WriteQueueCv.notify_one();
+}
+
+void UCustomGameInstanceSubsystem::EnqueueSetDamageRangeRecord(int32 CharId, int32 HighestMinRange, int32 HighestMaxRange)
+{
+    if (!IsReady() || bTestMode)
+    {
+        UE_LOG(LogTemp, Verbose, TEXT("EnqueueSetDamageRangeRecord - database not ready, skipping"));
+        return;
+    }
+    std::shared_ptr<FJobBase> Job = std::static_pointer_cast<FJobBase>(std::make_shared<FJobSetDamageRangeRecord>(CharId, HighestMinRange, HighestMaxRange));
+    {
+        std::lock_guard<std::mutex> Lock(WriteQueueMutex);
+        WriteQueue.push(Job);
+    }
+    WriteQueueCv.notify_one();
+}
+
+// Removed EnqueueSetMaxVitalsFromLevels; handled by level-up snapshot job
 
 void UCustomGameInstanceSubsystem::EnqueueAddItem(int32 CharId, int32 ItemId, int32 Qty)
 {
@@ -250,7 +341,7 @@ void UCustomGameInstanceSubsystem::FlushCharacterByPC(APlayerController* PC)
 #endif
 }
 
-void UCustomGameInstanceSubsystem::FlushCharacterByPS(ACustomPlayerState* PS)
+void UCustomGameInstanceSubsystem::FlushCharacterByPS(ACustomPlayerState* PS) //updates everything when a player disconnects for any reason
 {
 #if WITH_SERVER_CODE
     if (!IsReady() || bTestMode)
@@ -268,7 +359,10 @@ void UCustomGameInstanceSubsystem::FlushCharacterByPS(ACustomPlayerState* PS)
 
     const int32 CharId = PS->GetCharId_Server();
     const int32 Level = PS->Progression.Level;
+    const int32 MaxExpToLvl = PS->Progression.MaxExpToLvl;
+    const int64 CurrentXP = PS->Progression.XP;
     const FCharStats Stats = PS->BaseStats;
+    const FCombatVitals Vitals = PS->Vitals;
 
     auto ToLower = [](const FString& In) {
         return In.ToLower(); // UE helper
@@ -277,13 +371,20 @@ void UCustomGameInstanceSubsystem::FlushCharacterByPS(ACustomPlayerState* PS)
     TArray<FSingleStat> JobStats;
     JobStats.Emplace(ToLower(TEXT("Str")), Stats.Str);
     JobStats.Emplace(ToLower(TEXT("Dex")), Stats.Dex);
-    JobStats.Emplace(ToLower(TEXT("Wis")), Stats.Wis);
+    JobStats.Emplace(ToLower(TEXT("Wisd")), Stats.Wisd);
     JobStats.Emplace(ToLower(TEXT("Luk")), Stats.Luk);
     JobStats.Emplace(ToLower(TEXT("Pur")), Stats.Pur);
     JobStats.Emplace(ToLower(TEXT("Vic")), Stats.Vic);
 
-    EnqueueSetLevel(CharId, Level);
+    // Flush everything important to DB
     EnqueueSetBaseStats(CharId, JobStats);
+    // Persist canonical progression snapshot including base max vitals from levels
+    EnqueueSetLevelUpSnapshot(CharId, Level, MaxExpToLvl, Vitals.MaxHPFromLevels, Vitals.MaxMPFromLevels, PS->Progression.UnspentAP, static_cast<int32>(CurrentXP));
+    // Persist current running vitals
+    EnqueueSetCurrentHP(CharId, Vitals.CurrHP);
+    EnqueueSetCurrentMP(CharId, Vitals.CurrMP);
+    // Persist achievements snapshot
+    EnqueueSetDamageRangeRecord(CharId, PS->Achievements.HighestMinDamageRange, PS->Achievements.HighestMaxDamageRange);
 
     UE_LOG(LogTemp, Log, TEXT("FlushCharacter: queued Level=%d & %d base stats for CharId=%d"),
         Level, JobStats.Num(), CharId);
@@ -300,7 +401,7 @@ void UCustomGameInstanceSubsystem::QueueWorker()
         if (bStopWriterThread) break;
 
         // Take ownership of the job
-        auto Job = std::move(WriteQueue.front());
+        std::shared_ptr<FJobBase> Job = std::move(WriteQueue.front());
         WriteQueue.pop();
         Lock.unlock();
 
@@ -314,25 +415,9 @@ void UCustomGameInstanceSubsystem::QueueWorker()
                 {
                     switch (Job->Type)
                     {
-                    case EPersistenceJobType::SetLevel:
-                    {
-                        auto* SetLevelJob = static_cast<FJobSetLevel*>(Job.get());
-                        if (!SetLevelJob)
-                        {
-                            UE_LOG(LogTemp, Warning, TEXT("Invalid SetLevel job"));
-                            continue; // skip this job, but keep thread alive
-                        }
-
-                        if (!Conn->UpdateCharacterLevel(SetLevelJob->CharId, SetLevelJob->NewLevel))
-                        {
-                            UE_LOG(LogTemp, Error, TEXT("Failed to update level for CharId %d"), SetLevelJob->CharId);
-                        }
-                        break;
-                    }
-
                     case EPersistenceJobType::SetBaseStats:
                     {
-                        auto* StatsJob = static_cast<FJobSetBaseStats*>(Job.get());
+                        FJobSetBaseStats* StatsJob = static_cast<FJobSetBaseStats*>(Job.get());
                         if (!StatsJob)
                         {
                             UE_LOG(LogTemp, Warning, TEXT("Invalid SetBaseStats job"));
@@ -346,12 +431,113 @@ void UCustomGameInstanceSubsystem::QueueWorker()
                             StatsToUpdate[TCHAR_TO_UTF8(*stat.StatName)] = stat.Value;
                         }
 
-                        if (!Conn->UpdateCharacterStats(CharId, StatsToUpdate))
+                        if (!Conn->UpdateBaseStats(CharId, StatsToUpdate))
                         {
                             UE_LOG(LogTemp, Error, TEXT("Failed to update stats for CharId %d"), CharId);
                         }
                         break;
                     }
+
+                    // Removed SetVitals case; use SetCurrentHP and SetCurrentMP
+
+                    case EPersistenceJobType::SetCurrentHP:
+                    {
+                        FJobSetCurrentHP* HPJob = static_cast<FJobSetCurrentHP*>(Job.get());
+                        if (!HPJob)
+                        {
+                            UE_LOG(LogTemp, Warning, TEXT("Invalid SetCurrentHP job"));
+                            continue;
+                        }
+                        if (!Conn->UpdateCurrentHP(HPJob->CharId, HPJob->CurrHP))
+                        {
+                            UE_LOG(LogTemp, Error, TEXT("Failed to update CurrHP for CharId %d"), HPJob->CharId);
+                        }
+                        break;
+                    }
+
+                    case EPersistenceJobType::SetCurrentMP:
+                    {
+                        FJobSetCurrentMP* MPJob = static_cast<FJobSetCurrentMP*>(Job.get());
+                        if (!MPJob)
+                        {
+                            UE_LOG(LogTemp, Warning, TEXT("Invalid SetCurrentMP job"));
+                            continue;
+                        }
+                        if (!Conn->UpdateCurrentMP(MPJob->CharId, MPJob->CurrMP))
+                        {
+                            UE_LOG(LogTemp, Error, TEXT("Failed to update CurrMP for CharId %d"), MPJob->CharId);
+                        }
+                        break;
+                    }
+
+                    case EPersistenceJobType::SetLevelUpSnapshot:
+                    {
+                        FJobSetLevelUpSnapshot* LU = static_cast<FJobSetLevelUpSnapshot*>(Job.get());
+                        if (!LU)
+                        {
+                            UE_LOG(LogTemp, Warning, TEXT("Invalid SetLevelUpSnapshot job"));
+                            continue;
+                        }
+
+                        if (!Conn->UpdateLevelUpSnapshot(LU->CharId,
+                            LU->NewLevel,
+                            LU->MaxExpToLvl,
+                            LU->MaxHpFromLvls,
+                            LU->MaxMpFromLvls,
+                            LU->UnspentAP,
+                            static_cast<int>(LU->CurrentXP)))
+                        {
+                            UE_LOG(LogTemp, Error, TEXT("Failed to update LevelUp snapshot for CharId %d"), LU->CharId);
+                        }
+                        break;
+                    }
+
+                    case EPersistenceJobType::SetCurrentXP:
+                    {
+                        FJobSetCurrentXP* XpJob = static_cast<FJobSetCurrentXP*>(Job.get());
+                        if (!XpJob)
+                        {
+                            UE_LOG(LogTemp, Warning, TEXT("Invalid SetCurrentXP job"));
+                            continue;
+                        }
+                        if (!Conn->UpdateCharacterXP(XpJob->CharId, static_cast<int>(XpJob->CurrentXP), -1))
+                        {
+                            UE_LOG(LogTemp, Error, TEXT("Failed to update CurrentXP for CharId %d"), XpJob->CharId);
+                        }
+                        break;
+                    }
+
+                    case EPersistenceJobType::SetUnspentAP:
+                    {
+                        FJobSetUnspentAP* ApJob = static_cast<FJobSetUnspentAP*>(Job.get());
+                        if (!ApJob)
+                        {
+                            UE_LOG(LogTemp, Warning, TEXT("Invalid SetUnspentAP job"));
+                            continue;
+                        }
+                        if (!Conn->UpdateCharacterUnspentAP(ApJob->CharId, ApJob->UnspentAP))
+                        {
+                            UE_LOG(LogTemp, Error, TEXT("Failed to update UnspentAP for CharId %d"), ApJob->CharId);
+                        }
+                        break;
+                    }
+
+                    case EPersistenceJobType::SetDamageRangeRecord:
+                    {
+                        FJobSetDamageRangeRecord* RngJob = static_cast<FJobSetDamageRangeRecord*>(Job.get());
+                        if (!RngJob)
+                        {
+                            UE_LOG(LogTemp, Warning, TEXT("Invalid SetDamageRangeRecord job"));
+                            continue;
+                        }
+                        if (!Conn->UpdateCharacterAchievements(RngJob->CharId, RngJob->HighestMinRange, RngJob->HighestMaxRange))
+                        {
+                            UE_LOG(LogTemp, Error, TEXT("Failed to update DamageRangeRecord for CharId %d"), RngJob->CharId);
+                        }
+                        break;
+                    }
+
+                    // Removed SetMaxVitalsFromLevels; handled by LevelUp snapshot
 
                     default:
                         UE_LOG(LogTemp, Warning, TEXT("Unknown job type: %d"), static_cast<int>(Job->Type));

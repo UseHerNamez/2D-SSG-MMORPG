@@ -18,7 +18,7 @@ struct FCharStats
     GENERATED_BODY()
     UPROPERTY(BlueprintReadOnly) int32 Str = 0;
     UPROPERTY(BlueprintReadOnly) int32 Dex = 0;
-    UPROPERTY(BlueprintReadOnly) int32 Wis = 0;
+    UPROPERTY(BlueprintReadOnly) int32 Wisd = 0;
     UPROPERTY(BlueprintReadOnly) int32 Luk = 0;
     UPROPERTY(BlueprintReadOnly) int32 Pur = 0;
     UPROPERTY(BlueprintReadOnly) int32 Vic = 0;
@@ -48,8 +48,9 @@ struct FProgressionState
 {
     GENERATED_BODY()
     UPROPERTY(BlueprintReadOnly) int32  Level = 1;
-    UPROPERTY(BlueprintReadOnly) int64  XP = 0;
+    UPROPERTY(BlueprintReadOnly) int32  XP = 0;
     UPROPERTY(BlueprintReadOnly) int32  UnspentAP = 0;
+    UPROPERTY(BlueprintReadOnly) int32  MaxExpToLvl = 0;
 };
 
 // ---- Public inspect snapshot (global scope; not nested in a class) ----
@@ -60,4 +61,27 @@ struct FPublicInspectState
     UPROPERTY(BlueprintReadOnly) int32 Level = 1;
     UPROPERTY(BlueprintReadOnly) FCharStats BaseStats; // public, lightweight
     UPROPERTY(BlueprintReadOnly) FString Appearance;
+    // Publicly viewable achievements snapshots
+    UPROPERTY(BlueprintReadOnly) int32 HighestMinDamageRange = 0;
+    UPROPERTY(BlueprintReadOnly) int32 HighestMaxDamageRange = 0;
+};
+
+// Owner-view combat vitals. Replicated owner-only on PlayerState
+USTRUCT(BlueprintType)
+struct FCombatVitals
+{
+    GENERATED_BODY()
+    UPROPERTY(BlueprintReadOnly) int32 MaxHPFromLevels = 0;
+    UPROPERTY(BlueprintReadOnly) int32 MaxMPFromLevels = 0;
+    UPROPERTY(BlueprintReadOnly) int32 CurrHP = 0;
+    UPROPERTY(BlueprintReadOnly) int32 CurrMP = 0;
+};
+
+// Owner-view achievements (canonical source). Mirrored selectively to public inspect.
+USTRUCT(BlueprintType)
+struct FAchievementsState
+{
+    GENERATED_BODY()
+    UPROPERTY(BlueprintReadOnly) int32 HighestMinDamageRange = 0;
+    UPROPERTY(BlueprintReadOnly) int32 HighestMaxDamageRange = 0;
 };
