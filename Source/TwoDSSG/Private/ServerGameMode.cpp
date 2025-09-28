@@ -53,6 +53,8 @@ AServerGameMode::AServerGameMode()
 {
     bStartPlayersAsSpectators = true;
     PlayerStateClass = ACustomPlayerState::StaticClass();
+    // Ensure use of client PC subclass so UI RPCs work
+    PlayerControllerClass = AClientPlayerController::StaticClass();
 }
 
 FString AServerGameMode::InitNewPlayer(APlayerController* NewPlayerController, const FUniqueNetIdRepl& UniqueId, 
@@ -492,14 +494,14 @@ FString AServerGameMode::HandleTestModePlayer(APlayerController* NewPlayerContro
     {
         NewPlayerController->DisableInput(NewPlayerController);
 
-        for (TActorIterator<ACameraActor> It(GetWorld()); It; ++It)
-        {
-            if (It->ActorHasTag("LoadingCamera"))
-            {
-                NewPlayerController->SetViewTarget(*It);
-                break;
-            }
-        }
+         for (TActorIterator<ACameraActor> It(GetWorld()); It; ++It)
+         {
+             if (It->ActorHasTag("LoadingCamera"))
+             {
+                 NewPlayerController->SetViewTarget(*It);
+                 break;
+             }
+         }
 
         if (AClientPlayerController* ClientPC = Cast<AClientPlayerController>(NewPlayerController))
         {
@@ -521,6 +523,26 @@ FString AServerGameMode::HandleTestModePlayer(APlayerController* NewPlayerContro
                     if (APawn* P = NewPlayerController->GetPawn())
                     {
                         NewPlayerController->SetViewTargetWithBlend(P, 0.0f);
+                        // Prefer the pawn's tagged camera component if available
+                        
+                        if (UCameraComponent* TaggedCam = [&]() -> UCameraComponent*
+                        {
+                            TArray<UActorComponent*> Cams = P->GetComponentsByClass(UCameraComponent::StaticClass());
+                            for (UActorComponent* C : Cams)
+                            {
+                                if (C->ComponentHasTag(FName(TEXT("PlayerCamera"))))
+                                {
+                                    return Cast<UCameraComponent>(C);
+                                }
+                            }
+                            return Cams.Num() > 0 ? Cast<UCameraComponent>(Cams[0]) : nullptr;
+                        }())
+                        {
+                            TaggedCam->Activate();
+                        }
+                        NewPlayerController->bAutoManageActiveCameraTarget = true;
+                        NewPlayerController->AutoManageActiveCameraTarget(Cast<APawn>(P));
+                        
                         P->EnableInput(NewPlayerController);
 
                         BP_AfterPlayerSpawned(NewPlayerController);

@@ -105,10 +105,10 @@ void UCustomGameInstanceSubsystem::PopulateTestData(ACustomPlayerState* PlayerSt
     PlayerState->Identity.Gender = 0; // Female
 
     // Set Progression (XP, Level, AP) - direct assignment for test
-    PlayerState->Progression.Level = 5;
-    PlayerState->Progression.XP = 30;
-    PlayerState->Progression.UnspentAP = 3;
-    PlayerState->Progression.MaxExpToLvl = 100;
+    PlayerState->Progression.Level = 1;
+    PlayerState->Progression.XP = 3;
+    PlayerState->Progression.UnspentAP = 30;
+    PlayerState->Progression.MaxExpToLvl = 5;
 
     // Set Base Stats - direct assignment for test
     PlayerState->BaseStats.Str = 15;
@@ -126,7 +126,7 @@ void UCustomGameInstanceSubsystem::PopulateTestData(ACustomPlayerState* PlayerSt
     // Set Vitals (owner-only)
     PlayerState->Vitals.MaxHPFromLevels = 120;
     PlayerState->Vitals.MaxMPFromLevels = 50;
-    PlayerState->Vitals.CurrHP = 120;
+    PlayerState->Vitals.CurrHP = 100;
     PlayerState->Vitals.CurrMP = 40;
 
     // Set Achievements and mirror to public

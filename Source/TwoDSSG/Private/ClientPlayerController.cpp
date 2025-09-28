@@ -3,11 +3,13 @@
 
 void AClientPlayerController::RPC_ShowLoadingWidget_Implementation()
 {
+    UE_LOG(LogTemp, Log, TEXT("RPC_ShowLoadingWidget received on client"));
     ShowLoadingWidget();
 }
 
 void AClientPlayerController::RPC_HideLoadingWidget_Implementation()
 {
+    UE_LOG(LogTemp, Log, TEXT("RPC_HideLoadingWidget received on client"));
     HideLoadingWidget();
 }
 
