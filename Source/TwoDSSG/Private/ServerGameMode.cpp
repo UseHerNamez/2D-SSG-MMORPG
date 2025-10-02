@@ -16,6 +16,7 @@
 #include "CustomPlayerState.h"
 #include "CharacterInitTypes.h"
 #include "CustomGameInstanceSubsystem.h"
+#include "PaperDoll2DCharacter.h"
 
 namespace {
     inline FString ToFString(const std::string& s) { return UTF8_TO_TCHAR(s.c_str()); }
@@ -55,6 +56,7 @@ AServerGameMode::AServerGameMode()
     PlayerStateClass = ACustomPlayerState::StaticClass();
     // Ensure use of client PC subclass so UI RPCs work
     PlayerControllerClass = AClientPlayerController::StaticClass();
+    DefaultPawnClass = APaperDoll2DCharacter::StaticClass();
 }
 
 FString AServerGameMode::InitNewPlayer(APlayerController* NewPlayerController, const FUniqueNetIdRepl& UniqueId, 
@@ -364,6 +366,12 @@ void AServerGameMode::FetchCharacterDataFromDB(APlayerController* PlayerControll
 
                         if (APawn* P = PC->GetPawn())
                         {
+                        if (APaperDoll2DCharacter* Doll = Cast<APaperDoll2DCharacter>(P))
+                        {
+                            // Use CharId directly as the bucket. Final priority = Bucket * GlobalBucketStride + partPriority
+                            const int32 Bucket = PS->GetCharId_Server();
+                            Doll->AssignSortBucket_ServerOnly(Bucket);
+                        }
                         PC->SetViewTargetWithBlend(P, 0.0f);
                         // Prefer the pawn's tagged camera component if available
                         if (UCameraComponent* TaggedCam = [&]() -> UCameraComponent*
@@ -525,6 +533,12 @@ FString AServerGameMode::HandleTestModePlayer(APlayerController* NewPlayerContro
                         NewPlayerController->SetViewTargetWithBlend(P, 0.0f);
                         // Prefer the pawn's tagged camera component if available
                         
+                        if (APaperDoll2DCharacter* Doll = Cast<APaperDoll2DCharacter>(P))
+                        {
+                            const int32 Bucket = PS->GetCharId_Server();
+                            Doll->AssignSortBucket_ServerOnly(Bucket);
+                        }
+
                         if (UCameraComponent* TaggedCam = [&]() -> UCameraComponent*
                         {
                             TArray<UActorComponent*> Cams = P->GetComponentsByClass(UCameraComponent::StaticClass());

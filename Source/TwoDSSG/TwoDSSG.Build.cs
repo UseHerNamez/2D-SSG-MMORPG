@@ -87,7 +87,7 @@ public class TwoDSSG : ModuleRules
         }
 
         PublicDependencyModuleNames.AddRange(new string[] {
-            "Core", "CoreUObject", "Engine", "InputCore", "HTTP", "Json", "JsonUtilities"
+            "Core", "CoreUObject", "Engine", "InputCore", "HTTP", "Json", "JsonUtilities", "Paper2D"
         });
     }
 }
