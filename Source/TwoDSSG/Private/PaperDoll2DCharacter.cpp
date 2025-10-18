@@ -1,5 +1,7 @@
 #include "PaperDoll2DCharacter.h"
 #include "Net/UnrealNetwork.h"
+#include "PaperFlipbook.h"
+#include "PaperFlipbookComponent.h"
 
 APaperDoll2DCharacter::APaperDoll2DCharacter(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)
@@ -26,7 +28,8 @@ APaperDoll2DCharacter::APaperDoll2DCharacter(const FObjectInitializer& ObjectIni
 	ArmFar = CreateDefaultSubobject<UPaperFlipbookComponent>(TEXT("ArmFar"));
 	LegNear = CreateDefaultSubobject<UPaperFlipbookComponent>(TEXT("LegNear"));
 	LegFar = CreateDefaultSubobject<UPaperFlipbookComponent>(TEXT("LegFar"));
-	Cape = CreateDefaultSubobject<UPaperFlipbookComponent>(TEXT("Cape"));
+	HandNear = CreateDefaultSubobject<UPaperFlipbookComponent>(TEXT("HandNear"));
+	HandFar  = CreateDefaultSubobject<UPaperFlipbookComponent>(TEXT("HandFar"));
 
 	// Attach to root (capsule). Users can reposition in BP
 	Torso->SetupAttachment(GetRootComponent());
@@ -35,7 +38,8 @@ APaperDoll2DCharacter::APaperDoll2DCharacter(const FObjectInitializer& ObjectIni
 	ArmFar->SetupAttachment(Torso);
 	LegNear->SetupAttachment(Torso);
 	LegFar->SetupAttachment(Torso);
-	Cape->SetupAttachment(Torso);
+	HandNear->SetupAttachment(Torso);
+	HandFar->SetupAttachment(Torso);
 
 	Torso->SetIsReplicated(true);
 	Head->SetIsReplicated(true);
@@ -43,7 +47,8 @@ APaperDoll2DCharacter::APaperDoll2DCharacter(const FObjectInitializer& ObjectIni
 	ArmFar->SetIsReplicated(true);
 	LegNear->SetIsReplicated(true);
 	LegFar->SetIsReplicated(true);
-	Cape->SetIsReplicated(true);
+	HandNear->SetIsReplicated(true);
+	HandFar->SetIsReplicated(true);
 
 	// Paper2D components don't auto-run on network; we'll drive frames manually
 	Torso->SetLooping(true);
@@ -52,7 +57,8 @@ APaperDoll2DCharacter::APaperDoll2DCharacter(const FObjectInitializer& ObjectIni
 	ArmFar->SetLooping(true);
 	LegNear->SetLooping(true);
 	LegFar->SetLooping(true);
-	Cape->SetLooping(true);
+	HandNear->SetLooping(true);
+	HandFar->SetLooping(true);
 
 	Torso->SetPlayRate(0.0f);
 	Head->SetPlayRate(0.0f);
@@ -60,7 +66,8 @@ APaperDoll2DCharacter::APaperDoll2DCharacter(const FObjectInitializer& ObjectIni
 	ArmFar->SetPlayRate(0.0f);
 	LegNear->SetPlayRate(0.0f);
 	LegFar->SetPlayRate(0.0f);
-	Cape->SetPlayRate(0.0f);
+	HandNear->SetPlayRate(0.0f);
+	HandFar->SetPlayRate(0.0f);
 }
 
 void APaperDoll2DCharacter::BeginPlay()
@@ -129,6 +136,7 @@ void APaperDoll2DCharacter::OnRep_CurrentAnimState()
 {
 	CurrentAnimTimeSeconds = 0.0f;
 	UpdateFlipbooksForCurrentState();
+	ApplySortPriorities();
 }
 
 void APaperDoll2DCharacter::UpdateFlipbooksForCurrentState()
@@ -158,7 +166,8 @@ void APaperDoll2DCharacter::UpdateFlipbooksForCurrentState()
 	ArmFar->SetFlipbook(SetRef.ArmFar);
 	LegNear->SetFlipbook(SetRef.LegNear);
 	LegFar->SetFlipbook(SetRef.LegFar);
-	Cape->SetFlipbook(SetRef.Cape);
+	HandNear->SetFlipbook(SetRef.HandNear);
+	HandFar->SetFlipbook(SetRef.HandFar);
 }
 
 int32 APaperDoll2DCharacter::ComputeFrameIndex(const UPaperFlipbook* Master, float TimeSeconds) const
@@ -201,7 +210,8 @@ UPaperFlipbook* APaperDoll2DCharacter::GetMasterFlipbook() const
     if (SetRef.ArmFar) return SetRef.ArmFar;
     if (SetRef.LegNear) return SetRef.LegNear;
     if (SetRef.LegFar) return SetRef.LegFar;
-    if (SetRef.Cape) return SetRef.Cape;
+    if (SetRef.HandNear) return SetRef.HandNear;
+    if (SetRef.HandFar) return SetRef.HandFar;
 	return nullptr;
 }
 
@@ -223,13 +233,14 @@ void APaperDoll2DCharacter::UpdatePlaybackFrame(float DeltaSeconds)
 		}
 	};
 
-	Apply(Torso);
-	Apply(Head);
-	Apply(ArmNear);
-	Apply(ArmFar);
-	Apply(LegNear);
-	Apply(LegFar);
-	Apply(Cape);
+    Apply(Torso);
+    Apply(Head);
+    Apply(ArmNear);
+    Apply(ArmFar);
+    Apply(LegNear);
+    Apply(LegFar);
+    Apply(HandNear);
+    Apply(HandFar);
 }
 
 void APaperDoll2DCharacter::ApplySortPriorities() const
@@ -241,11 +252,12 @@ void APaperDoll2DCharacter::ApplySortPriorities() const
     // Resolve base priorities from SortRules if provided, else use defaults
     int32 TorsoBase = BasePriority_Torso;
     int32 HeadBase = BasePriority_Head;
-    int32 CapeBase = BasePriority_Cape;
     int32 ArmNearBase = BasePriority_Torso + 1;
     int32 ArmFarBase  = BasePriority_Torso - 1;
     int32 LegNearBase = BasePriority_Torso + 1;
     int32 LegFarBase  = BasePriority_Torso - 1;
+    int32 HandNearBase = BasePriority_Torso + 2;
+    int32 HandFarBase  = BasePriority_Torso - 2;
 
     if (SortRules)
     {
@@ -257,26 +269,28 @@ void APaperDoll2DCharacter::ApplySortPriorities() const
             ArmFarBase = P->ArmFar;
             LegNearBase = P->LegNear;
             LegFarBase = P->LegFar;
-            CapeBase = P->Cape;
+            HandNearBase = P->HandNear;
+            HandFarBase = P->HandFar;
         }
     }
 
     const int32 TorsoFinal = BucketBase + TorsoBase;
     const int32 HeadFinal = BucketBase + HeadBase;
-    const int32 CapeFinal = BucketBase + CapeBase;
     const int32 ArmNearFinal = BucketBase + ArmNearBase;
     const int32 ArmFarFinal  = BucketBase + ArmFarBase;
     const int32 LegNearFinal = BucketBase + LegNearBase;
     const int32 LegFarFinal  = BucketBase + LegFarBase;
+    const int32 HandNearFinal = BucketBase + HandNearBase;
+    const int32 HandFarFinal  = BucketBase + HandFarBase;
 
     if (Torso) Torso->SetTranslucentSortPriority(TorsoFinal);
     if (Head) Head->SetTranslucentSortPriority(HeadFinal);
-    if (Cape) Cape->SetTranslucentSortPriority(CapeFinal);
-
     if (ArmNear) ArmNear->SetTranslucentSortPriority(ArmNearFinal);
     if (ArmFar) ArmFar->SetTranslucentSortPriority(ArmFarFinal);
     if (LegNear) LegNear->SetTranslucentSortPriority(LegNearFinal);
     if (LegFar) LegFar->SetTranslucentSortPriority(LegFarFinal);
+    if (HandNear) HandNear->SetTranslucentSortPriority(HandNearFinal);
+    if (HandFar)  HandFar->SetTranslucentSortPriority(HandFarFinal);
 
     // Apply equipment offsets under each body part by component tag (slot name)
     auto ApplyChildren = [&](UPaperFlipbookComponent* ParentComp, int32 ParentPriority)
@@ -289,6 +303,7 @@ void APaperDoll2DCharacter::ApplySortPriorities() const
             {
                 bool bUseAbsolute = false;
                 int32 Value = 0;
+                bool bHasPerFrame = false;
                 if (SortRules)
                 {
                     // Use first tag as slot key if present
@@ -303,6 +318,20 @@ void APaperDoll2DCharacter::ApplySortPriorities() const
                         const int32* PerState = Rule->PerStateOverrides.Find(CurrentAnimState);
                         bUseAbsolute = Rule->bAbsolute;
                         Value = PerState ? *PerState : Rule->DefaultValue;
+                        // Per-frame override support
+                        if (const FPerFramePriority* PerFrame = Rule->PerFrameOverrides.Find(CurrentAnimState))
+                        {
+                            if (PerFrame->Values.Num() > 0)
+                            {
+                                bHasPerFrame = true;
+                                if (UPaperFlipbook* Master = GetMasterFlipbook())
+                                {
+                                    const int32 Frame = ComputeFrameIndex(Master, CurrentAnimTimeSeconds);
+                                    const int32 Index = Frame % PerFrame->Values.Num();
+                                    Value = PerFrame->Values[Index];
+                                }
+                            }
+                        }
                     }
                 }
                 if (bUseAbsolute)
@@ -324,7 +353,8 @@ void APaperDoll2DCharacter::ApplySortPriorities() const
     ApplyChildren(ArmFar, ArmFarFinal);
     ApplyChildren(LegNear, LegNearFinal);
     ApplyChildren(LegFar, LegFarFinal);
-    ApplyChildren(Cape, CapeFinal);
+    ApplyChildren(HandNear, HandNearFinal);
+    ApplyChildren(HandFar,  HandFarFinal);
 }
 
 void APaperDoll2DCharacter::OnRep_SortBucketId()
@@ -332,5 +362,12 @@ void APaperDoll2DCharacter::OnRep_SortBucketId()
 	ApplySortPriorities();
 }
 
+void APaperDoll2DCharacter::SetGlobalPlayRate(float NewRate)
+{
+	GlobalPlayRate = FMath::Clamp(NewRate, 0.0f, 10.0f);
+}
 
-
+void APaperDoll2DCharacter::RefreshSorting()
+{
+	ApplySortPriorities();
+}

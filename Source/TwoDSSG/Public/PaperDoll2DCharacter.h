@@ -2,11 +2,12 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
-#include "PaperFlipbook.h"
-#include "PaperFlipbookComponent.h"
 #include "PaperDollAnimTypes.h"
 #include "PaperDollSortRules.h"
 #include "PaperDoll2DCharacter.generated.h"
+
+class UPaperFlipbook;
+class UPaperFlipbookComponent;
 
 USTRUCT(BlueprintType)
 struct FPaperDollStateFlipbooks
@@ -17,9 +18,10 @@ struct FPaperDollStateFlipbooks
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Anim") UPaperFlipbook* Head = nullptr;
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Anim") UPaperFlipbook* ArmNear = nullptr;
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Anim") UPaperFlipbook* ArmFar = nullptr;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Anim") UPaperFlipbook* HandNear = nullptr;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Anim") UPaperFlipbook* HandFar = nullptr;
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Anim") UPaperFlipbook* LegNear = nullptr;
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Anim") UPaperFlipbook* LegFar = nullptr;
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Anim") UPaperFlipbook* Cape = nullptr;
 };
 
 USTRUCT(BlueprintType)
@@ -56,9 +58,10 @@ void PlayAnimationStateEx(EPaperDollAnimState NewState, int32 VariantIndex, bool
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components") UPaperFlipbookComponent* Head;
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components") UPaperFlipbookComponent* ArmNear;
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components") UPaperFlipbookComponent* ArmFar;
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components") UPaperFlipbookComponent* HandNear;
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components") UPaperFlipbookComponent* HandFar;
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components") UPaperFlipbookComponent* LegNear;
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components") UPaperFlipbookComponent* LegFar;
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components") UPaperFlipbookComponent* Cape;
 
 // Animation Sets per state; supports multiple variants per state (wrapper avoids nested containers)
 UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Anim")
@@ -68,15 +71,24 @@ TMap<EPaperDollAnimState, FPaperDollVariants> AnimSets;
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Sorting") int32 BasePriority_Torso = 0;
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Sorting") int32 BasePriority_Head = 2; // ensure chin can overlap chest
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Sorting") int32 BasePriority_Arms = 0; // treated as center around torso
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Sorting") int32 BasePriority_Hands = 3;
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Sorting") int32 BasePriority_Legs = 0; // treated as center around torso
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Sorting") int32 BasePriority_Cape = -3; // always behind torso
 
 	// Spacing between different players on a client to avoid overlap ranges
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Sorting") int32 GlobalBucketStride = 50;
 
 	// Animation playback control
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Anim") bool bUseTorsoAsTimeMaster = true;
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Anim") float GlobalPlayRate = 1.0f;
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Anim") float GlobalPlayRate = 1.0f;
+
+    UFUNCTION(BlueprintCallable, Category = "Anim")
+    void SetGlobalPlayRate(float NewRate);
+
+    UFUNCTION(BlueprintPure, Category = "Anim")
+    float GetGlobalPlayRate() const { return GlobalPlayRate; }
+
+    UFUNCTION(BlueprintCallable, Category = "Sorting")
+    void RefreshSorting();
 
 	// Optional data asset to drive per-state sort priorities and equipment offsets
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Sorting") UPaperDollSortRules* SortRules = nullptr;

@@ -5,6 +5,16 @@
 #include "Engine/DataAsset.h"
 #include "PaperDollSortRules.generated.h"
 
+// Wrapper to allow per-frame arrays in a map (UHT forbids nested containers directly)
+USTRUCT(BlueprintType)
+struct FPerFramePriority
+{
+    GENERATED_BODY()
+
+    UPROPERTY(EditAnywhere, BlueprintReadOnly)
+    TArray<int32> Values;
+};
+
 // Base part priorities for a single state
 USTRUCT(BlueprintType)
 struct FPaperDollPartPriorities
@@ -15,9 +25,10 @@ struct FPaperDollPartPriorities
 	UPROPERTY(EditAnywhere, BlueprintReadOnly) int32 Head = 2;
 	UPROPERTY(EditAnywhere, BlueprintReadOnly) int32 ArmNear = 1;
 	UPROPERTY(EditAnywhere, BlueprintReadOnly) int32 ArmFar = -1;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly) int32 HandNear = 3;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly) int32 HandFar = -3;
 	UPROPERTY(EditAnywhere, BlueprintReadOnly) int32 LegNear = 1;
 	UPROPERTY(EditAnywhere, BlueprintReadOnly) int32 LegFar = -1;
-	UPROPERTY(EditAnywhere, BlueprintReadOnly) int32 Cape = -3;
 };
 
 // Per-equipment slot offsets or absolute priorities
@@ -37,6 +48,11 @@ struct FEquipmentSortPerState
 	// Optional per-state overrides
     UPROPERTY(EditAnywhere, BlueprintReadOnly)
     TMap<EPaperDollAnimState, int32> PerStateOverrides;
+
+    // Optional per-frame absolute overrides (used within the same state)
+    // If provided and non-empty for a state, index = current frame % array length
+    UPROPERTY(EditAnywhere, BlueprintReadOnly)
+    TMap<EPaperDollAnimState, FPerFramePriority> PerFrameOverrides;
 };
 
 UCLASS(BlueprintType)
