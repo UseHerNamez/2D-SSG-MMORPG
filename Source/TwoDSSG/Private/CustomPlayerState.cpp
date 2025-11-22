@@ -94,6 +94,11 @@ void ACustomPlayerState::ApplyAppearance_ServerOnly(const FString& NewAppearance
     check(HasAuthority());
     PublicInspect.Appearance = NewAppearance;
     ForceNetUpdate();
+
+    if (UCustomGameInstanceSubsystem* Sub = GetWorld() ? GetWorld()->GetGameInstance()->GetSubsystem<UCustomGameInstanceSubsystem>() : nullptr)
+    {
+        Sub->EnqueueSetAppearance(GetCharId_Server(), PublicInspect.Appearance);
+    }
 }
 
 void ACustomPlayerState::ApplyHP_ServerOnly(int32 NewCurrHP)
@@ -168,3 +173,52 @@ void ACustomPlayerState::SetServerOnlyData(const FCharacterInitData_Server& In)
     ServerOnlyData = In;
 }
 #endif
+
+#if WITH_SERVER_CODE
+// Helper to parse "key:value,key2:value2" into a map
+static void ParseAppearanceString(const FString& In, TMap<FString, FString>& OutMap)
+{
+    OutMap.Empty();
+    TArray<FString> Pairs;
+    In.ParseIntoArray(Pairs, TEXT(","), true);
+    for (const FString& P : Pairs)
+    {
+        FString K, V;
+        if (P.Split(TEXT(":"), &K, &V))
+        {
+            OutMap.Add(K.TrimStartAndEnd(), V.TrimStartAndEnd());
+        }
+    }
+}
+
+static FString BuildAppearanceString(const TMap<FString, FString>& InMap)
+{
+    TArray<FString> Parts;
+    Parts.Reserve(InMap.Num());
+    for (const auto& It : InMap)
+    {
+        Parts.Add(It.Key + TEXT(":") + It.Value);
+    }
+    return FString::Join(Parts, TEXT(","));
+}
+#endif
+
+void ACustomPlayerState::UpdateAppearanceEntry_ServerOnly(FName Slot, const FString& Value)
+{
+#if WITH_SERVER_CODE
+    check(HasAuthority());
+    TMap<FString, FString> Map;
+    ParseAppearanceString(PublicInspect.Appearance, Map);
+    const FString Key = Slot.ToString();
+    if (Value.IsEmpty())
+    {
+        Map.Remove(Key);
+    }
+    else
+    {
+        Map.Add(Key, Value);
+    }
+    const FString NewAppearance = BuildAppearanceString(Map);
+    ApplyAppearance_ServerOnly(NewAppearance);
+#endif
+}

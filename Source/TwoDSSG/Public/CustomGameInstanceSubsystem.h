@@ -55,6 +55,9 @@ public:
         void EnqueueSetCurrentMP(int32 CharId, int32 CurrMP);
 
     UFUNCTION(BlueprintCallable, Category = "Persistence", meta = (BlueprintAuthorityOnly))
+        void EnqueueSetAppearance(int32 CharId, const FString& Appearance);
+
+    UFUNCTION(BlueprintCallable, Category = "Persistence", meta = (BlueprintAuthorityOnly))
         void EnqueueAddItem(int32 CharId, int32 ItemId, int32 Qty);
 
     UFUNCTION(BlueprintCallable, Category = "Persistence", meta = (BlueprintAuthorityOnly))

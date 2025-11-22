@@ -13,6 +13,7 @@ enum class EPersistenceJobType : uint8
     SetDamageRangeRecord,
     SetCurrentHP,
     SetCurrentMP,
+    SetAppearance,
     // there will be more
 };
 
@@ -105,5 +106,15 @@ struct FJobSetCurrentMP : public FJobBase
     FJobSetCurrentMP(int32 InCharId, int32 InCurrMP)
         : FJobBase(EPersistenceJobType::SetCurrentMP, InCharId)
         , CurrMP(InCurrMP)
+    {}
+};
+
+struct FJobSetAppearance : public FJobBase
+{
+    FString Appearance;
+
+    FJobSetAppearance(int32 InCharId, const FString& InAppearance)
+        : FJobBase(EPersistenceJobType::SetAppearance, InCharId)
+        , Appearance(InAppearance)
     {}
 };

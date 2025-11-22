@@ -52,6 +52,10 @@ public:
     UFUNCTION(BlueprintCallable, Category = "Persistence", meta = (BlueprintAuthorityOnly))
         void ApplyAppearance_ServerOnly(const FString& NewAppearance);
 
+    // Update one entry (slot=value) in the serialized appearance string and persist (server only)
+    UFUNCTION(BlueprintCallable, Category = "Persistence", meta = (BlueprintAuthorityOnly))
+        void UpdateAppearanceEntry_ServerOnly(FName Slot, const FString& Value);
+
     // HP/MP server-only apply helpers
     UFUNCTION(BlueprintCallable, Category = "Persistence", meta = (BlueprintAuthorityOnly))
         void ApplyHP_ServerOnly(int32 NewCurrHP);

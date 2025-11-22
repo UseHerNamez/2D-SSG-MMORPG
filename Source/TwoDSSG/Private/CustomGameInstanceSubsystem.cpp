@@ -251,6 +251,21 @@ void UCustomGameInstanceSubsystem::EnqueueSetCurrentMP(int32 CharId, int32 CurrM
     WriteQueueCv.notify_one();
 }
 
+void UCustomGameInstanceSubsystem::EnqueueSetAppearance(int32 CharId, const FString& Appearance)
+{
+    if (!IsReady() || bTestMode)
+    {
+        UE_LOG(LogTemp, Verbose, TEXT("EnqueueSetAppearance - database not ready, skipping"));
+        return;
+    }
+    std::shared_ptr<FJobBase> Job = std::static_pointer_cast<FJobBase>(std::make_shared<FJobSetAppearance>(CharId, Appearance));
+    {
+        std::lock_guard<std::mutex> Lock(WriteQueueMutex);
+        WriteQueue.push(Job);
+    }
+    WriteQueueCv.notify_one();
+}
+
 void UCustomGameInstanceSubsystem::EnqueueSetLevelUpSnapshot(int32 CharId, int32 NewLevel, int32 MaxExpToLvl, int32 MaxHpFromLvls, int32 MaxMpFromLvls, int32 UnspentAP, int32 CurrentXP)
 {
     if (!IsReady() || bTestMode)
@@ -534,6 +549,22 @@ void UCustomGameInstanceSubsystem::QueueWorker()
                         {
                             UE_LOG(LogTemp, Error, TEXT("Failed to update DamageRangeRecord for CharId %d"), RngJob->CharId);
                         }
+                        break;
+                    }
+
+                    case EPersistenceJobType::SetAppearance:
+                    {
+                        FJobSetAppearance* AppJob = static_cast<FJobSetAppearance*>(Job.get());
+                        if (!AppJob)
+                        {
+                            UE_LOG(LogTemp, Warning, TEXT("Invalid SetAppearance job"));
+                            continue;
+                        }
+                        // TODO: implement in DatabaseConnector; for now, log only to keep pipeline intact
+                        UE_LOG(LogTemp, Verbose, TEXT("QueueWorker: SetAppearance pending DB impl (CharId=%d Appearance=%s)"),
+                            AppJob->CharId, *AppJob->Appearance);
+                        // Example when implemented:
+                        // if (!Conn->UpdateAppearance(AppJob->CharId, TCHAR_TO_UTF8(*AppJob->Appearance))) { ... }
                         break;
                     }
 

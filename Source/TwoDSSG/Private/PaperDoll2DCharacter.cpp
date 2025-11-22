@@ -2,6 +2,11 @@
 #include "Net/UnrealNetwork.h"
 #include "PaperFlipbook.h"
 #include "PaperFlipbookComponent.h"
+#include "CustomPlayerState.h"
+#include "TimerManager.h"
+
+// Forward declare local helpers used before definition
+static UPaperFlipbookComponent* FindParentForSlot(APaperDoll2DCharacter* Self, const FName& SlotTag);
 
 APaperDoll2DCharacter::APaperDoll2DCharacter(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)
@@ -68,6 +73,9 @@ APaperDoll2DCharacter::APaperDoll2DCharacter(const FObjectInitializer& ObjectIni
 	LegFar->SetPlayRate(0.0f);
 	HandNear->SetPlayRate(0.0f);
 	HandFar->SetPlayRate(0.0f);
+
+	// Pre-populate SlotToParentPart with common slot names (keys only, values set in Blueprint)
+	InitializeSlotToParentPartDefaults();
 }
 
 void APaperDoll2DCharacter::BeginPlay()
@@ -106,7 +114,7 @@ void APaperDoll2DCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>
     DOREPLIFETIME(APaperDoll2DCharacter, SortBucketId);
 }
 
-void APaperDoll2DCharacter::PlayAnimationState(EPaperDollAnimState NewState, bool bResetTime)
+void APaperDoll2DCharacter::PlayAnimationState(EPaperDollAnimState NewState, bool bResetTime) // resetTime - if want to start the animation from frame 0
 {
 	if (HasAuthority())
 	{
@@ -121,7 +129,7 @@ void APaperDoll2DCharacter::PlayAnimationState(EPaperDollAnimState NewState, boo
 	}
 }
 
-void APaperDoll2DCharacter::PlayAnimationStateEx(EPaperDollAnimState NewState, int32 VariantIndex, bool bResetTime)
+void APaperDoll2DCharacter::PlayAnimationStateEx(EPaperDollAnimState NewState, int32 VariantIndex, bool bResetTime) // Ex - if the anim has many variants (for example basicatk)
 {
     if (HasAuthority())
     {
@@ -168,6 +176,9 @@ void APaperDoll2DCharacter::UpdateFlipbooksForCurrentState()
 	LegFar->SetFlipbook(SetRef.LegFar);
 	HandNear->SetFlipbook(SetRef.HandNear);
 	HandFar->SetFlipbook(SetRef.HandFar);
+
+    // Apply equipment flipbooks for this state if mapping is provided
+    ApplyEquipFlipbooksForCurrentState();
 }
 
 int32 APaperDoll2DCharacter::ComputeFrameIndex(const UPaperFlipbook* Master, float TimeSeconds) const
@@ -225,22 +236,39 @@ void APaperDoll2DCharacter::UpdatePlaybackFrame(float DeltaSeconds)
 	CurrentAnimTimeSeconds += DeltaSeconds;
 	const int32 Frame = ComputeFrameIndex(Master, CurrentAnimTimeSeconds);
 
-    auto Apply = [Frame](UPaperFlipbookComponent* Comp)
+    auto ApplySelf = [Frame](UPaperFlipbookComponent* Comp)
 	{
 		if (Comp && Comp->GetFlipbook())
 		{
-            Comp->SetPlaybackPositionInFrames(Frame, /*bFireEvents*/ false);
+            // Clamp to the component's flipbook frame count (supports 1-frame equips)
+            const int32 Num = Comp->GetFlipbook()->GetNumFrames();
+            const int32 Clamped = (Num > 0) ? FMath::Clamp(Frame, 0, Num - 1) : 0;
+            Comp->SetPlaybackPositionInFrames(Clamped, /*bFireEvents*/ false);
 		}
 	};
 
-    Apply(Torso);
-    Apply(Head);
-    Apply(ArmNear);
-    Apply(ArmFar);
-    Apply(LegNear);
-    Apply(LegFar);
-    Apply(HandNear);
-    Apply(HandFar);
+    auto ApplyWithChildren = [&](UPaperFlipbookComponent* Parent)
+    {
+        ApplySelf(Parent);
+        if (!Parent) return;
+        const TArray<USceneComponent*>& Children = Parent->GetAttachChildren();
+        for (USceneComponent* Child : Children)
+        {
+            if (UPaperFlipbookComponent* Eq = Cast<UPaperFlipbookComponent>(Child))
+            {
+                ApplySelf(Eq);
+            }
+        }
+    };
+
+    ApplyWithChildren(Torso);
+    ApplyWithChildren(Head);
+    ApplyWithChildren(ArmNear);
+    ApplyWithChildren(ArmFar);
+    ApplyWithChildren(LegNear);
+    ApplyWithChildren(LegFar);
+    ApplyWithChildren(HandNear);
+    ApplyWithChildren(HandFar);
 }
 
 void APaperDoll2DCharacter::ApplySortPriorities() const
@@ -296,8 +324,8 @@ void APaperDoll2DCharacter::ApplySortPriorities() const
     auto ApplyChildren = [&](UPaperFlipbookComponent* ParentComp, int32 ParentPriority)
     {
         if (!ParentComp) return;
-        const TArray<USceneComponent*>& Children = ParentComp->GetAttachChildren();
-        for (USceneComponent* Child : Children)
+        const TArray<USceneComponent*>& AttachedChildren = ParentComp->GetAttachChildren();
+        for (USceneComponent* Child : AttachedChildren)
         {
             if (UPaperFlipbookComponent* Eq = Cast<UPaperFlipbookComponent>(Child))
             {
@@ -307,12 +335,12 @@ void APaperDoll2DCharacter::ApplySortPriorities() const
                 if (SortRules)
                 {
                     // Use first tag as slot key if present
-                    FName SlotName;
+                    FName SlotTag;
                     if (Eq->ComponentTags.Num() > 0)
                     {
-                        SlotName = Eq->ComponentTags[0];
+                        SlotTag = Eq->ComponentTags[0];
                     }
-                    const FEquipmentSortPerState* Rule = SlotName.IsNone() ? nullptr : SortRules->EquipmentRules.Find(SlotName);
+                    const FEquipmentSortPerState* Rule = SlotTag.IsNone() ? nullptr : SortRules->EquipmentRules.Find(SlotTag);
                     if (Rule)
                     {
                         const int32* PerState = Rule->PerStateOverrides.Find(CurrentAnimState);
@@ -370,4 +398,384 @@ void APaperDoll2DCharacter::SetGlobalPlayRate(float NewRate)
 void APaperDoll2DCharacter::RefreshSorting()
 {
 	ApplySortPriorities();
+}
+
+void APaperDoll2DCharacter::ApplyEquipFlipbooksForCurrentState()
+{
+	if (EquipFlipbooksBySlot.Num() == 0) return;
+
+	for (const auto& Pair : EquipFlipbooksBySlot)
+	{
+		const FName SlotTag = Pair.Key;
+		const FEquipStateFlipbooks& Map = Pair.Value;
+
+		UPaperFlipbookComponent* Eq = nullptr;
+		FindEquipComponentBySlot(SlotTag, Eq);
+		if (!Eq)
+		{
+			// Ensure the component exists if mapping is present
+			Eq = EquipOrSwapFlipbook(SlotTag, nullptr, true);
+		}
+		if (!Eq) continue;
+
+		// Ensure correct parent for this state (supports dynamic re-parenting e.g., climb)
+		if (UPaperFlipbookComponent* DesiredParent = FindParentForSlot(this, SlotTag))
+		{
+			if (Eq->GetAttachParent() != DesiredParent)
+			{
+				if (DesiredParent->DoesSocketExist(SlotTag))
+				{
+					Eq->AttachToComponent(DesiredParent, FAttachmentTransformRules::KeepRelativeTransform, SlotTag);
+				}
+				else
+				{
+					Eq->AttachToComponent(DesiredParent, FAttachmentTransformRules::KeepRelativeTransform);
+				}
+			}
+		}
+
+		// Apply flipbook for current state
+		if (UPaperFlipbook* const* FB = Map.ByState.Find(CurrentAnimState))
+		{
+			Eq->SetFlipbook(*FB);
+		}
+	}
+}
+
+UPaperFlipbookComponent* APaperDoll2DCharacter::EquipOrSwapFlipbooks(FName SlotTag, const TMap<EPaperDollAnimState, UPaperFlipbook*>& MappingByState)
+{
+    // Store mapping
+    FEquipStateFlipbooks Mapping;
+    Mapping.ByState = MappingByState;
+    EquipFlipbooksBySlot.Add(SlotTag, Mapping);
+    // Ensure component
+    UPaperFlipbookComponent* Comp = EquipOrSwapFlipbook(SlotTag, nullptr, true);
+    // Apply current state's flipbook now
+    ApplyEquipFlipbooksForCurrentState();
+    // Safe to refresh sorting (cheap)
+    RefreshSorting();
+    return Comp;
+}
+
+bool APaperDoll2DCharacter::FindEquipComponentBySlot(FName SlotTag, UPaperFlipbookComponent*& OutComponent) const
+{
+    OutComponent = nullptr;
+    if (SlotTag.IsNone())
+    {
+        return false;
+    }
+
+    auto FindUnderParent = [&](UPaperFlipbookComponent* Parent) -> UPaperFlipbookComponent*
+    {
+        if (!Parent) return nullptr;
+        const TArray<USceneComponent*>& AttachedChildren = Parent->GetAttachChildren();
+        for (USceneComponent* Child : AttachedChildren)
+        {
+            if (UPaperFlipbookComponent* Eq = Cast<UPaperFlipbookComponent>(Child))
+            {
+                const bool bTagMatch = (Eq->ComponentTags.Num() > 0 && Eq->ComponentTags[0] == SlotTag);
+                const bool bSocketMatch = (Eq->GetAttachSocketName() == SlotTag);
+                if (bTagMatch || bSocketMatch)
+                {
+                    return Eq;
+                }
+            }
+        }
+        return nullptr;
+    };
+
+    // Prefer the mapped/heuristic parent first
+    UPaperFlipbookComponent* MappedParent = FindParentForSlot(const_cast<APaperDoll2DCharacter*>(this), SlotTag);
+    if (UPaperFlipbookComponent* Found = FindUnderParent(MappedParent))
+    {
+        OutComponent = Found;
+        return true;
+    }
+
+    // Fallback: search all body part parents
+    UPaperFlipbookComponent* Parents[] = { Torso, Head, ArmNear, ArmFar, HandNear, HandFar, LegNear, LegFar };
+    for (UPaperFlipbookComponent* P : Parents)
+    {
+        if (UPaperFlipbookComponent* Found = FindUnderParent(P))
+        {
+            OutComponent = Found;
+            return true;
+        }
+    }
+
+    return false;
+}
+
+void APaperDoll2DCharacter::SetSlotParentOverrideForState(EPaperDollAnimState State, FName SlotTag, FName ParentPartName)
+{
+	StateSlotParentOverrides.FindOrAdd(State).Map.Add(SlotTag, ParentPartName);
+	if (State == CurrentAnimState)
+	{
+		ApplyEquipFlipbooksForCurrentState();
+		RefreshSorting();
+	}
+}
+
+void APaperDoll2DCharacter::ClearSlotParentOverrideForState(EPaperDollAnimState State, FName SlotTag)
+{
+	if (FSlotParentMap* M = StateSlotParentOverrides.Find(State))
+	{
+		M->Map.Remove(SlotTag);
+	}
+	if (State == CurrentAnimState)
+	{
+		ApplyEquipFlipbooksForCurrentState();
+		RefreshSorting();
+	}
+}
+
+static UPaperFlipbookComponent* ResolveParentByName(APaperDoll2DCharacter* Self, const FName& Name)
+{
+    if (!Self) return nullptr;
+    if (Name == "Torso") return Self->Torso;
+    if (Name == "Head") return Self->Head;
+    if (Name == "ArmNear") return Self->ArmNear;
+    if (Name == "ArmFar") return Self->ArmFar;
+    if (Name == "HandNear") return Self->HandNear;
+    if (Name == "HandFar") return Self->HandFar;
+    if (Name == "LegNear") return Self->LegNear;
+    if (Name == "LegFar") return Self->LegFar;
+    return Self->Torso;
+}
+
+static UPaperFlipbookComponent* FindParentForSlot(APaperDoll2DCharacter* Self, const FName& SlotTag)
+{
+    if (!Self) return nullptr;
+    // Check per-state override first
+    if (const FSlotParentMap* StateMap = Self->StateSlotParentOverrides.Find(Self->GetCurrentAnimState()))
+    {
+        if (const FName* OverrideParentName = StateMap->Map.Find(SlotTag))
+        {
+            if (UPaperFlipbookComponent* C = ResolveParentByName(Self, *OverrideParentName))
+            {
+                return C;
+            }
+        }
+    }
+    // Prefer explicit mapping
+    if (Self->SlotToParentPart.Contains(SlotTag))
+    {
+        if (UPaperFlipbookComponent* C = ResolveParentByName(Self, Self->SlotToParentPart[SlotTag]))
+        {
+            return C;
+        }
+    }
+    // Try sockets by name across parts
+    {
+        UPaperFlipbookComponent* Parts[] = { Self->Head, Self->HandNear, Self->HandFar, Self->ArmNear, Self->ArmFar, Self->LegNear, Self->LegFar, Self->Torso };
+        for (UPaperFlipbookComponent* P : Parts)
+        {
+            if (P && P->DoesSocketExist(SlotTag)) return P;
+        }
+    }
+    return nullptr; // let caller fallback to heuristic
+}
+
+static bool NameContains(const FName& Tag, const TCHAR* Sub)
+{
+    return Tag.ToString().Contains(Sub, ESearchCase::IgnoreCase);
+}
+
+UPaperFlipbookComponent* APaperDoll2DCharacter::EquipOrSwapFlipbook(FName SlotTag, UPaperFlipbook* Flipbook, bool bCreateIfMissing)
+{
+    // Decide parent by mapping first, then by simple heuristics
+    UPaperFlipbookComponent* Parent = FindParentForSlot(this, SlotTag);
+    if (!Parent)
+    {
+        if (NameContains(SlotTag, TEXT("Head")) || NameContains(SlotTag, TEXT("Hair")) || NameContains(SlotTag, TEXT("Helmet")) || NameContains(SlotTag, TEXT("Earring")))
+        {
+            Parent = Head;
+        }
+        else if (NameContains(SlotTag, TEXT("HandNear")) || NameContains(SlotTag, TEXT("GloveNear")) || NameContains(SlotTag, TEXT("RingNear")) || NameContains(SlotTag, TEXT("WeaponNear")))
+        {
+            Parent = HandNear;
+        }
+        else if (NameContains(SlotTag, TEXT("HandFar")) || NameContains(SlotTag, TEXT("GloveFar")) || NameContains(SlotTag, TEXT("RingFar")) || NameContains(SlotTag, TEXT("WeaponFar")) || NameContains(SlotTag, TEXT("ShieldFar")))
+        {
+            Parent = HandFar;
+        }
+        else if (NameContains(SlotTag, TEXT("LegNear")) || NameContains(SlotTag, TEXT("PantsNear")) || NameContains(SlotTag, TEXT("BottomNear")) || NameContains(SlotTag, TEXT("ShoeNear")))
+        {
+            Parent = LegNear;
+        }
+        else if (NameContains(SlotTag, TEXT("LegFar")) || NameContains(SlotTag, TEXT("PantsFar")) || NameContains(SlotTag, TEXT("BottomFar")) || NameContains(SlotTag, TEXT("ShoeFar")))
+        {
+            Parent = LegFar;
+        }
+        else
+        {
+            // Cape/Aura/Coat default to Torso
+            Parent = Torso;
+        }
+    }
+    if (!Parent)
+    {
+        return nullptr;
+    }
+
+    // Find existing component with this tag under the parent
+    UPaperFlipbookComponent* Target = nullptr;
+    const TArray<USceneComponent*>& AttachedChildren = Parent->GetAttachChildren();
+    for (USceneComponent* Child : AttachedChildren)
+    {
+        if (UPaperFlipbookComponent* Eq = Cast<UPaperFlipbookComponent>(Child))
+        {
+            if (Eq->ComponentTags.Num() > 0 && Eq->ComponentTags[0] == SlotTag)
+            {
+                Target = Eq;
+                break;
+            }
+        }
+    }
+
+    bool bCreatedOrRetagged = false;
+
+    if (!Target && bCreateIfMissing)
+    {
+        Target = NewObject<UPaperFlipbookComponent>(this);
+        if (!Target) return nullptr;
+        // Attach to socket if present; otherwise to the parent with no socket
+        if (Parent->DoesSocketExist(SlotTag))
+        {
+            Target->AttachToComponent(Parent, FAttachmentTransformRules::KeepRelativeTransform, SlotTag);
+        }
+        else
+        {
+            Target->SetupAttachment(Parent);
+        }
+        Target->RegisterComponent();
+        Target->SetIsReplicated(false);
+        Target->SetLooping(true);
+        Target->SetPlayRate(0.0f);
+        Target->ComponentTags.Reset();
+        Target->ComponentTags.Add(SlotTag);
+        bCreatedOrRetagged = true;
+    }
+    else if (Target && (Target->ComponentTags.Num() == 0 || Target->ComponentTags[0] != SlotTag))
+    {
+        Target->ComponentTags.Reset();
+        Target->ComponentTags.Add(SlotTag);
+        bCreatedOrRetagged = true;
+    }
+    // Ensure correct socket attachment if the parent now exposes the socket
+    if (Target && Parent->DoesSocketExist(SlotTag))
+    {
+        Target->AttachToComponent(Parent, FAttachmentTransformRules::KeepRelativeTransform, SlotTag);
+    }
+
+    if (Target)
+    {
+        Target->SetFlipbook(Flipbook);
+        if (bCreatedOrRetagged)
+        {
+            RefreshSorting();
+        }
+    }
+    return Target;
+}
+int32 APaperDoll2DCharacter::GetCurrentFrameIndex() const
+{
+	if (UPaperFlipbook* Master = GetMasterFlipbook())
+	{
+		return ComputeFrameIndex(Master, CurrentAnimTimeSeconds);
+	}
+	return 0;
+}
+
+int32 APaperDoll2DCharacter::GetMasterNumFrames() const
+{
+	if (UPaperFlipbook* Master = GetMasterFlipbook())
+	{
+		return Master->GetNumFrames();
+	}
+	return 0;
+}
+
+float APaperDoll2DCharacter::GetMasterTotalDurationSeconds() const
+{
+	if (UPaperFlipbook* Master = GetMasterFlipbook())
+	{
+		return Master->GetTotalDuration();
+	}
+	return 0.0f;
+}
+
+bool APaperDoll2DCharacter::IsFrameInRange(int32 FromInclusive, int32 ToInclusive) const
+{
+	const int32 F = GetCurrentFrameIndex();
+	return F >= FromInclusive && F <= ToInclusive;
+}
+
+void APaperDoll2DCharacter::StartAttackHeld(float PlayRateMultiplier, int32 VariantIndex)
+{
+	if (!HasAuthority()) return;
+	SetGlobalPlayRate(PlayRateMultiplier);
+	bAttackHeld = true;
+	PlayAnimationStateEx(EPaperDollAnimState::BasicAttack, VariantIndex, true);
+	const float Dur = GetMasterTotalDurationSeconds() / FMath::Max(0.001f, GlobalPlayRate);
+	GetWorldTimerManager().SetTimer(AttackCycleTimer, this, &APaperDoll2DCharacter::HandleAttackCycleEnd, Dur, false);
+}
+
+void APaperDoll2DCharacter::StopAttackHeld()
+{
+	if (!HasAuthority()) return;
+	bAttackHeld = false;
+}
+
+void APaperDoll2DCharacter::HandleAttackCycleEnd()
+{
+	if (!HasAuthority()) return;
+	if (bAttackHeld)
+	{
+		PlayAnimationStateEx(EPaperDollAnimState::BasicAttack, -1, true);
+		const float Dur = GetMasterTotalDurationSeconds() / FMath::Max(0.001f, GlobalPlayRate);
+		GetWorldTimerManager().SetTimer(AttackCycleTimer, this, &APaperDoll2DCharacter::HandleAttackCycleEnd, Dur, false);
+	}
+}
+
+void APaperDoll2DCharacter::InitializeSlotToParentPartDefaults()
+{
+	// Pre-populate SlotToParentPart with all slot names and default body part mappings
+	// Values can be overridden in Blueprint if needed
+	
+	// Head slots
+	SlotToParentPart.Add(TEXT("Hat"), TEXT("Head"));
+	SlotToParentPart.Add(TEXT("FaceAcc"), TEXT("Head"));
+	SlotToParentPart.Add(TEXT("EyeAcc"), TEXT("Head"));
+	SlotToParentPart.Add(TEXT("FrontEarring"), TEXT("Head"));
+	SlotToParentPart.Add(TEXT("BackEarring"), TEXT("Head"));
+	
+	// Torso slots
+	SlotToParentPart.Add(TEXT("Top"), TEXT("Torso"));
+	SlotToParentPart.Add(TEXT("FrontCape"), TEXT("Torso"));
+	SlotToParentPart.Add(TEXT("BackCape"), TEXT("Torso"));
+	SlotToParentPart.Add(TEXT("FrontAura"), TEXT("Torso"));
+	SlotToParentPart.Add(TEXT("BackAura"), TEXT("Torso"));
+	SlotToParentPart.Add(TEXT("Pendant"), TEXT("Torso"));
+	
+	// Arm slots (sleeves attach to arms, not torso)
+	SlotToParentPart.Add(TEXT("FrontSleeve"), TEXT("ArmNear"));
+	SlotToParentPart.Add(TEXT("BackSleeve"), TEXT("ArmFar"));
+	
+	// Hand slots
+	SlotToParentPart.Add(TEXT("FrontGlove"), TEXT("HandNear"));
+	SlotToParentPart.Add(TEXT("BackGlove"), TEXT("HandFar"));
+	SlotToParentPart.Add(TEXT("Ring1"), TEXT("HandNear"));
+	SlotToParentPart.Add(TEXT("Ring2"), TEXT("HandNear"));
+	SlotToParentPart.Add(TEXT("Ring3"), TEXT("HandNear"));
+	SlotToParentPart.Add(TEXT("Ring4"), TEXT("HandNear"));
+	SlotToParentPart.Add(TEXT("Weapon"), TEXT("HandNear"));
+	SlotToParentPart.Add(TEXT("Secondary"), TEXT("HandFar"));
+	SlotToParentPart.Add(TEXT("Shield"), TEXT("HandFar"));
+	
+	// Leg slots (includes pants/bottoms - entire leg from pelvis down)
+	SlotToParentPart.Add(TEXT("FrontBottom"), TEXT("LegNear"));
+	SlotToParentPart.Add(TEXT("BackBottom"), TEXT("LegFar"));
+	SlotToParentPart.Add(TEXT("FrontShoe"), TEXT("LegNear"));
+	SlotToParentPart.Add(TEXT("BackShoe"), TEXT("LegFar"));
 }
