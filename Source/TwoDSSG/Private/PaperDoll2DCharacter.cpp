@@ -4,6 +4,7 @@
 #include "PaperFlipbookComponent.h"
 #include "CustomPlayerState.h"
 #include "TimerManager.h"
+#include "GameFramework/CharacterMovementComponent.h"
 
 // Forward declare local helpers used before definition
 static UPaperFlipbookComponent* FindParentForSlot(APaperDoll2DCharacter* Self, const FName& SlotTag);
@@ -192,7 +193,8 @@ int32 APaperDoll2DCharacter::ComputeFrameIndex(const UPaperFlipbook* Master, flo
 	{
 		return 0;
 	}
-	const float Normalized = FMath::Fmod(FMath::Max(0.0f, TimeSeconds * GlobalPlayRate), Duration);
+	const float EffectiveRate = FMath::Clamp(GlobalPlayRate * PlayRate, 0.0f, 10.0f);
+	const float Normalized = FMath::Fmod(FMath::Max(0.0f, TimeSeconds * EffectiveRate), Duration);
 	const int32 FrameIndex = Master->GetKeyFrameIndexAtTime(Normalized);
 	return FMath::Clamp(FrameIndex, 0, Master->GetNumFrames() - 1);
 }
@@ -711,14 +713,15 @@ bool APaperDoll2DCharacter::IsFrameInRange(int32 FromInclusive, int32 ToInclusiv
 	return F >= FromInclusive && F <= ToInclusive;
 }
 
+void APaperDoll2DCharacter::SetPlayRate(float NewRate)
+{
+	PlayRate = FMath::Clamp(NewRate, 0.0f, 10.0f);
+}
+
 void APaperDoll2DCharacter::StartAttackHeld(float PlayRateMultiplier, int32 VariantIndex)
 {
-	if (!HasAuthority()) return;
-	SetGlobalPlayRate(PlayRateMultiplier);
-	bAttackHeld = true;
-	PlayAnimationStateEx(EPaperDollAnimState::BasicAttack, VariantIndex, true);
-	const float Dur = GetMasterTotalDurationSeconds() / FMath::Max(0.001f, GlobalPlayRate);
-	GetWorldTimerManager().SetTimer(AttackCycleTimer, this, &APaperDoll2DCharacter::HandleAttackCycleEnd, Dur, false);
+	// Backward-compatible wrapper: defaults to BasicAttack; if VariantIndex < 0, randomize for basic.
+	StartAttackHeldWithState(PlayRateMultiplier, EPaperDollAnimState::BasicAttack, VariantIndex);
 }
 
 void APaperDoll2DCharacter::StopAttackHeld()
@@ -727,14 +730,186 @@ void APaperDoll2DCharacter::StopAttackHeld()
 	bAttackHeld = false;
 }
 
+void APaperDoll2DCharacter::StartAttackHeldWithState(float PlayRateMultiplier, EPaperDollAnimState AttackState, int32 VariantIndex)
+{
+	if (!HasAuthority()) return;
+	SetGlobalPlayRate(PlayRateMultiplier);
+
+	// If an attack is already running, keep it held and update desired state; do not restart mid-swing.
+	if (bAttackHeld)
+	{
+		HeldAttackState = AttackState;
+		bAttackHeld = true;
+		return;
+	}
+
+	// Fresh start
+	HeldAttackState = AttackState;
+	bAttackHeld = true;
+
+	// Resolve variant
+	int32 ResolvedVariant = VariantIndex;
+	if (AttackState == EPaperDollAnimState::BasicAttack)
+	{
+		if (ResolvedVariant < 0)
+		{
+			if (const FPaperDollVariants* VariantsWrap = AnimSets.Find(EPaperDollAnimState::BasicAttack))
+			{
+				if (VariantsWrap->Variants.Num() > 1)
+				{
+					ResolvedVariant = FMath::RandRange(0, VariantsWrap->Variants.Num() - 1);
+				}
+			}
+		}
+	}
+	else if (AttackState == EPaperDollAnimState::BendAttack)
+	{
+		ResolvedVariant = -1; // bend attack single/default
+	}
+
+	PlayAnimationStateEx(AttackState, ResolvedVariant, true);
+	const float Dur = GetMasterTotalDurationSeconds() / FMath::Max(0.001f, GlobalPlayRate);
+	GetWorldTimerManager().SetTimer(AttackCycleTimer, this, &APaperDoll2DCharacter::HandleAttackCycleEnd, Dur, false);
+}
+
 void APaperDoll2DCharacter::HandleAttackCycleEnd()
 {
 	if (!HasAuthority()) return;
 	if (bAttackHeld)
 	{
-		PlayAnimationStateEx(EPaperDollAnimState::BasicAttack, -1, true);
+		int32 VariantIndex = -1;
+		if (HeldAttackState == EPaperDollAnimState::BasicAttack)
+		{
+			if (const FPaperDollVariants* VariantsWrap = AnimSets.Find(EPaperDollAnimState::BasicAttack))
+			{
+				if (VariantsWrap->Variants.Num() > 1)
+				{
+					VariantIndex = FMath::RandRange(0, VariantsWrap->Variants.Num() - 1);
+				}
+			}
+		}
+		PlayAnimationStateEx(HeldAttackState, VariantIndex, true);
 		const float Dur = GetMasterTotalDurationSeconds() / FMath::Max(0.001f, GlobalPlayRate);
 		GetWorldTimerManager().SetTimer(AttackCycleTimer, this, &APaperDoll2DCharacter::HandleAttackCycleEnd, Dur, false);
+	}
+}
+
+// Simple priority table (higher wins)
+static int32 GetAnimPriority(EPaperDollAnimState State)
+{
+	switch (State)
+	{
+	case EPaperDollAnimState::ClimbLadder:
+	case EPaperDollAnimState::ClimbRope:    return 100;
+	case EPaperDollAnimState::BasicAttack:  return 90;
+	case EPaperDollAnimState::Jump:         return 80;
+	case EPaperDollAnimState::BendAttack:   return 75;
+	case EPaperDollAnimState::Bend:         return 70;
+	case EPaperDollAnimState::Walk:         return 60;
+	case EPaperDollAnimState::Alert:        return 50;
+	case EPaperDollAnimState::Idle:         return 40;
+	default:                                return 40;
+	}
+}
+
+bool APaperDoll2DCharacter::RequestAnimationStateWithPriority(EPaperDollAnimState DesiredState, bool bInCombat, int32 VariantIndex, bool bResetTime)
+{
+	if (!HasAuthority()) return false;
+
+	// Normalize low-priority requests to combat-aware fallback
+	if (DesiredState == EPaperDollAnimState::Alert || DesiredState == EPaperDollAnimState::Idle)
+	{
+		DesiredState = bInCombat ? EPaperDollAnimState::Alert : EPaperDollAnimState::Idle;
+	}
+
+	// Climb guard: only Jump can override climb
+	if ((CurrentAnimState == EPaperDollAnimState::ClimbLadder || CurrentAnimState == EPaperDollAnimState::ClimbRope) &&
+		DesiredState != EPaperDollAnimState::Jump)
+	{
+		return false;
+	}
+
+	// Attack guard: cannot attack while climbing
+	if (DesiredState == EPaperDollAnimState::BasicAttack &&
+		(CurrentAnimState == EPaperDollAnimState::ClimbLadder || CurrentAnimState == EPaperDollAnimState::ClimbRope))
+	{
+		return false;
+	}
+
+	// Priority comparison
+	const int32 CurrP = GetAnimPriority(CurrentAnimState);
+	const int32 DesiredP = GetAnimPriority(DesiredState);
+
+	// If desired is lower priority than current, ignore
+	if (DesiredP < CurrP)
+	{
+		return false;
+	}
+
+	// Apply the state
+	if (DesiredState == EPaperDollAnimState::BasicAttack)
+	{
+		PlayAnimationStateEx(DesiredState, VariantIndex, bResetTime);
+	}
+	else
+	{
+		PlayAnimationState(DesiredState, bResetTime);
+	}
+	return true;
+}
+
+void APaperDoll2DCharacter::PredictAnimationStateLocal(EPaperDollAnimState DesiredState, int32 VariantIndex, bool bResetTime)
+{
+	// Purely client-side prediction for responsiveness; server will override via replication.
+	if (HasAuthority()) return;
+	CurrentAnimState = DesiredState;
+	CurrentAnimVariantIndex = VariantIndex;
+	if (bResetTime)
+	{
+		CurrentAnimTimeSeconds = 0.0f;
+	}
+	UpdateFlipbooksForCurrentState();
+	ApplySortPriorities();
+}
+
+void APaperDoll2DCharacter::SetClimbAnimType(EClimbAnimType InType)
+{
+	if (!HasAuthority()) return;
+	ClimbAnimType = InType;
+}
+
+void APaperDoll2DCharacter::OnMovementModeChanged(EMovementMode PrevMovementMode, uint8 PreviousCustomMode)
+{
+	Super::OnMovementModeChanged(PrevMovementMode, PreviousCustomMode);
+
+	if (!HasAuthority())
+	{
+		return;
+	}
+
+	const EMovementMode NewMode = GetCharacterMovement() ? GetCharacterMovement()->MovementMode : MOVE_None;
+
+	// Auto-drive unique movement-mode states:
+	// - Falling maps to Jump animation (used for jump/fall)
+	// - Flying is often used for climb; map to ClimbLadder by default (adjust if you distinguish rope vs ladder elsewhere)
+	switch (NewMode)
+	{
+	case MOVE_Falling:
+		RequestAnimationStateWithPriority(EPaperDollAnimState::Jump, /*bInCombat=*/false, /*VariantIndex=*/-1, /*bResetTime=*/true);
+		break;
+	case MOVE_Flying:
+		// If you distinguish rope vs ladder, map accordingly
+		if (ClimbAnimType == EClimbAnimType::Rope)
+		{
+			RequestAnimationStateWithPriority(EPaperDollAnimState::ClimbRope, /*bInCombat=*/false, /*VariantIndex=*/-1, /*bResetTime=*/true);
+		}
+		else
+		{
+			RequestAnimationStateWithPriority(EPaperDollAnimState::ClimbLadder, /*bInCombat=*/false, /*VariantIndex=*/-1, /*bResetTime=*/true);
+		}
+		break;
+	default:
+		break;
 	}
 }
 

@@ -53,6 +53,13 @@ struct FEquipStateFlipbooks
     TMap<EPaperDollAnimState, UPaperFlipbook*> ByState;
 };
 
+UENUM(BlueprintType)
+enum class EClimbAnimType : uint8
+{
+	Ladder  UMETA(DisplayName = "Ladder"),
+	Rope    UMETA(DisplayName = "Rope")
+};
+
 UCLASS()
 class TWODSSG_API APaperDoll2DCharacter : public ACharacter
 {
@@ -65,6 +72,7 @@ public:
 	virtual void Tick(float DeltaSeconds) override;
 	virtual void OnConstruction(const FTransform& Transform) override;
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
+	virtual void OnMovementModeChanged(EMovementMode PrevMovementMode, uint8 PreviousCustomMode = 0) override;
 
 UFUNCTION(BlueprintCallable, Category = "Anim")
 void PlayAnimationState(EPaperDollAnimState NewState, bool bResetTime = true);
@@ -72,6 +80,19 @@ void PlayAnimationState(EPaperDollAnimState NewState, bool bResetTime = true);
 // Choose explicit variant, or pass -1 to auto-pick (random if multiple)
 UFUNCTION(BlueprintCallable, Category = "Anim")
 void PlayAnimationStateEx(EPaperDollAnimState NewState, int32 VariantIndex, bool bResetTime = true);
+
+	// One-shot request with built-in priority rules and combat-aware fallback (Authority only).
+	// Returns true if the request was accepted and state changed/kept; false if rejected by priority rules.
+	UFUNCTION(BlueprintCallable, Category = "Anim", meta = (BlueprintAuthorityOnly))
+	bool RequestAnimationStateWithPriority(EPaperDollAnimState DesiredState, bool bInCombat, int32 VariantIndex = -1, bool bResetTime = true);
+
+	// Client-side visual prediction only (no authority, no replication). Safe to call on owning client for responsiveness.
+	UFUNCTION(BlueprintCallable, Category = "Anim", meta = (BlueprintAuthorityOnly = false))
+	void PredictAnimationStateLocal(EPaperDollAnimState DesiredState, int32 VariantIndex = -1, bool bResetTime = true);
+
+	// Set climb anim type (ladder vs rope) before entering flying movement (server only)
+	UFUNCTION(BlueprintCallable, Category = "Anim", meta = (BlueprintAuthorityOnly))
+	void SetClimbAnimType(EClimbAnimType InType);
 
 	// Components (individual body parts)
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components") UPaperFlipbookComponent* Torso;
@@ -100,12 +121,23 @@ TMap<EPaperDollAnimState, FPaperDollVariants> AnimSets;
 	// Animation playback control
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Anim") bool bUseTorsoAsTimeMaster = true;
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Anim") float GlobalPlayRate = 1.0f;
+	// Additional per-character multiplier (e.g., movespeed/attackspeed driven). Effective rate = GlobalPlayRate * PlayRate.
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Anim") float PlayRate = 1.0f;
 
     UFUNCTION(BlueprintCallable, Category = "Anim")
     void SetGlobalPlayRate(float NewRate);
 
     UFUNCTION(BlueprintPure, Category = "Anim")
     float GetGlobalPlayRate() const { return GlobalPlayRate; }
+
+	UFUNCTION(BlueprintCallable, Category = "Anim")
+	void SetPlayRate(float NewRate);
+
+	UFUNCTION(BlueprintPure, Category = "Anim")
+	float GetPlayRate() const { return PlayRate; }
+
+	UFUNCTION(BlueprintPure, Category = "Anim")
+	float GetEffectivePlayRate() const { return GlobalPlayRate * PlayRate; }
 
 	// Helpers for timing/frames (for BP hit windows, timers)
 	UFUNCTION(BlueprintPure, Category = "Anim")
@@ -123,9 +155,13 @@ TMap<EPaperDollAnimState, FPaperDollVariants> AnimSets;
 	UFUNCTION(BlueprintPure, Category = "Anim")
 	bool IsFrameInRange(int32 FromInclusive, int32 ToInclusive) const;
 
-	// Attack held helpers (server authority)
+	// Attack held helpers (server authority). Supports basic or bend attack; does not restart mid-swing.
 	UFUNCTION(BlueprintCallable, Category = "Anim|Attack", meta=(BlueprintAuthorityOnly))
 	void StartAttackHeld(float PlayRateMultiplier, int32 VariantIndex = -1);
+
+	// New: explicit attack state (basic or bend). No restart mid-swing if already running.
+	UFUNCTION(BlueprintCallable, Category = "Anim|Attack", meta=(BlueprintAuthorityOnly))
+	void StartAttackHeldWithState(float PlayRateMultiplier, EPaperDollAnimState AttackState = EPaperDollAnimState::BasicAttack, int32 VariantIndex = -1);
 
 	UFUNCTION(BlueprintCallable, Category = "Anim|Attack", meta=(BlueprintAuthorityOnly))
 	void StopAttackHeld();
@@ -205,6 +241,12 @@ private:
     // Internal helper retained (non-UFUNCTION):
     UPaperFlipbookComponent* EquipOrSwapFlipbook(FName SlotTag, UPaperFlipbook* Flipbook, bool bCreateIfMissing = true);
     void InitializeSlotToParentPartDefaults();
+
+	// Climb anim selection (server only; default ladder)
+	EClimbAnimType ClimbAnimType = EClimbAnimType::Ladder;
+
+	// Held attack state tracking (basic or bend)
+	EPaperDollAnimState HeldAttackState = EPaperDollAnimState::BasicAttack;
 
 public:
 	UFUNCTION(BlueprintCallable, Category = "Sorting", meta = (BlueprintAuthorityOnly))
