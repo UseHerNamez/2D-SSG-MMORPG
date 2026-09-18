@@ -60,6 +60,22 @@ enum class EClimbAnimType : uint8
 	Rope    UMETA(DisplayName = "Rope")
 };
 
+// Held keys / status the owning client pushes to the server each tick (or on change).
+USTRUCT(BlueprintType)
+struct FPaperDollAnimInput
+{
+	GENERATED_BODY()
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Anim") bool bLeft = false;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Anim") bool bRight = false;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Anim") bool bDown = false;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Anim") bool bUp = false;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Anim") bool bJump = false;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Anim") bool bAttack = false;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Anim") bool bInCombat = false;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Anim") bool bInClimbRegion = false;
+};
+
 UCLASS()
 class TWODSSG_API APaperDoll2DCharacter : public ACharacter
 {
@@ -90,9 +106,33 @@ void PlayAnimationStateEx(EPaperDollAnimState NewState, int32 VariantIndex, bool
 	UFUNCTION(BlueprintCallable, Category = "Anim", meta = (BlueprintAuthorityOnly = false))
 	void PredictAnimationStateLocal(EPaperDollAnimState DesiredState, int32 VariantIndex = -1, bool bResetTime = true);
 
+	// Owning client: call every tick with held keys. RPCs to server. Do not trust client for combat/climb region —
+	// those are set with SetAnimStatus_ServerOnly from server BP (timer / overlap).
+	UFUNCTION(BlueprintCallable, Category = "Anim|Input")
+	void SetAnimInput(FPaperDollAnimInput Input);
+
+	UFUNCTION(BlueprintPure, Category = "Anim|Input")
+	FPaperDollAnimInput GetAnimInput() const { return AnimInput; }
+
+	// Server only: combat timer + climb overlap. Never set these from a client-trusted path.
+	UFUNCTION(BlueprintCallable, Category = "Anim|Input", meta = (BlueprintAuthorityOnly))
+	void SetAnimStatus_ServerOnly(bool bInCombat, bool bInClimbRegion);
+
+	// If true (default), server Tick picks Idle/Alert/Walk/Bend/Jump/Climb from AnimInput + MovementMode.
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Anim")
+	bool bAnimResolverEnabled = true;
+
 	// Set climb anim type (ladder vs rope) before entering flying movement (server only)
 	UFUNCTION(BlueprintCallable, Category = "Anim", meta = (BlueprintAuthorityOnly))
 	void SetClimbAnimType(EClimbAnimType InType);
+
+	// Optional: track held locomotion keys (e.g. for BP logic). Walk/Bend are not gated on this.
+	UFUNCTION(BlueprintCallable, Category = "Anim", meta = (BlueprintAuthorityOnly))
+	void SetLocomotionInputHeld(bool bLeft, bool bRight, bool bDown);
+
+	// Call from OnLanded (server) to pick Idle / Walk / Bend based on keys held at touchdown.
+	UFUNCTION(BlueprintCallable, Category = "Anim", meta = (BlueprintAuthorityOnly))
+	void NotifyLandedWithInput(bool bLeft, bool bRight, bool bDown, bool bJumpHeld, bool bInCombat);
 
 	// Components (individual body parts)
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components") UPaperFlipbookComponent* Torso;
@@ -118,8 +158,19 @@ TMap<EPaperDollAnimState, FPaperDollVariants> AnimSets;
 	// Spacing between different players on a client to avoid overlap ranges
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Sorting") int32 GlobalBucketStride = 50;
 
+	// Added to all part priorities so the character draws above typical level tiles/platforms.
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Sorting") int32 CharacterSortBase = 100;
+
+	// Project DefaultEngine.ini uses SortAlongAxis (Y=-1). Masked Paper2D sprites ignore TranslucentSortPriority;
+	// each part is nudged along local Y by (TorsoRule - PartRule) * SortDepthStep to break draw-order ties.
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Sorting") float SortDepthStep = 1.0f;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Sorting") bool bInvertSortDepth = false;
+
 	// Animation playback control
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Anim") bool bUseTorsoAsTimeMaster = true;
+	// States that play 1→2→3→2→1… instead of wrapping 1→2→3→1. Idle/Alert default to ping-pong.
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Anim")
+	TSet<EPaperDollAnimState> PingPongLoopStates;
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Anim") float GlobalPlayRate = 1.0f;
 	// Additional per-character multiplier (e.g., movespeed/attackspeed driven). Effective rate = GlobalPlayRate * PlayRate.
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Anim") float PlayRate = 1.0f;
@@ -204,12 +255,27 @@ protected:
 	UFUNCTION()
 	void OnRep_SortBucketId();
 
+	UFUNCTION(Server, Reliable, WithValidation)
+	void ServerSetAnimInput(FPaperDollAnimInput Input);
+
+	void ApplyAnimInput(const FPaperDollAnimInput& Input);
+	void ResolveAnimationFromInput(bool bFromAttackEnd = false);
+	bool IsClimbingMovement() const;
+	EPaperDollAnimState ComputeDesiredAnimState() const;
+
 	void UpdateFlipbooksForCurrentState();
 	void UpdatePlaybackFrame(float DeltaSeconds);
 	int32 ComputeFrameIndex(const UPaperFlipbook* Master, float TimeSeconds) const;
 	UPaperFlipbook* GetMasterFlipbook() const;
-	void ApplySortPriorities() const;
-    void ApplyEquipFlipbooksForCurrentState();
+	void ApplySortPriorities();
+	void CacheBodyPartDesignLocations();
+	void ApplySortDepthAlongAxis(int32 TorsoBase, int32 HeadBase, int32 ArmNearBase, int32 ArmFarBase,
+		int32 LegNearBase, int32 LegFarBase, int32 HandNearBase, int32 HandFarBase) const;
+	void ApplyEquipFlipbooksForCurrentState();
+
+	float GetSyncedWorldTimeSeconds() const;
+	void CommitAnimPlaybackClock(bool bResetTime);
+	void SyncPlaybackTimeFromServerStart();
 
 protected:
 	UPROPERTY(ReplicatedUsing = OnRep_CurrentAnimState, VisibleAnywhere, BlueprintReadOnly, Category = "Anim")
@@ -221,6 +287,11 @@ protected:
 // Variant index for the current state (replicated). -1 means default/first.
 UPROPERTY(ReplicatedUsing = OnRep_CurrentAnimState, VisibleAnywhere, BlueprintReadOnly, Category = "Anim")
 int32 CurrentAnimVariantIndex = -1;
+
+	// Server world time when the current state/variant playback clock was (re)started.
+	// Clients compute CurrentAnimTimeSeconds = ServerNow - this, so late joiners resume mid-attack.
+	UPROPERTY(ReplicatedUsing = OnRep_CurrentAnimState, VisibleAnywhere, BlueprintReadOnly, Category = "Anim")
+	float AnimStateServerStartTime = 0.0f;
 
 // no per-facing toggles; layering is invariant to facing
 
@@ -247,6 +318,29 @@ private:
 
 	// Held attack state tracking (basic or bend)
 	EPaperDollAnimState HeldAttackState = EPaperDollAnimState::BasicAttack;
+	float PreAttackPlayRate = 1.0f;
+
+	bool bLocomotionWalkHeld = false;
+	bool bLocomotionBendHeld = false;
+
+	FPaperDollAnimInput AnimInput;
+
+	bool bBodyPartDesignLocsCached = false;
+	FVector TorsoDesignRelLoc = FVector::ZeroVector;
+	FVector HeadDesignRelLoc = FVector::ZeroVector;
+	FVector ArmNearDesignRelLoc = FVector::ZeroVector;
+	FVector ArmFarDesignRelLoc = FVector::ZeroVector;
+	FVector LegNearDesignRelLoc = FVector::ZeroVector;
+	FVector LegFarDesignRelLoc = FVector::ZeroVector;
+	FVector HandNearDesignRelLoc = FVector::ZeroVector;
+	FVector HandFarDesignRelLoc = FVector::ZeroVector;
+
+	int32 ResolveVariantForState(EPaperDollAnimState State, int32 VariantIndex) const;
+	float GetAnimationCycleDurationSeconds() const;
+	void ReleaseAttackToFallbackAnimation();
+	bool NeedsPerFrameSortUpdate() const;
+	static bool IsGroundLocomotionState(EPaperDollAnimState State);
+	static bool IsAttackState(EPaperDollAnimState State);
 
 public:
 	UFUNCTION(BlueprintCallable, Category = "Sorting", meta = (BlueprintAuthorityOnly))

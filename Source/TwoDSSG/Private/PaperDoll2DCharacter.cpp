@@ -5,6 +5,7 @@
 #include "CustomPlayerState.h"
 #include "TimerManager.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "GameFramework/GameStateBase.h"
 
 // Forward declare local helpers used before definition
 static UPaperFlipbookComponent* FindParentForSlot(APaperDoll2DCharacter* Self, const FName& SlotTag);
@@ -47,43 +48,49 @@ APaperDoll2DCharacter::APaperDoll2DCharacter(const FObjectInitializer& ObjectIni
 	HandNear->SetupAttachment(Torso);
 	HandFar->SetupAttachment(Torso);
 
-	Torso->SetIsReplicated(true);
-	Head->SetIsReplicated(true);
-	ArmNear->SetIsReplicated(true);
-	ArmFar->SetIsReplicated(true);
-	LegNear->SetIsReplicated(true);
-	LegFar->SetIsReplicated(true);
-	HandNear->SetIsReplicated(true);
-	HandFar->SetIsReplicated(true);
-
-	// Paper2D components don't auto-run on network; we'll drive frames manually
-	Torso->SetLooping(true);
-	Head->SetLooping(true);
-	ArmNear->SetLooping(true);
-	ArmFar->SetLooping(true);
-	LegNear->SetLooping(true);
-	LegFar->SetLooping(true);
-	HandNear->SetLooping(true);
-	HandFar->SetLooping(true);
-
-	Torso->SetPlayRate(0.0f);
-	Head->SetPlayRate(0.0f);
-	ArmNear->SetPlayRate(0.0f);
-	ArmFar->SetPlayRate(0.0f);
-	LegNear->SetPlayRate(0.0f);
-	LegFar->SetPlayRate(0.0f);
-	HandNear->SetPlayRate(0.0f);
-	HandFar->SetPlayRate(0.0f);
+	// Body flipbooks: not replicated — anim state replicates; we drive frames locally from CurrentAnimState.
+	// NoCollision on all parts — only the capsule handles movement/overlap.
+	auto InitBodyPart = [](UPaperFlipbookComponent* Comp)
+	{
+		if (!Comp) return;
+		Comp->SetIsReplicated(false);
+		Comp->SetLooping(true);
+		Comp->SetPlayRate(0.0f);
+		Comp->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+		Comp->SetGenerateOverlapEvents(false);
+	};
+	InitBodyPart(Torso);
+	InitBodyPart(Head);
+	InitBodyPart(ArmNear);
+	InitBodyPart(ArmFar);
+	InitBodyPart(LegNear);
+	InitBodyPart(LegFar);
+	InitBodyPart(HandNear);
+	InitBodyPart(HandFar);
 
 	// Pre-populate SlotToParentPart with common slot names (keys only, values set in Blueprint)
 	InitializeSlotToParentPartDefaults();
+
+	// Idle/Alert breathe with ping-pong; Walk/attacks wrap forward by default
+	PingPongLoopStates.Add(EPaperDollAnimState::Idle);
+	PingPongLoopStates.Add(EPaperDollAnimState::Alert);
+
+	// Avoid priority-0 tie-break (child draw order) before BeginPlay.
+	ApplySortPriorities();
 }
 
 void APaperDoll2DCharacter::BeginPlay()
 {
 	Super::BeginPlay();
+	CacheBodyPartDesignLocations();
 	ApplySortPriorities();
 	UpdateFlipbooksForCurrentState();
+
+	// Authority spawn should start Idle unless something already requested a higher state.
+	if (HasAuthority() && CurrentAnimState == EPaperDollAnimState::Idle)
+	{
+		PlayAnimationState(EPaperDollAnimState::Idle, true);
+	}
 }
 
 void APaperDoll2DCharacter::OnConstruction(const FTransform& Transform)
@@ -98,11 +105,17 @@ void APaperDoll2DCharacter::OnConstruction(const FTransform& Transform)
 		SkelMesh->SetGenerateOverlapEvents(false);
 		SkelMesh->SetComponentTickEnabled(false);
 	}
+	CacheBodyPartDesignLocations();
+	ApplySortPriorities();
 }
 
 void APaperDoll2DCharacter::Tick(float DeltaSeconds)
 {
 	Super::Tick(DeltaSeconds);
+	if (HasAuthority() && bAnimResolverEnabled)
+	{
+		ResolveAnimationFromInput();
+	}
 	UpdatePlaybackFrame(DeltaSeconds);
 }
 
@@ -112,40 +125,79 @@ void APaperDoll2DCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>
 
 	DOREPLIFETIME(APaperDoll2DCharacter, CurrentAnimState);
     DOREPLIFETIME(APaperDoll2DCharacter, CurrentAnimVariantIndex);
+	DOREPLIFETIME(APaperDoll2DCharacter, AnimStateServerStartTime);
     DOREPLIFETIME(APaperDoll2DCharacter, SortBucketId);
 }
 
 void APaperDoll2DCharacter::PlayAnimationState(EPaperDollAnimState NewState, bool bResetTime) // resetTime - if want to start the animation from frame 0
 {
-	if (HasAuthority())
+	if (!HasAuthority())
 	{
-		CurrentAnimState = NewState;
-        CurrentAnimVariantIndex = -1; // default variant
-        if (bResetTime) { CurrentAnimTimeSeconds = 0.0f; }
-		UpdateFlipbooksForCurrentState();
+		return;
 	}
-	else
+
+	const bool bStateChanged = (CurrentAnimState != NewState) || (CurrentAnimVariantIndex != -1);
+	if (!bStateChanged && !bResetTime)
 	{
-		// Clients should not authoritatively change state; but local prediction could go here
+		return;
 	}
+
+	CurrentAnimState = NewState;
+	CurrentAnimVariantIndex = -1; // default variant
+	CommitAnimPlaybackClock(bResetTime || bStateChanged);
+	UpdateFlipbooksForCurrentState();
 }
 
 void APaperDoll2DCharacter::PlayAnimationStateEx(EPaperDollAnimState NewState, int32 VariantIndex, bool bResetTime) // Ex - if the anim has many variants (for example basicatk)
 {
     if (HasAuthority())
     {
-        CurrentAnimState = NewState;
-        CurrentAnimVariantIndex = VariantIndex;
-        if (bResetTime) { CurrentAnimTimeSeconds = 0.0f; }
-        UpdateFlipbooksForCurrentState();
+		const int32 ResolvedVariant = ResolveVariantForState(NewState, VariantIndex);
+		const bool bStateChanged = (CurrentAnimState != NewState) || (CurrentAnimVariantIndex != ResolvedVariant);
+		if (!bStateChanged && !bResetTime)
+		{
+			return;
+		}
+
+		CurrentAnimState = NewState;
+        CurrentAnimVariantIndex = ResolvedVariant;
+		CommitAnimPlaybackClock(bResetTime || bStateChanged);
+		UpdateFlipbooksForCurrentState();
     }
 }
 
 void APaperDoll2DCharacter::OnRep_CurrentAnimState()
 {
-	CurrentAnimTimeSeconds = 0.0f;
+	// Join mid-attack (or any state): resume from server timeline, do not restart at frame 0.
+	SyncPlaybackTimeFromServerStart();
 	UpdateFlipbooksForCurrentState();
-	ApplySortPriorities();
+}
+
+float APaperDoll2DCharacter::GetSyncedWorldTimeSeconds() const
+{
+	if (const UWorld* World = GetWorld())
+	{
+		if (const AGameStateBase* GS = World->GetGameState())
+		{
+			return GS->GetServerWorldTimeSeconds();
+		}
+		return World->GetTimeSeconds();
+	}
+	return 0.0f;
+}
+
+void APaperDoll2DCharacter::CommitAnimPlaybackClock(bool bResetTime)
+{
+	if (bResetTime)
+	{
+		CurrentAnimTimeSeconds = 0.0f;
+	}
+	AnimStateServerStartTime = GetSyncedWorldTimeSeconds() - CurrentAnimTimeSeconds;
+}
+
+void APaperDoll2DCharacter::SyncPlaybackTimeFromServerStart()
+{
+	CurrentAnimTimeSeconds = FMath::Max(0.0f, GetSyncedWorldTimeSeconds() - AnimStateServerStartTime);
 }
 
 void APaperDoll2DCharacter::UpdateFlipbooksForCurrentState()
@@ -159,12 +211,8 @@ void APaperDoll2DCharacter::UpdateFlipbooksForCurrentState()
     int32 VariantIndex = CurrentAnimVariantIndex;
     if (VariantIndex < 0 || VariantIndex >= VariantsWrap->Variants.Num())
     {
-        VariantIndex = 0;
-        if (VariantsWrap->Variants.Num() > 1 && CurrentAnimState == EPaperDollAnimState::BasicAttack)
-        {
-            VariantIndex = FMath::RandRange(0, VariantsWrap->Variants.Num() - 1);
-            CurrentAnimVariantIndex = VariantIndex; // lock-in on server
-        }
+        VariantIndex = ResolveVariantForState(CurrentAnimState, VariantIndex);
+        CurrentAnimVariantIndex = VariantIndex;
     }
 
     const FPaperDollStateFlipbooks& SetRef = VariantsWrap->Variants[VariantIndex];
@@ -180,6 +228,9 @@ void APaperDoll2DCharacter::UpdateFlipbooksForCurrentState()
 
     // Apply equipment flipbooks for this state if mapping is provided
     ApplyEquipFlipbooksForCurrentState();
+
+	// Part priorities can differ per anim state — refresh whenever flipbooks change.
+	ApplySortPriorities();
 }
 
 int32 APaperDoll2DCharacter::ComputeFrameIndex(const UPaperFlipbook* Master, float TimeSeconds) const
@@ -188,15 +239,33 @@ int32 APaperDoll2DCharacter::ComputeFrameIndex(const UPaperFlipbook* Master, flo
 	{
 		return 0;
 	}
+	const int32 NumFrames = Master->GetNumFrames();
 	const float Duration = Master->GetTotalDuration();
 	if (Duration <= 0.0f)
 	{
 		return 0;
 	}
 	const float EffectiveRate = FMath::Clamp(GlobalPlayRate * PlayRate, 0.0f, 10.0f);
-	const float Normalized = FMath::Fmod(FMath::Max(0.0f, TimeSeconds * EffectiveRate), Duration);
+	const float AdvancedTime = FMath::Max(0.0f, TimeSeconds * EffectiveRate);
+
+	// Ping-pong: 0 → 1 → … → N-1 → N-2 → … → 1 → 0 → … (matches Idle 1-2-3-2-1)
+	if (PingPongLoopStates.Contains(CurrentAnimState) && NumFrames > 1)
+	{
+		const int32 CycleLen = (NumFrames * 2) - 2; // e.g. 3 frames → 0,1,2,1
+		const float FrameDuration = Duration / static_cast<float>(NumFrames);
+		const int32 LinearStep = FMath::FloorToInt(AdvancedTime / FMath::Max(FrameDuration, KINDA_SMALL_NUMBER));
+		int32 StepInCycle = LinearStep % CycleLen;
+		if (StepInCycle < 0)
+		{
+			StepInCycle += CycleLen;
+		}
+		const int32 FrameIndex = (StepInCycle < NumFrames) ? StepInCycle : (CycleLen - StepInCycle);
+		return FMath::Clamp(FrameIndex, 0, NumFrames - 1);
+	}
+
+	const float Normalized = FMath::Fmod(AdvancedTime, Duration);
 	const int32 FrameIndex = Master->GetKeyFrameIndexAtTime(Normalized);
-	return FMath::Clamp(FrameIndex, 0, Master->GetNumFrames() - 1);
+	return FMath::Clamp(FrameIndex, 0, NumFrames - 1);
 }
 
 UPaperFlipbook* APaperDoll2DCharacter::GetMasterFlipbook() const
@@ -271,13 +340,184 @@ void APaperDoll2DCharacter::UpdatePlaybackFrame(float DeltaSeconds)
     ApplyWithChildren(LegFar);
     ApplyWithChildren(HandNear);
     ApplyWithChildren(HandFar);
+
+	// Per-frame equipment sort rules depend on CurrentAnimTimeSeconds — refresh only when needed.
+	if (NeedsPerFrameSortUpdate())
+	{
+		ApplySortPriorities();
+	}
 }
 
-void APaperDoll2DCharacter::ApplySortPriorities() const
+bool APaperDoll2DCharacter::IsGroundLocomotionState(EPaperDollAnimState State)
+{
+	switch (State)
+	{
+	case EPaperDollAnimState::Walk:
+	case EPaperDollAnimState::Idle:
+	case EPaperDollAnimState::Alert:
+	case EPaperDollAnimState::Bend:
+	case EPaperDollAnimState::BendAttack:
+		return true;
+	default:
+		return false;
+	}
+}
+
+// Idle/Alert/Walk/Bend must freely swap when BP asks — priority numbers alone would trap Walk forever (Idle can't override).
+static bool IsSwappableGroundAnim(EPaperDollAnimState State)
+{
+	switch (State)
+	{
+	case EPaperDollAnimState::Walk:
+	case EPaperDollAnimState::Idle:
+	case EPaperDollAnimState::Alert:
+	case EPaperDollAnimState::Bend:
+		return true;
+	default:
+		return false;
+	}
+}
+
+bool APaperDoll2DCharacter::IsAttackState(EPaperDollAnimState State)
+{
+	return State == EPaperDollAnimState::BasicAttack || State == EPaperDollAnimState::BendAttack;
+}
+
+int32 APaperDoll2DCharacter::ResolveVariantForState(EPaperDollAnimState State, int32 VariantIndex) const
+{
+	const FPaperDollVariants* VariantsWrap = AnimSets.Find(State);
+	if (!VariantsWrap || VariantsWrap->Variants.Num() == 0)
+	{
+		return 0;
+	}
+	if (VariantIndex >= 0 && VariantIndex < VariantsWrap->Variants.Num())
+	{
+		return VariantIndex;
+	}
+	if (VariantsWrap->Variants.Num() > 1 && State == EPaperDollAnimState::BasicAttack)
+	{
+		return FMath::RandRange(0, VariantsWrap->Variants.Num() - 1);
+	}
+	return 0;
+}
+
+float APaperDoll2DCharacter::GetAnimationCycleDurationSeconds() const
+{
+	UPaperFlipbook* Master = GetMasterFlipbook();
+	if (!Master)
+	{
+		return 0.5f;
+	}
+	float Duration = Master->GetTotalDuration();
+	if (Duration <= KINDA_SMALL_NUMBER)
+	{
+		const int32 NumFrames = Master->GetNumFrames();
+		Duration = (NumFrames > 0) ? static_cast<float>(NumFrames) / 12.0f : 0.5f;
+	}
+	return FMath::Max(Duration, 0.05f);
+}
+
+void APaperDoll2DCharacter::ReleaseAttackToFallbackAnimation()
+{
+	GetWorldTimerManager().ClearTimer(AttackCycleTimer);
+	SetPlayRate(PreAttackPlayRate);
+	if (bAnimResolverEnabled)
+	{
+		ResolveAnimationFromInput(true);
+	}
+	else
+	{
+		PlayAnimationState(EPaperDollAnimState::Idle, true);
+	}
+}
+
+void APaperDoll2DCharacter::CacheBodyPartDesignLocations()
+{
+	auto Cache = [&](UPaperFlipbookComponent* Comp, FVector& OutLoc)
+	{
+		if (Comp)
+		{
+			OutLoc = Comp->GetRelativeLocation();
+		}
+	};
+
+	Cache(Torso, TorsoDesignRelLoc);
+	Cache(Head, HeadDesignRelLoc);
+	Cache(ArmNear, ArmNearDesignRelLoc);
+	Cache(ArmFar, ArmFarDesignRelLoc);
+	Cache(LegNear, LegNearDesignRelLoc);
+	Cache(LegFar, LegFarDesignRelLoc);
+	Cache(HandNear, HandNearDesignRelLoc);
+	Cache(HandFar, HandFarDesignRelLoc);
+	bBodyPartDesignLocsCached = true;
+}
+
+void APaperDoll2DCharacter::ApplySortDepthAlongAxis(int32 TorsoBase, int32 HeadBase, int32 ArmNearBase, int32 ArmFarBase,
+	int32 LegNearBase, int32 LegFarBase, int32 HandNearBase, int32 HandFarBase) const
+{
+	if (!bBodyPartDesignLocsCached || SortDepthStep <= KINDA_SMALL_NUMBER)
+	{
+		return;
+	}
+
+	auto RuleToDepth = [&](int32 PartBase) -> float
+	{
+		return static_cast<float>(TorsoBase - PartBase) * SortDepthStep;
+	};
+
+	float HeadDepth = RuleToDepth(HeadBase);
+	float ArmNearDepth = RuleToDepth(ArmNearBase);
+	float ArmFarDepth = RuleToDepth(ArmFarBase);
+	float LegNearDepth = RuleToDepth(LegNearBase);
+	float LegFarDepth = RuleToDepth(LegFarBase);
+	float HandNearDepth = RuleToDepth(HandNearBase);
+	float HandFarDepth = RuleToDepth(HandFarBase);
+
+	// Arms/hands: far always behind torso on axis sort (legs may cross during Walk via SortRules).
+	ArmFarDepth = FMath::Max(ArmFarDepth, SortDepthStep);
+	HandFarDepth = FMath::Max(HandFarDepth, SortDepthStep * 2.0f);
+	ArmNearDepth = FMath::Min(ArmNearDepth, -SortDepthStep);
+	HandNearDepth = FMath::Min(HandNearDepth, -SortDepthStep * 2.0f);
+	HeadDepth = FMath::Min(HeadDepth, -SortDepthStep);
+
+	if (bInvertSortDepth)
+	{
+		HeadDepth *= -1.0f;
+		ArmNearDepth *= -1.0f;
+		ArmFarDepth *= -1.0f;
+		LegNearDepth *= -1.0f;
+		LegFarDepth *= -1.0f;
+		HandNearDepth *= -1.0f;
+		HandFarDepth *= -1.0f;
+	}
+
+	auto ApplyDepth = [](UPaperFlipbookComponent* Comp, const FVector& DesignLoc, float DepthY)
+	{
+		if (!Comp)
+		{
+			return;
+		}
+		FVector Loc = DesignLoc;
+		Loc.Y += DepthY;
+		Comp->SetRelativeLocation(Loc);
+	};
+
+	ApplyDepth(Torso, TorsoDesignRelLoc, 0.0f);
+	ApplyDepth(Head, HeadDesignRelLoc, HeadDepth);
+	ApplyDepth(ArmNear, ArmNearDesignRelLoc, ArmNearDepth);
+	ApplyDepth(ArmFar, ArmFarDesignRelLoc, ArmFarDepth);
+	ApplyDepth(LegNear, LegNearDesignRelLoc, LegNearDepth);
+	ApplyDepth(LegFar, LegFarDesignRelLoc, LegFarDepth);
+	ApplyDepth(HandNear, HandNearDesignRelLoc, HandNearDepth);
+	ApplyDepth(HandFar, HandFarDesignRelLoc, HandFarDepth);
+}
+
+void APaperDoll2DCharacter::ApplySortPriorities()
 {
 	// Local pawn renders with base priorities; remote pawns are offset by bucket
 	const bool bIsLocalView = IsLocallyControlled();
 	const int32 BucketBase = bIsLocalView ? 0 : (SortBucketId * GlobalBucketStride);
+	const int32 SortOrigin = CharacterSortBase + BucketBase;
 
     // Resolve base priorities from SortRules if provided, else use defaults
     int32 TorsoBase = BasePriority_Torso;
@@ -304,14 +544,21 @@ void APaperDoll2DCharacter::ApplySortPriorities() const
         }
     }
 
-    const int32 TorsoFinal = BucketBase + TorsoBase;
-    const int32 HeadFinal = BucketBase + HeadBase;
-    const int32 ArmNearFinal = BucketBase + ArmNearBase;
-    const int32 ArmFarFinal  = BucketBase + ArmFarBase;
-    const int32 LegNearFinal = BucketBase + LegNearBase;
-    const int32 LegFarFinal  = BucketBase + LegFarBase;
-    const int32 HandNearFinal = BucketBase + HandNearBase;
-    const int32 HandFarFinal  = BucketBase + HandFarBase;
+    const int32 TorsoFinal = SortOrigin + TorsoBase;
+    int32 HeadFinal = SortOrigin + HeadBase;
+    int32 ArmNearFinal = SortOrigin + ArmNearBase;
+    int32 ArmFarFinal  = SortOrigin + ArmFarBase;
+    const int32 LegNearFinal = SortOrigin + LegNearBase;
+    const int32 LegFarFinal  = SortOrigin + LegFarBase;
+    int32 HandNearFinal = SortOrigin + HandNearBase;
+    int32 HandFarFinal  = SortOrigin + HandFarBase;
+
+	// Arms/hands: far always behind torso, near always in front (legs may cross torso during Walk).
+	ArmFarFinal = FMath::Min(ArmFarFinal, TorsoFinal - 1);
+	HandFarFinal = FMath::Min(HandFarFinal, ArmFarFinal - 1);
+	ArmNearFinal = FMath::Max(ArmNearFinal, TorsoFinal + 1);
+	HandNearFinal = FMath::Max(HandNearFinal, ArmNearFinal + 1);
+	HeadFinal = FMath::Max(HeadFinal, TorsoFinal + 1);
 
     if (Torso) Torso->SetTranslucentSortPriority(TorsoFinal);
     if (Head) Head->SetTranslucentSortPriority(HeadFinal);
@@ -366,8 +613,7 @@ void APaperDoll2DCharacter::ApplySortPriorities() const
                 }
                 if (bUseAbsolute)
                 {
-                    // Absolute value is relative to bucket base already? We'll still add BucketBase to keep per-observer shift
-                    Eq->SetTranslucentSortPriority(BucketBase + Value);
+                    Eq->SetTranslucentSortPriority(SortOrigin + Value);
                 }
                 else
                 {
@@ -385,6 +631,8 @@ void APaperDoll2DCharacter::ApplySortPriorities() const
     ApplyChildren(LegFar, LegFarFinal);
     ApplyChildren(HandNear, HandNearFinal);
     ApplyChildren(HandFar,  HandFarFinal);
+
+	ApplySortDepthAlongAxis(TorsoBase, HeadBase, ArmNearBase, ArmFarBase, LegNearBase, LegFarBase, HandNearBase, HandFarBase);
 }
 
 void APaperDoll2DCharacter::OnRep_SortBucketId()
@@ -654,6 +902,8 @@ UPaperFlipbookComponent* APaperDoll2DCharacter::EquipOrSwapFlipbook(FName SlotTa
         Target->SetIsReplicated(false);
         Target->SetLooping(true);
         Target->SetPlayRate(0.0f);
+        Target->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+        Target->SetGenerateOverlapEvents(false);
         Target->ComponentTags.Reset();
         Target->ComponentTags.Add(SlotTag);
         bCreatedOrRetagged = true;
@@ -733,65 +983,54 @@ void APaperDoll2DCharacter::StopAttackHeld()
 void APaperDoll2DCharacter::StartAttackHeldWithState(float PlayRateMultiplier, EPaperDollAnimState AttackState, int32 VariantIndex)
 {
 	if (!HasAuthority()) return;
-	SetGlobalPlayRate(PlayRateMultiplier);
+
+	if (IsClimbingMovement()
+		|| CurrentAnimState == EPaperDollAnimState::ClimbLadder
+		|| CurrentAnimState == EPaperDollAnimState::ClimbRope)
+	{
+		return;
+	}
+
+	if (!IsAttackState(AttackState))
+	{
+		AttackState = EPaperDollAnimState::BasicAttack;
+	}
 
 	// If an attack is already running, keep it held and update desired state; do not restart mid-swing.
 	if (bAttackHeld)
 	{
 		HeldAttackState = AttackState;
 		bAttackHeld = true;
+		SetPlayRate(PlayRateMultiplier);
 		return;
 	}
 
 	// Fresh start
+	PreAttackPlayRate = PlayRate;
 	HeldAttackState = AttackState;
 	bAttackHeld = true;
+	SetPlayRate(PlayRateMultiplier);
 
-	// Resolve variant
-	int32 ResolvedVariant = VariantIndex;
-	if (AttackState == EPaperDollAnimState::BasicAttack)
-	{
-		if (ResolvedVariant < 0)
-		{
-			if (const FPaperDollVariants* VariantsWrap = AnimSets.Find(EPaperDollAnimState::BasicAttack))
-			{
-				if (VariantsWrap->Variants.Num() > 1)
-				{
-					ResolvedVariant = FMath::RandRange(0, VariantsWrap->Variants.Num() - 1);
-				}
-			}
-		}
-	}
-	else if (AttackState == EPaperDollAnimState::BendAttack)
-	{
-		ResolvedVariant = -1; // bend attack single/default
-	}
-
+	const int32 ResolvedVariant = ResolveVariantForState(AttackState, VariantIndex);
 	PlayAnimationStateEx(AttackState, ResolvedVariant, true);
-	const float Dur = GetMasterTotalDurationSeconds() / FMath::Max(0.001f, GlobalPlayRate);
+	const float Dur = GetAnimationCycleDurationSeconds() / FMath::Max(0.001f, GetEffectivePlayRate());
 	GetWorldTimerManager().SetTimer(AttackCycleTimer, this, &APaperDoll2DCharacter::HandleAttackCycleEnd, Dur, false);
 }
 
 void APaperDoll2DCharacter::HandleAttackCycleEnd()
 {
 	if (!HasAuthority()) return;
-	if (bAttackHeld)
+	if (!bAttackHeld)
 	{
-		int32 VariantIndex = -1;
-		if (HeldAttackState == EPaperDollAnimState::BasicAttack)
-		{
-			if (const FPaperDollVariants* VariantsWrap = AnimSets.Find(EPaperDollAnimState::BasicAttack))
-			{
-				if (VariantsWrap->Variants.Num() > 1)
-				{
-					VariantIndex = FMath::RandRange(0, VariantsWrap->Variants.Num() - 1);
-				}
-			}
-		}
-		PlayAnimationStateEx(HeldAttackState, VariantIndex, true);
-		const float Dur = GetMasterTotalDurationSeconds() / FMath::Max(0.001f, GlobalPlayRate);
-		GetWorldTimerManager().SetTimer(AttackCycleTimer, this, &APaperDoll2DCharacter::HandleAttackCycleEnd, Dur, false);
+		ReleaseAttackToFallbackAnimation();
+		return;
 	}
+
+	// Start next held cycle — pick a new random basic-attack variant only between full cycles.
+	const int32 NextVariant = ResolveVariantForState(HeldAttackState, -1);
+	PlayAnimationStateEx(HeldAttackState, NextVariant, true);
+	const float Dur = GetAnimationCycleDurationSeconds() / FMath::Max(0.001f, GetEffectivePlayRate());
+	GetWorldTimerManager().SetTimer(AttackCycleTimer, this, &APaperDoll2DCharacter::HandleAttackCycleEnd, Dur, false);
 }
 
 // Simple priority table (higher wins)
@@ -816,6 +1055,16 @@ bool APaperDoll2DCharacter::RequestAnimationStateWithPriority(EPaperDollAnimStat
 {
 	if (!HasAuthority()) return false;
 
+	// Attack swing is locked until the cycle finishes (timer) or the held flag is cleared and cycle ends.
+	if (IsAttackState(CurrentAnimState) && !IsAttackState(DesiredState))
+	{
+		const bool bSwingStillRunning = bAttackHeld || GetWorldTimerManager().IsTimerActive(AttackCycleTimer);
+		if (bSwingStillRunning)
+		{
+			return false;
+		}
+	}
+
 	// Normalize low-priority requests to combat-aware fallback
 	if (DesiredState == EPaperDollAnimState::Alert || DesiredState == EPaperDollAnimState::Idle)
 	{
@@ -830,30 +1079,63 @@ bool APaperDoll2DCharacter::RequestAnimationStateWithPriority(EPaperDollAnimStat
 	}
 
 	// Attack guard: cannot attack while climbing
-	if (DesiredState == EPaperDollAnimState::BasicAttack &&
-		(CurrentAnimState == EPaperDollAnimState::ClimbLadder || CurrentAnimState == EPaperDollAnimState::ClimbRope))
+	if (IsAttackState(DesiredState) &&
+		(CurrentAnimState == EPaperDollAnimState::ClimbLadder || CurrentAnimState == EPaperDollAnimState::ClimbRope || IsClimbingMovement()))
 	{
 		return false;
 	}
+
+	// Allow ground locomotion to override Jump once landed (Jump priority > Walk otherwise).
+	const UCharacterMovementComponent* MoveComp = GetCharacterMovement();
+	const bool bOnGround = MoveComp && MoveComp->IsMovingOnGround();
+	const bool bAllowGroundOverrideJump = bOnGround
+		&& CurrentAnimState == EPaperDollAnimState::Jump
+		&& IsGroundLocomotionState(DesiredState);
+
+	// Allow locomotion to override attack once the held-attack flag is cleared.
+	const bool bAllowLocomotionAfterAttack = !bAttackHeld
+		&& IsAttackState(CurrentAnimState)
+		&& IsGroundLocomotionState(DesiredState);
+
+	const bool bAllowJumpOffClimb =
+		DesiredState == EPaperDollAnimState::Jump
+		&& (CurrentAnimState == EPaperDollAnimState::ClimbLadder || CurrentAnimState == EPaperDollAnimState::ClimbRope);
+
+	// Walk ↔ Idle ↔ Bend ↔ Alert: BP decides; do not block by numeric priority.
+	const bool bAllowGroundAnimSwap =
+		IsSwappableGroundAnim(CurrentAnimState) && IsSwappableGroundAnim(DesiredState);
 
 	// Priority comparison
 	const int32 CurrP = GetAnimPriority(CurrentAnimState);
 	const int32 DesiredP = GetAnimPriority(DesiredState);
 
-	// If desired is lower priority than current, ignore
-	if (DesiredP < CurrP)
+	// If desired is lower priority than current, ignore (unless an explicit override applies)
+	if (DesiredP < CurrP && !bAllowGroundOverrideJump && !bAllowLocomotionAfterAttack && !bAllowGroundAnimSwap && !bAllowJumpOffClimb)
 	{
 		return false;
 	}
 
-	// Apply the state
-	if (DesiredState == EPaperDollAnimState::BasicAttack)
+	// Apply the state — only reset time when state/variant actually changes
+	int32 ResolvedVariant = VariantIndex;
+	if (IsAttackState(DesiredState))
 	{
-		PlayAnimationStateEx(DesiredState, VariantIndex, bResetTime);
+		ResolvedVariant = ResolveVariantForState(DesiredState, VariantIndex);
+	}
+	const bool bStateChanged = (CurrentAnimState != DesiredState)
+		|| (IsAttackState(DesiredState) && CurrentAnimVariantIndex != ResolvedVariant);
+	if (!bStateChanged && !IsAttackState(DesiredState))
+	{
+		return true;
+	}
+	const bool bShouldResetTime = bResetTime && bStateChanged;
+
+	if (IsAttackState(DesiredState))
+	{
+		PlayAnimationStateEx(DesiredState, ResolvedVariant, bShouldResetTime);
 	}
 	else
 	{
-		PlayAnimationState(DesiredState, bResetTime);
+		PlayAnimationState(DesiredState, bShouldResetTime);
 	}
 	return true;
 }
@@ -862,14 +1144,236 @@ void APaperDoll2DCharacter::PredictAnimationStateLocal(EPaperDollAnimState Desir
 {
 	// Purely client-side prediction for responsiveness; server will override via replication.
 	if (HasAuthority()) return;
+	const bool bStateChanged = (CurrentAnimState != DesiredState) || (CurrentAnimVariantIndex != VariantIndex);
 	CurrentAnimState = DesiredState;
 	CurrentAnimVariantIndex = VariantIndex;
-	if (bResetTime)
+	if (bResetTime || bStateChanged)
 	{
-		CurrentAnimTimeSeconds = 0.0f;
+		CommitAnimPlaybackClock(bResetTime || bStateChanged);
 	}
 	UpdateFlipbooksForCurrentState();
-	ApplySortPriorities();
+}
+
+static bool AnimInputEquals(const FPaperDollAnimInput& A, const FPaperDollAnimInput& B)
+{
+	return A.bLeft == B.bLeft
+		&& A.bRight == B.bRight
+		&& A.bDown == B.bDown
+		&& A.bUp == B.bUp
+		&& A.bJump == B.bJump
+		&& A.bAttack == B.bAttack
+		&& A.bInCombat == B.bInCombat
+		&& A.bInClimbRegion == B.bInClimbRegion;
+}
+
+void APaperDoll2DCharacter::SetAnimInput(FPaperDollAnimInput Input)
+{
+	// Keys only from this path. Status flags are server-owned (see SetAnimStatus_ServerOnly).
+	if (HasAuthority())
+	{
+		Input.bInCombat = AnimInput.bInCombat;
+		Input.bInClimbRegion = AnimInput.bInClimbRegion;
+	}
+
+	if (AnimInputEquals(AnimInput, Input))
+	{
+		return;
+	}
+
+	if (HasAuthority())
+	{
+		ApplyAnimInput(Input);
+		return;
+	}
+
+	if (IsLocallyControlled())
+	{
+		// Keep local copy for prediction-facing BP; server will overwrite status fields on apply.
+		AnimInput.bLeft = Input.bLeft;
+		AnimInput.bRight = Input.bRight;
+		AnimInput.bDown = Input.bDown;
+		AnimInput.bUp = Input.bUp;
+		AnimInput.bJump = Input.bJump;
+		AnimInput.bAttack = Input.bAttack;
+		ServerSetAnimInput(Input);
+	}
+}
+
+bool APaperDoll2DCharacter::ServerSetAnimInput_Validate(FPaperDollAnimInput Input)
+{
+	// Server RPCs on a possessed pawn are only accepted from the owning connection.
+	return true;
+}
+
+void APaperDoll2DCharacter::ServerSetAnimInput_Implementation(FPaperDollAnimInput Input)
+{
+	// Strip world/status claims — client can lie; server BP sets these separately.
+	Input.bInCombat = AnimInput.bInCombat;
+	Input.bInClimbRegion = AnimInput.bInClimbRegion;
+	ApplyAnimInput(Input);
+}
+
+void APaperDoll2DCharacter::SetAnimStatus_ServerOnly(bool bInCombat, bool bInClimbRegion)
+{
+	if (!HasAuthority())
+	{
+		return;
+	}
+	AnimInput.bInCombat = bInCombat;
+	AnimInput.bInClimbRegion = bInClimbRegion;
+}
+
+void APaperDoll2DCharacter::ApplyAnimInput(const FPaperDollAnimInput& Input)
+{
+	AnimInput = Input;
+	bLocomotionWalkHeld = Input.bLeft || Input.bRight;
+	bLocomotionBendHeld = Input.bDown;
+}
+
+bool APaperDoll2DCharacter::IsClimbingMovement() const
+{
+	const UCharacterMovementComponent* MoveComp = GetCharacterMovement();
+	return MoveComp && MoveComp->MovementMode == MOVE_Flying;
+}
+
+EPaperDollAnimState APaperDoll2DCharacter::ComputeDesiredAnimState() const
+{
+	const UCharacterMovementComponent* MoveComp = GetCharacterMovement();
+	const EMovementMode Mode = MoveComp ? MoveComp->MovementMode : MOVE_None;
+	const bool bWalkHoriz = AnimInput.bLeft != AnimInput.bRight;
+
+	if (Mode == MOVE_Flying)
+	{
+		return (ClimbAnimType == EClimbAnimType::Rope)
+			? EPaperDollAnimState::ClimbRope
+			: EPaperDollAnimState::ClimbLadder;
+	}
+
+	if (Mode == MOVE_Falling)
+	{
+		return EPaperDollAnimState::Jump;
+	}
+
+	if (bWalkHoriz)
+	{
+		return EPaperDollAnimState::Walk;
+	}
+
+	if (AnimInput.bDown && !AnimInput.bUp)
+	{
+		return EPaperDollAnimState::Bend;
+	}
+
+	return AnimInput.bInCombat ? EPaperDollAnimState::Alert : EPaperDollAnimState::Idle;
+}
+
+void APaperDoll2DCharacter::ResolveAnimationFromInput(bool bFromAttackEnd)
+{
+	if (!HasAuthority())
+	{
+		return;
+	}
+
+	if (IsClimbingMovement())
+	{
+		if (bAttackHeld)
+		{
+			StopAttackHeld();
+		}
+		const EPaperDollAnimState ClimbState = (ClimbAnimType == EClimbAnimType::Rope)
+			? EPaperDollAnimState::ClimbRope
+			: EPaperDollAnimState::ClimbLadder;
+		RequestAnimationStateWithPriority(ClimbState, AnimInput.bInCombat);
+		return;
+	}
+
+	if (!bFromAttackEnd && IsAttackState(CurrentAnimState))
+	{
+		if (!AnimInput.bAttack)
+		{
+			StopAttackHeld();
+		}
+		return;
+	}
+
+	if (AnimInput.bAttack)
+	{
+		const UCharacterMovementComponent* MoveComp = GetCharacterMovement();
+		const bool bOnGround = MoveComp && MoveComp->IsMovingOnGround();
+		const bool bWalkHoriz = AnimInput.bLeft != AnimInput.bRight;
+		const bool bBendAttack = bOnGround && AnimInput.bDown && !AnimInput.bUp && !bWalkHoriz;
+		StartAttackHeldWithState(PlayRate, bBendAttack ? EPaperDollAnimState::BendAttack : EPaperDollAnimState::BasicAttack, -1);
+		return;
+	}
+
+	RequestAnimationStateWithPriority(ComputeDesiredAnimState(), AnimInput.bInCombat);
+}
+
+bool APaperDoll2DCharacter::NeedsPerFrameSortUpdate() const
+{
+	if (!SortRules)
+	{
+		return false;
+	}
+	for (const auto& Pair : SortRules->EquipmentRules)
+	{
+		const FEquipmentSortPerState& Rule = Pair.Value;
+		if (const FPerFramePriority* PerFrame = Rule.PerFrameOverrides.Find(CurrentAnimState))
+		{
+			if (PerFrame->Values.Num() > 0)
+			{
+				return true;
+			}
+		}
+	}
+	return false;
+}
+
+void APaperDoll2DCharacter::SetLocomotionInputHeld(bool bLeft, bool bRight, bool bDown)
+{
+	AnimInput.bLeft = bLeft;
+	AnimInput.bRight = bRight;
+	AnimInput.bDown = bDown;
+	bLocomotionWalkHeld = bLeft || bRight;
+	bLocomotionBendHeld = bDown;
+}
+
+void APaperDoll2DCharacter::NotifyLandedWithInput(bool bLeft, bool bRight, bool bDown, bool bJumpHeld, bool bInCombat)
+{
+	if (!HasAuthority()) return;
+
+	AnimInput.bLeft = bLeft;
+	AnimInput.bRight = bRight;
+	AnimInput.bDown = bDown;
+	AnimInput.bJump = bJumpHeld;
+	AnimInput.bInCombat = bInCombat;
+	bLocomotionWalkHeld = bLeft || bRight;
+	bLocomotionBendHeld = bDown;
+
+	if (bAnimResolverEnabled)
+	{
+		ResolveAnimationFromInput();
+		return;
+	}
+
+	// Jump still held: leave animation alone; BP jump logic will re-enter falling/jump.
+	if (bJumpHeld)
+	{
+		return;
+	}
+
+	if (bDown)
+	{
+		RequestAnimationStateWithPriority(EPaperDollAnimState::Bend, bInCombat);
+	}
+	else if (bLeft || bRight)
+	{
+		RequestAnimationStateWithPriority(EPaperDollAnimState::Walk, bInCombat);
+	}
+	else
+	{
+		RequestAnimationStateWithPriority(EPaperDollAnimState::Idle, bInCombat);
+	}
 }
 
 void APaperDoll2DCharacter::SetClimbAnimType(EClimbAnimType InType)
@@ -887,6 +1391,12 @@ void APaperDoll2DCharacter::OnMovementModeChanged(EMovementMode PrevMovementMode
 		return;
 	}
 
+	if (bAnimResolverEnabled)
+	{
+		ResolveAnimationFromInput();
+		return;
+	}
+
 	const EMovementMode NewMode = GetCharacterMovement() ? GetCharacterMovement()->MovementMode : MOVE_None;
 
 	// Auto-drive unique movement-mode states:
@@ -895,19 +1405,25 @@ void APaperDoll2DCharacter::OnMovementModeChanged(EMovementMode PrevMovementMode
 	switch (NewMode)
 	{
 	case MOVE_Falling:
-		RequestAnimationStateWithPriority(EPaperDollAnimState::Jump, /*bInCombat=*/false, /*VariantIndex=*/-1, /*bResetTime=*/true);
+		if (CurrentAnimState != EPaperDollAnimState::Jump)
+		{
+			RequestAnimationStateWithPriority(EPaperDollAnimState::Jump, /*bInCombat=*/false, /*VariantIndex=*/-1, /*bResetTime=*/true);
+		}
+		break;
+	case MOVE_Walking:
+		// Do not auto-pick Walk here — BP calls NotifyLandedWithInput from OnLanded with key state.
 		break;
 	case MOVE_Flying:
-		// If you distinguish rope vs ladder, map accordingly
-		if (ClimbAnimType == EClimbAnimType::Rope)
+	{
+		const EPaperDollAnimState ClimbState = (ClimbAnimType == EClimbAnimType::Rope)
+			? EPaperDollAnimState::ClimbRope
+			: EPaperDollAnimState::ClimbLadder;
+		if (CurrentAnimState != ClimbState)
 		{
-			RequestAnimationStateWithPriority(EPaperDollAnimState::ClimbRope, /*bInCombat=*/false, /*VariantIndex=*/-1, /*bResetTime=*/true);
-		}
-		else
-		{
-			RequestAnimationStateWithPriority(EPaperDollAnimState::ClimbLadder, /*bInCombat=*/false, /*VariantIndex=*/-1, /*bResetTime=*/true);
+			RequestAnimationStateWithPriority(ClimbState, /*bInCombat=*/false, /*VariantIndex=*/-1, /*bResetTime=*/true);
 		}
 		break;
+	}
 	default:
 		break;
 	}
